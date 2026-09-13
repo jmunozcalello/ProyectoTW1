@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Taller Web I</title>
+
+
+</head>
+
+<body>
+
+
+    <main role="main" class="container">
+
+        <div class="container">
+            <div id="loginbox" style="margin-top:50px;"
+                 class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                <form th:action="@{/saludar}" method="POST">
+                    <h3 class="form-signin-heading">Saludar a usuario</h3>
+
+                    <input name="nombre" id="nombre" type="text" class="form-control" required />
+
+                    <button id="btn-saludar" class="btn btn-lg btn-primary btn-block" Type="Submit">Saludar</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+
+</body>
+
+</html>
