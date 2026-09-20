@@ -24,9 +24,37 @@
 
   <main role="main" class="container">
     <div class="container">
-      <h1>Bienvenidos a Taller Web 1</h1>
+      <h1>Home</h1>
 
-      <a href="login.html" class="btn btn-lg btn-primary btn-block">Volver</a>
+      <p>
+        Aca el usuario tendra recomendaciones, acceso a editar y ver sus ambientes (Y respectivas propuestas)
+      </p>
+
+      <div>
+          <h2>Mis Ambientes</h2>
+          <a th:href="@{/ambientes/crear}" class="btn btn-primary">Crear ambiente</a>
+          <div>
+              <p>Habitacion De...</p>
+              <p>Descripcion del ambiente</p>
+              <a th:href="@{/ambientes/1}" class="btn btn-primary">Detalle</a>
+              <a th:href="@{/ambientes/1}" class="btn btn-primary">Ver propuestas</a>
+          </div>
+          <div>
+              <p>Cocina</p>
+              <p>Descripcion del ambiente</p>
+              <a th:href="@{/ambientes/1}" class="btn btn-primary">Detalle</a>
+              <a th:href="@{/ambientes/1}" class="btn btn-primary">Ver propuestas</a>
+          </div>
+        </div>
+
+        <div>
+          <h2>Recomendaciones</h2>
+          <div>
+              <p>Recomendacion de mueble</p>
+              <p>Ideal para Habitacion de...</p>
+              <a th:href="@{/muebles/1}" class="btn btn-primary" disabled="disabled">Detalle</a>
+          </div>
+        </div>
     </div>
   </main>
   <!-- /.container -->
