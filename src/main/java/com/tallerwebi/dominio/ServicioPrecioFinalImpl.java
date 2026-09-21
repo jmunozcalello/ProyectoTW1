@@ -1,5 +1,6 @@
 package com.tallerwebi.dominio;
 
+import com.tallerwebi.dominio.excepcion.TipoClienteInvalidoException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,16 @@ import org.springframework.stereotype.Service;
 public class ServicioPrecioFinalImpl implements ServicioPrecioFinal {
     @Override
     public Double calcularPrecio(double precioBase, String tipoCliente) {
-        return 0.0;
+
+        if (tipoCliente.equals("VIP")) {
+            return precioBase * 0.9; //10% de descuento
+        }
+        if (tipoCliente.equals("PREMIUM")) {
+            return precioBase * 0.8; //20% de descuento
+        }
+        if (tipoCliente.equals("NORMAL")) {
+            return precioBase;
+        }
+        throw new TipoClienteInvalidoException();
     }
 }
