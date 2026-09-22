@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class ControladorAmbiente {
+public class  ControladorAmbiente {
 
   @RequestMapping(path = "/ambientes", method = RequestMethod.GET)
   public ModelAndView ambientes() {
