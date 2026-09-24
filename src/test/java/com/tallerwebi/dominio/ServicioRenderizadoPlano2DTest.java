@@ -3,7 +3,9 @@ package com.tallerwebi.dominio;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
@@ -23,29 +25,100 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ServicioRenderizadoPlano2DTest {
 
-    ServicioPlano2D servicioPlano2D = new ServicioPlano2DImpl();
+    private ServicioPlano2D servicioPlano2D = new ServicioPlano2DImpl();
+    private final Mueble SILLA = new Mueble("Silla");
+    private final Mueble MESA = new Mueble("Mesa");
+    private final List<Mueble> MUEBLES = List.of(SILLA, MESA);
 
     @Test
-    public void DeberiaGenerarUnPlanoCuandoLasDimensionesYMueblesSonValidos() {
-
-        // preparacion
-        Mueble silla = new Mueble("Silla");
-        Mueble mesa = new Mueble("Mesa");
+    public void deberiaGenerarUnPlanoCuandoLasDimensionesYMueblesSonValidos() {
 
         // ejecucion
-        Plano planoObtenido = whenCargoDimensionesYMueblesDelAmbienteGeneraUnPlano(4.0,3.0,silla,mesa); // tdd podria hacer que valide dimensiones y muebles
+        Plano planoGenerado = whenCargoDimensionesYMueblesDelAmbienteGeneraUnPlano(4.0, 3.0, MUEBLES);
 
         // validacion
-        thenExisteUnPlanoGenerado(planoObtenido);
+        thenExisteUnPlanoGenerado(planoGenerado);
 
     }
 
-    private Plano whenCargoDimensionesYMueblesDelAmbienteGeneraUnPlano(Double ancho, Double largo, Mueble mueble1, Mueble mueble2) {
-        return servicioPlano2D.generarPlano(ancho,largo,mueble1,mueble2);
+    @Test
+    public void deberiaUbicarTodosLosMueblesEnElPlanoCuandoDimensionesYMueblesSonValidos() {
+
+        // ejecucion
+        Plano planoGenerado = whenCargoDimensionesYMueblesDelAmbienteGeneraUnPlano(4.0, 3.0, MUEBLES);
+
+        // validacion
+        thenSeUbicanTodosLosMueblesEnElPlano(planoGenerado);
+
     }
 
-    private void thenExisteUnPlanoGenerado(Plano planoObtenido) {
-        assertFalse(planoObtenido.getMuebles().isEmpty());
+    @Test
+    public void deberiaConsiderarQueUnMuebleEstaDentroDelPerimetroCuandoElMuebleCabeEnElPerimetro() {
+
+        // preparacion
+        Mueble mueble = new Mueble("Mesa", 1.0, 1.0);
+        MuebleUbicado muebleUbicado = new MuebleUbicado(mueble, 3.0, 2.0);
+        Ambiente ambiente = new Ambiente(4.0, 3.0);
+
+
+        // ejecucion
+        Boolean muebleEstaDentroDelPerimetro = whenVerificoSiElMuebleEstaEnElPerimetro(muebleUbicado, ambiente);
+
+        // validacion
+        thenElResultadoDeEstarDentroDelPerimetroEs(true, muebleEstaDentroDelPerimetro);
+
+    }
+
+    @Test
+    public void deberiaConsiderarQueUnMuebleNoEstaDentroDelPerimetroCuandoElMuebleSeSaleDelPerimetro() {
+
+        // preparacion
+        Mueble mueble = new Mueble("Mesa", 1.0, 1.0);
+        MuebleUbicado muebleUbicado = new MuebleUbicado(mueble, 3.5, 0.0);
+        Ambiente ambiente = new Ambiente(4.0, 3.0);
+
+        // ejecucion
+        Boolean muebleEstaDentroDelPerimetro = whenVerificoSiElMuebleEstaEnElPerimetro(muebleUbicado, ambiente);
+
+        // validacion
+        thenElResultadoDeEstarDentroDelPerimetroEs(false, muebleEstaDentroDelPerimetro);
+
+    }
+
+    @Test
+    public void deberiaConsiderarQueNoEstaDentroDelPerimetroCuandoElMuebleSeSaleDelPerimetroEnElEjeY() {
+
+        // preparacion
+        Mueble mueble = new Mueble("Mesa", 1.0, 1.0);
+        MuebleUbicado muebleUbicado = new MuebleUbicado(mueble, 0.0, 2.5);
+        Ambiente ambiente = new Ambiente(4.0, 3.0);
+        // 2.5 + 1.0 = 3.5 > 3.0 (largo)
+        // ejecucion
+        Boolean muebleEstaDentroDelPerimetro = whenVerificoSiElMuebleEstaEnElPerimetro(muebleUbicado, ambiente);
+
+        // validacion
+        thenElResultadoDeEstarDentroDelPerimetroEs(false, muebleEstaDentroDelPerimetro);
+    }
+
+
+    private Plano whenCargoDimensionesYMueblesDelAmbienteGeneraUnPlano(Double ancho, Double largo, List<Mueble> muebles) {
+        return servicioPlano2D.generarPlano(ancho, largo, muebles);
+    }
+
+    private void thenExisteUnPlanoGenerado(Plano planoGenerado) {
+        assertFalse(planoGenerado.getMuebles().isEmpty());
+    }
+
+    private void thenSeUbicanTodosLosMueblesEnElPlano(Plano planoGenerado) {
+        assertEquals(2, planoGenerado.getMuebles().size());
+    }
+
+    private Boolean whenVerificoSiElMuebleEstaEnElPerimetro(MuebleUbicado muebleUbicado, Ambiente ambiente) {
+        return servicioPlano2D.estaDentroDelPerimetro(muebleUbicado, ambiente);
+    }
+
+    private void thenElResultadoDeEstarDentroDelPerimetroEs(Boolean resultadoEsperado, Boolean elMuebleEstaDentroDelPerimetro) {
+        assertEquals(resultadoEsperado, elMuebleEstaDentroDelPerimetro);
     }
 
 

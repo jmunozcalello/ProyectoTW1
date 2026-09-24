@@ -3,18 +3,19 @@ package com.tallerwebi.dominio;
 import java.util.List;
 
 public class Plano {
-    private List<Mueble> muebles;
+    private List<MuebleUbicado> muebles;
     private Double ancho;
     private Double largo;
 
 
-    public Plano(Double ancho, Double largo, List<Mueble> muebles) {
+
+    public Plano(Double ancho, Double largo, List<MuebleUbicado> muebles) {
         this.ancho = ancho;
         this.largo = largo;
         this.muebles = muebles;
     }
 
-    public List<Mueble> getMuebles() {
+    public List<MuebleUbicado> getMuebles() {
         return muebles;
     }
 
