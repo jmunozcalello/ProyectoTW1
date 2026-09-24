@@ -21,7 +21,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void ObtenerListaVaciaCuandoNingunMuebleCumpleElPresupuesto()
+  public void dadoUnMuebleConPrecioMayorAlPresupuesto_cuandoSeFiltraPorPrecio_entoncesLaListaResultanteEstaVacia()
     throws PresupuestoNegativoException, PresupuestoNuloException {
     Double precioMaximo = 10.0;
     Mueble mueble = new Mueble();
@@ -35,7 +35,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void ObtenerListaVaciaCuandoElCatalogoEstaVacio()
+  public void dadoUnCatalogoVacio_cuandoSeFiltraPorPrecio_entoncesLaListaResultanteEstaVacia()
     throws PresupuestoNegativoException, PresupuestoNuloException {
     List<Mueble> catalogo = this.servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(1000.0);
     Assertions.assertTrue(
@@ -45,7 +45,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void ObtenerMuebleCuyoPrecioEsExactamenteIgualAlPresupuestoMaximo()
+  public void dadoUnMuebleConPrecioIgualAlPresupuestoMaximo_cuandoSeFiltraPorPrecio_entoncesElMuebleSeIncluyeEnElResultado()
     throws PresupuestoNegativoException, PresupuestoNuloException {
     Double precioMaximo = 500.0;
     Mueble mueble = new Mueble();
@@ -69,7 +69,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void NoObtenerMuebleCuyoPrecioSuperaPorElPresupuestoMaximo()
+  public void dadoUnMuebleConPrecioSuperiorAlPresupuestoMaximo_cuandoSeFiltraPorPrecio_entoncesElMuebleNoSeIncluyeEnElResultado()
     throws PresupuestoNegativoException, PresupuestoNuloException {
     Double precioMaximo = 499.99;
     Mueble mueble = new Mueble();
@@ -83,7 +83,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void ObtenerListaVaciaCuandoElCatalogoNoTieneMueblesDeLaCategoriaEspecificada() {
+  public void dadoUnCatalogoSinMueblesDelEstiloBuscado_cuandoSeFiltraPorEstilo_entoncesLaListaResultanteEstaVacia() {
     Estilo estilo = Estilo.Retro;
     List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesDeEstilo(estilo);
     Assertions.assertTrue(
@@ -93,7 +93,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void SugerirMontoMinimoIgualAlPrecioDelMuebleMasBaratoDeLaCategoriaElegida() {
+  public void dadoVariosMueblesDeLaMismaCategoria_cuandoSeBuscaElMasBaratoDeLaCategoria_entoncesDevuelveElDeMenorPrecio() {
     Estilo categoria = Estilo.Retro;
     Mueble muebleMasBarato = new Mueble();
     muebleMasBarato.setPrecio(100.0);
@@ -110,7 +110,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void ObtenerMueblesDeVariasCategoriasCuandoSePasaMasDeUnaCategoria() {
+  public void dadoMueblesDeDistintosEstilos_cuandoSeFiltraPorVariosEstilos_entoncesDevuelveSoloLosMueblesDeEsosEstilos() {
     List<Estilo> estilos = List.of(Estilo.Retro, Estilo.Minimalista);
     Mueble muebleRetro = new Mueble();
     Mueble muebleMinimalista = new Mueble();
@@ -138,7 +138,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void LanzarExcepcionCuandoElPresupuestoMaximoEsNegativo() {
+  public void dadoUnPresupuestoNegativo_cuandoSeFiltraPorPrecio_entoncesLanzaPresupuestoNegativoException() {
     Double precioMaximo = -100.0;
 
     PresupuestoNegativoException exception = assertThrows(
@@ -150,7 +150,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void LanzarExcepcionCuandoElPresupuestoMaximoEsNulo() {
+  public void dadoUnPresupuestoNulo_cuandoSeFiltraPorPrecio_entoncesLanzaPresupuestoNuloException() {
     Double precioMaximo = null;
 
     PresupuestoNuloException exception = assertThrows(
@@ -162,7 +162,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void ObtenerMueblesOrdenadosDeMenorAMayorPrecio() {
+  public void dadoMueblesConDistintosPrecios_cuandoSeOrdenanAscendentemente_entoncesQuedanDeMenorAMayorPrecio() {
     Mueble mueble1 = new Mueble();
     mueble1.setPrecio(300.0);
     Mueble mueble2 = new Mueble();
@@ -198,7 +198,7 @@ public class ServicioCatalogoTest {
   }
 
   @Test
-  public void ObtenerMueblesOrdenadosDeMayorAMenorPrecio() {
+  public void dadoMueblesConDistintosPrecios_cuandoSeOrdenanDescendentemente_entoncesQuedanDeMayorAMenorPrecio() {
     Mueble mueble1 = new Mueble();
     mueble1.setPrecio(300.0);
     Mueble mueble2 = new Mueble();
