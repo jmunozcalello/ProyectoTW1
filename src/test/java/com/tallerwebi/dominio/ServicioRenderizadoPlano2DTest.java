@@ -100,6 +100,15 @@ public class ServicioRenderizadoPlano2DTest {
         thenElResultadoDeEstarDentroDelPerimetroEs(false, muebleEstaDentroDelPerimetro);
     }
 
+    //falta test principal
+
+
+
+
+
+
+
+
 
     private Plano whenCargoDimensionesYMueblesDelAmbienteGeneraUnPlano(Double ancho, Double largo, List<Mueble> muebles) {
         return servicioPlano2D.generarPlano(ancho, largo, muebles);
