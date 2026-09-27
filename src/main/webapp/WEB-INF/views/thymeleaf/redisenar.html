@@ -32,18 +32,14 @@
             generará propuestas.
         </p>
 
-        <form>
+        <form th:action="@{/muebles/redisenar}" method="post">
 
             <div>
                 <h3>Estilo</h3>
 
-                <select name="estilo">
-                    <option>Minimalista</option>
-                    <option>Industrial</option>
-                    <option>Retro</option>
-                    <option>Boho</option>
-                    <option>Japandi</option>
-                    <option>Escandinavo</option>
+                <select name="estilo" class="form-select">
+                    <option th:each="estilo : ${estilos}" th:value="${estilo.name()}"
+                        th:text="${estilo}"></option>
                 </select>
             </div>
 
@@ -52,20 +48,9 @@
 
                 <input type="number"
                        name="presupuesto"
-                       placeholder="$">
-
-            </div>
-
-            <div>
-                <h3>Prioridad</h3>
-
-                <select name="prioridad">
-                    <option>Espacio libre</option>
-                    <option>Comodidad</option>
-                    <option>Estética</option>
-                    <option>Funcionalidad</option>
-                </select>
-
+                       class="form-control"
+                       min="0"
+                       placeholder="$" required>
             </div>
 
             <br>

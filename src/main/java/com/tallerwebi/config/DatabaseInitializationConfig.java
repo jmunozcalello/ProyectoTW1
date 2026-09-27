@@ -1,6 +1,7 @@
 package com.tallerwebi.config;
 
 import javax.sql.DataSource;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +16,7 @@ public class DatabaseInitializationConfig {
   private DataSource dataSource;
 
   @Bean
-  public DataSourceInitializer dataSourceInitializer() {
+  public DataSourceInitializer dataSourceInitializer(SessionFactory sessionFactory) {
     ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
     populator.addScript(new ClassPathResource("data.sql"));
 
