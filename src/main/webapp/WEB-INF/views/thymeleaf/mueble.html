@@ -25,24 +25,27 @@
 <main role="main" class="container">
     <div class="container">
 
-        <h1>Cama</h1>
+        <h1 th:text="${mueble.nombre}">Sillón Retró</h1>
 
-        <p>
-            Detalle del mueble.
+        <p th:text="${mueble.descripcion}">
+            Sillón de voluteadas tapizado en terciopelo color mostaza, con patas de madera maciza.
         </p>
 
         <div>
-            <p>Tipo: Cama</p>
-            <p>Ancho: 160cm</p>
-            <p>Profundidad: 200cm</p>
-            <p>Alto: 50cm</p>
+            <p>
+                Precio:
+                <span th:text="${'$ ' + #numbers.formatDecimal(mueble.precio, 1, 'COMMA', 0, 'POINT')}">
+                    $ 85.000
+                </span>
+            </p>
+            <p th:text="${'Estilo: ' + mueble.estilo}">Estilo: Retro</p>
         </div>
 
         <hr>
 
-        <a th:href="@{/muebles}"
+        <a th:href="@{/catalogo}"
            class="btn btn-secondary">
-            Volver
+            Volver al catálogo
         </a>
 
     </div>

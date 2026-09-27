@@ -11,6 +11,7 @@ import com.tallerwebi.dominio.RepositorioCatalogo;
 import com.tallerwebi.infraestructura.config.HibernateInfraestructuraTestConfig;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,6 +66,37 @@ public class RepositorioCatalogoTest {
     List<Mueble> mueblesObtenidos = this.repositorioCatalogo.ObtenerTodosLosMuebles();
 
     assertThat(mueblesObtenidos.size(), is(equalTo(2)));
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  public void DadoUnMuebleGuardadoCuandoLoBuscoPorIdEntoncesObtengoEseMueble() {
+    Mueble mueble = this.dadoQueTengoUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
+    mueble.setDescripcion("Sillón de voluteadas tapizado en terciopelo.");
+    this.cuandoGuardoUnMueble(mueble);
+
+    Optional<Mueble> muebleObtenido = this.repositorioCatalogo.ObtenerMueblePorId(mueble.getId());
+
+    assertThat(muebleObtenido.isPresent(), is(true));
+    assertThat(muebleObtenido.get().getNombre(), is(equalTo("Sillón Retró")));
+    assertThat(
+      muebleObtenido.get().getDescripcion(),
+      is(equalTo("Sillón de voluteadas tapizado en terciopelo."))
+    );
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  public void DadoQueNoHayNingunMuebleConEseIdCuandoLoBuscoEntoncesObtengoUnOptionalVacio() {
+    Mueble mueble = this.dadoQueTengoUnMueble("Mueble 1", 150.0, Estilo.Retro);
+    this.cuandoGuardoUnMueble(mueble);
+
+    Optional<Mueble> muebleObtenido =
+      this.repositorioCatalogo.ObtenerMueblePorId(mueble.getId() + 1000);
+
+    assertThat(muebleObtenido.isPresent(), is(false));
   }
 
   private Mueble dadoQueTengoUnMueble(String nombre, double precio, Estilo estilo) {

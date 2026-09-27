@@ -5,8 +5,13 @@ import com.tallerwebi.dominio.excepcion.PresupuestoNuloException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Service("servicioCatalogo")
+@Transactional
 public class ServicioCatalogoImpl implements ServicioCatalogo {
 
   private RepositorioCatalogo repositorioCatalogo;
@@ -94,5 +99,35 @@ public class ServicioCatalogoImpl implements ServicioCatalogo {
     List<Mueble> muebles = repositorioCatalogo.ObtenerTodosLosMuebles();
 
     return muebles.stream().sorted(Comparator.comparing(Mueble::getPrecio).reversed()).toList();
+  }
+
+  @Override
+  public List<Mueble> ObtenerMueblesQueCumplan(Estilo estilo, Double precioMaximo)
+    throws PresupuestoNegativoException {
+    if (precioMaximo != null && precioMaximo < 0) {
+      throw new PresupuestoNegativoException("El presupuesto máximo no puede ser negativo");
+    }
+
+    List<Mueble> mueblesFiltrados = new ArrayList<>();
+    for (Mueble mueble : repositorioCatalogo.ObtenerTodosLosMuebles()) {
+      if (cumpleElFiltroDeEstilo(mueble, estilo) && cumpleElFiltroDePrecio(mueble, precioMaximo)) {
+        mueblesFiltrados.add(mueble);
+      }
+    }
+
+    return mueblesFiltrados;
+  }
+
+  @Override
+  public Optional<Mueble> ObtenerMueblePorId(int id) {
+    return this.repositorioCatalogo.ObtenerMueblePorId(id);
+  }
+
+  private boolean cumpleElFiltroDeEstilo(Mueble mueble, Estilo estilo) {
+    return estilo == null || mueble.getEstilo() == estilo;
+  }
+
+  private boolean cumpleElFiltroDePrecio(Mueble mueble, Double precioMaximo) {
+    return precioMaximo == null || mueble.getPrecio() <= precioMaximo;
   }
 }
