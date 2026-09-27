@@ -1,0 +1,64 @@
+/*
+ * Habitat — tokens de marca
+ *
+ * Único lugar donde se definen colores, tipografías, radios y sombras.
+ * El resto del CSS (main.css) y Bootstrap consumen estas variables:
+ * para cambiar el branding alcanza con tocar este archivo.
+ *
+ * Contrastes verificados (WCAG AA >= 4.5):
+ *   primario / blanco 5.7 · salvia / blanco 5.4 · texto / crema 14.0 · texto-suave / crema 5.6
+ */
+
+:root {
+  /* Paleta de marca */
+  --hb-terracota: #a34e30;
+  --hb-terracota-oscuro: #86391f;
+  --hb-terracota-suave: #f6eae3;
+  --hb-salvia: #5e7052;
+  --hb-salvia-oscuro: #46553c;
+  --hb-salvia-suave: #e9eee4;
+
+  /* Neutros cálidos */
+  --hb-crema: #faf7f2;
+  --hb-superficie: #ffffff;
+  --hb-arena: #efe9e1;
+  --hb-borde: #e4ddd3;
+  --hb-texto: #2b2622;
+  --hb-texto-suave: #6b625a;
+
+  /* Tipografía */
+  --hb-fuente-titulos: "Fraunces", Georgia, "Times New Roman", serif;
+  --hb-fuente-texto: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Forma */
+  --hb-radio: 0.75rem;
+  --hb-radio-sm: 0.5rem;
+  --hb-radio-lg: 1.25rem;
+  --hb-sombra: 0 1px 2px rgba(43, 38, 34, 0.06), 0 4px 12px rgba(43, 38, 34, 0.06);
+  --hb-sombra-hover: 0 2px 4px rgba(43, 38, 34, 0.08), 0 12px 28px rgba(43, 38, 34, 0.1);
+  --hb-foco: 0 0 0 0.25rem rgba(163, 78, 48, 0.25);
+
+  /* Mapeo a las variables globales de Bootstrap 5.2 */
+  --bs-primary: var(--hb-terracota);
+  --bs-primary-rgb: 163, 78, 48;
+  --bs-secondary: var(--hb-texto-suave);
+  --bs-secondary-rgb: 107, 98, 90;
+  --bs-success: var(--hb-salvia);
+  --bs-success-rgb: 94, 112, 82;
+  --bs-light: var(--hb-crema);
+  --bs-light-rgb: 250, 247, 242;
+  --bs-dark: var(--hb-texto);
+  --bs-dark-rgb: 43, 38, 34;
+
+  --bs-body-font-family: var(--hb-fuente-texto);
+  --bs-body-color: var(--hb-texto);
+  --bs-body-color-rgb: 43, 38, 34;
+  --bs-body-bg: var(--hb-crema);
+  --bs-body-bg-rgb: 250, 247, 242;
+  --bs-border-color: var(--hb-borde);
+  --bs-border-radius: var(--hb-radio);
+  --bs-border-radius-sm: var(--hb-radio-sm);
+  --bs-border-radius-lg: var(--hb-radio-lg);
+  --bs-link-color: var(--hb-terracota);
+  --bs-link-hover-color: var(--hb-terracota-oscuro);
+}

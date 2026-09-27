@@ -295,6 +295,32 @@ Remove-Item -Recurse -Force .calidad-de-codigo/jacoco; mvn clean test
 rd /s /q .calidad-de-codigo\jacoco & mvn clean test
 ```
 
+## 13. Front: branding y layout (Habitat)
+El front usa Bootstrap 5.2 con la marca aplicada por variables CSS, sin build.
+
+* `resources/core/css/tokens.css`: colores, tipografías (Fraunces + Inter), radios y sombras. **Para cambiar el branding se toca solo este archivo.**
+* `resources/core/css/main.css`: componentes de Bootstrap con la marca y clases propias `hb-*` (`hb-page-header`, `hb-eyebrow`, `hb-section-title`, `hb-card-hover`, `hb-chip`, `hb-datos`, `hb-auth`). No usar colores sueltos: siempre `var(--hb-*)`.
+* `WEB-INF/views/thymeleaf/fragments/layout.html`: `head`, `navbar`, `footer` y `scripts` compartidos.
+
+Esqueleto de una vista nueva:
+```html
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Título de la página')}"></head>
+<body>
+  <nav th:replace="~{fragments/layout :: navbar('ambientes')}"></nav> <!-- 'publico' | 'inicio' | 'ambientes' -->
+  <main class="container">
+    <header class="hb-page-header">
+      <div><h1>Título</h1><p>Bajada</p></div>
+    </header>
+    <!-- contenido -->
+  </main>
+  <footer th:replace="~{fragments/layout :: footer}"></footer>
+  <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+```
+
 ## Tecnologías:
 * Docker
 * Java 25 (LTS)

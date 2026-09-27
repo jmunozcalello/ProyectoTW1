@@ -1,109 +1,65 @@
 <!DOCTYPE HTML>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <title>Taller Web I</title>
-
-  <!-- Boostrap core css -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-
-  <!-- custom style -->
-  <link rel="stylesheet" th:href="@{/css/main.css}" />
-
-</head>
+<head th:replace="~{fragments/layout :: head('Habitación')}"></head>
 
 <body>
+  <nav th:replace="~{fragments/layout :: navbar('ambientes')}"></nav>
 
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">UNLAM</a>
-  </nav>
-
-<main role="main" class="container">
-    <div class="container">
-
+  <main class="container">
+    <header class="hb-page-header">
+      <div>
+        <span class="hb-eyebrow">Ambiente</span>
         <h1>Habitación</h1>
+        <p>Acá podés ver, editar y rediseñar este ambiente.</p>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <a th:href="@{/muebles}" class="btn btn-lg btn-secondary"><i class="bi bi-pencil"></i> Ver / editar muebles</a>
+        <a th:href="@{/muebles/redisenar}" class="btn btn-lg btn-primary"><i class="bi bi-magic"></i> Rediseñar</a>
+      </div>
+    </header>
 
-        <p>
-            Acá podés ver, editar y rediseñar este ambiente.
-        </p>
-
-        <div>
-            <h2>Información</h2>
-
-            <p>Tipo: Dormitorio</p>
-            <p>Dimensiones: 4m x 3m</p>
-            <p>Estilo: Minimalista</p>
-        </div>
-
-        <hr>
-
-        <div>
-            <h2>Acciones</h2>
-
-            <a th:href="@{/muebles}"
-               class="btn btn-lg btn-primary">
-                Ver / editar muebles
-            </a>
-
-            <a th:href="@{/muebles/redisenar}"
-               class="btn btn-lg btn-primary">
-                Rediseñar
-            </a>
-        </div>
-
-        <hr>
-
-        <div>
-            <h2>Propuestas</h2>
-
-            <div>
-                <h3>Propuesta Minimalista</h3>
-
-                <p>
-                    Redistribución de muebles para mejorar
-                    la circulación.
-                </p>
-
-                <a th:href="@{/propuestas/1}"
-                   class="btn btn-primary">
-                    Ver propuesta
-                </a>
-            </div>
-
-            <div>
-                <h3>Propuesta Económica</h3>
-
-                <p>
-                    Cambios realizados sin superar el presupuesto.
-                </p>
-
-                <a th:href="@{/propuestas/2}"
-                   class="btn btn-primary">
-                    Ver propuesta
-                </a>
-            </div>
-        </div>
-
-        <hr>
-
-        <a th:href="@{/ambientes}"
-           class="btn btn-secondary">
-            Volver
-        </a>
-
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Información</h2>
+        <dl class="hb-datos">
+          <dt>Tipo</dt>
+          <dd>Dormitorio</dd>
+          <dt>Dimensiones</dt>
+          <dd>4m x 3m</dd>
+          <dt>Estilo</dt>
+          <dd><span class="hb-chip hb-chip-salvia">Minimalista</span></dd>
+        </dl>
+      </div>
     </div>
-</main>
-  <!-- /.container -->
 
-  <!-- Boostrap core js -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-    crossorigin="anonymous"></script>
+    <h2 class="hb-section-title">Propuestas</h2>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card h-100 hb-card-hover">
+          <div class="card-body">
+            <h3 class="h5">Propuesta Minimalista</h3>
+            <p class="text-secondary">Redistribución de muebles para mejorar la circulación.</p>
+            <a th:href="@{/propuestas/1}" class="btn btn-primary">Ver propuesta</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100 hb-card-hover">
+          <div class="card-body">
+            <h3 class="h5">Propuesta Económica</h3>
+            <p class="text-secondary">Cambios realizados sin superar el presupuesto.</p>
+            <a th:href="@{/propuestas/2}" class="btn btn-primary">Ver propuesta</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <a th:href="@{/ambientes}" class="btn btn-secondary mt-4"><i class="bi bi-arrow-left"></i> Volver</a>
+  </main>
+
+  <footer th:replace="~{fragments/layout :: footer}"></footer>
+  <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 
 </html>

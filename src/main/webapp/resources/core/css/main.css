@@ -1,19 +1,306 @@
+/*
+ * Habitat — estilos de componentes
+ *
+ * Requiere tokens.css cargado antes. Acá no van colores sueltos: siempre var(--hb-*).
+ * 1. Base   2. Componentes de Bootstrap con la marca   3. Componentes propios (hb-*)
+ */
+
+/* 1. Base ------------------------------------------------------------------ */
+
 body {
-  padding-top: 5rem;
-}
-.starter-template {
-  padding: 3rem 1.5rem;
-  text-align: center;
-}
-
-h1{
-	color:#0000FF;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-h2{
-	color:#FF0000;
+main {
+  flex: 1;
 }
 
-.navbar-brand{
-    margin:0 2rem;
+h1, h2, h3, h4, h5, h6,
+.navbar-brand {
+  font-family: var(--hb-fuente-titulos);
+  font-weight: 600;
+  color: var(--hb-texto);
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--hb-terracota-suave);
+}
+
+/* 2. Componentes de Bootstrap con la marca --------------------------------- */
+
+.btn {
+  --bs-btn-font-weight: 500;
+  --bs-btn-border-radius: var(--hb-radio-sm);
+  --bs-btn-padding-x: 1.1rem;
+  --bs-btn-padding-y: 0.5rem;
+}
+
+.btn-lg {
+  --bs-btn-border-radius: var(--hb-radio);
+  --bs-btn-padding-x: 1.5rem;
+  --bs-btn-font-size: 1.05rem;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--hb-terracota);
+  --bs-btn-border-color: var(--hb-terracota);
+  --bs-btn-hover-bg: var(--hb-terracota-oscuro);
+  --bs-btn-hover-border-color: var(--hb-terracota-oscuro);
+  --bs-btn-active-bg: var(--hb-terracota-oscuro);
+  --bs-btn-active-border-color: var(--hb-terracota-oscuro);
+  --bs-btn-disabled-bg: var(--hb-terracota);
+  --bs-btn-disabled-border-color: var(--hb-terracota);
+  --bs-btn-focus-shadow-rgb: 163, 78, 48;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--hb-terracota);
+  --bs-btn-border-color: var(--hb-terracota);
+  --bs-btn-hover-bg: var(--hb-terracota);
+  --bs-btn-hover-border-color: var(--hb-terracota);
+  --bs-btn-active-bg: var(--hb-terracota-oscuro);
+  --bs-btn-active-border-color: var(--hb-terracota-oscuro);
+  --bs-btn-focus-shadow-rgb: 163, 78, 48;
+}
+
+/* Secundario: botón claro con borde, para acciones como "Volver" o "Cancelar" */
+.btn-secondary {
+  --bs-btn-color: var(--hb-texto);
+  --bs-btn-bg: var(--hb-superficie);
+  --bs-btn-border-color: var(--hb-borde);
+  --bs-btn-hover-color: var(--hb-texto);
+  --bs-btn-hover-bg: var(--hb-arena);
+  --bs-btn-hover-border-color: var(--hb-borde);
+  --bs-btn-active-color: var(--hb-texto);
+  --bs-btn-active-bg: var(--hb-arena);
+  --bs-btn-active-border-color: var(--hb-borde);
+  --bs-btn-focus-shadow-rgb: 107, 98, 90;
+}
+
+.btn-success {
+  --bs-btn-bg: var(--hb-salvia);
+  --bs-btn-border-color: var(--hb-salvia);
+  --bs-btn-hover-bg: var(--hb-salvia-oscuro);
+  --bs-btn-hover-border-color: var(--hb-salvia-oscuro);
+  --bs-btn-active-bg: var(--hb-salvia-oscuro);
+  --bs-btn-active-border-color: var(--hb-salvia-oscuro);
+  --bs-btn-focus-shadow-rgb: 94, 112, 82;
+}
+
+.form-control,
+.form-select {
+  border-color: var(--hb-borde);
+  border-radius: var(--hb-radio-sm);
+  padding: 0.6rem 0.85rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--hb-terracota);
+  box-shadow: var(--hb-foco);
+}
+
+.input-group-text {
+  background: var(--hb-arena);
+  border-color: var(--hb-borde);
+  color: var(--hb-texto-suave);
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-check-input:checked {
+  background-color: var(--hb-terracota);
+  border-color: var(--hb-terracota);
+}
+
+.card {
+  --bs-card-border-color: var(--hb-borde);
+  --bs-card-border-radius: var(--hb-radio);
+  --bs-card-inner-border-radius: calc(var(--hb-radio) - 1px);
+  --bs-card-bg: var(--hb-superficie);
+  box-shadow: var(--hb-sombra);
+}
+
+.navbar {
+  --bs-navbar-brand-color: var(--hb-texto);
+  --bs-navbar-brand-hover-color: var(--hb-terracota);
+  --bs-navbar-color: var(--hb-texto-suave);
+  --bs-navbar-hover-color: var(--hb-texto);
+  --bs-navbar-active-color: var(--hb-terracota);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--hb-borde);
+}
+
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.navbar .nav-link {
+  font-weight: 500;
+}
+
+.alert {
+  border-radius: var(--hb-radio-sm);
+}
+
+/* 3. Componentes propios (hb-*) -------------------------------------------- */
+
+/* Logo: el ícono hereda el color de marca */
+.hb-logo {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--hb-terracota);
+}
+
+/* Encabezado de página: título + bajada + acción principal opcional */
+.hb-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2.5rem 0 1.5rem;
+}
+
+.hb-page-header h1 {
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  margin-bottom: 0.25rem;
+}
+
+.hb-page-header p {
+  color: var(--hb-texto-suave);
+  margin-bottom: 0;
+}
+
+/* Etiqueta chica sobre un título ("Ambiente", "Propuesta"...) */
+.hb-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hb-terracota);
+  margin-bottom: 0.35rem;
+}
+
+/* Título de sección dentro de una página */
+.hb-section-title {
+  font-size: 1.25rem;
+  margin: 2rem 0 1rem;
+}
+
+/* Tarjeta clickeable: se eleva al pasar el mouse */
+.hb-card-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hb-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--hb-sombra-hover);
+}
+
+/* Chip de dato: medidas, estilo, costo */
+.hb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: var(--hb-arena);
+  color: var(--hb-texto);
+}
+
+.hb-chip-primario {
+  background: var(--hb-terracota-suave);
+  color: var(--hb-terracota-oscuro);
+}
+
+.hb-chip-salvia {
+  background: var(--hb-salvia-suave);
+  color: var(--hb-salvia-oscuro);
+}
+
+/* Lista de datos clave/valor (detalle de mueble, ambiente) */
+.hb-datos {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+}
+
+.hb-datos dt {
+  font-weight: 500;
+  color: var(--hb-texto-suave);
+}
+
+.hb-datos dd {
+  margin: 0;
+}
+
+/* Hero de la landing */
+.hb-hero {
+  padding: 4rem 0 3rem;
+}
+
+.hb-hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  line-height: 1.1;
+}
+
+.hb-hero .lead {
+  color: var(--hb-texto-suave);
+  max-width: 36rem;
+}
+
+/* Ícono destacado en tarjetas de la landing */
+.hb-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--hb-radio-sm);
+  background: var(--hb-terracota-suave);
+  color: var(--hb-terracota);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.hb-icono-salvia {
+  background: var(--hb-salvia-suave);
+  color: var(--hb-salvia-oscuro);
+}
+
+/* Pantallas de login / registro: tarjeta centrada */
+.hb-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.hb-auth .card {
+  width: 100%;
+  max-width: 26rem;
+}
+
+.hb-footer {
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+  border-top: 1px solid var(--hb-borde);
+  color: var(--hb-texto-suave);
+  font-size: 0.875rem;
 }
