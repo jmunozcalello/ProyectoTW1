@@ -10,7 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.tallerwebi.dominio.Estilo;
+import com.tallerwebi.dominio.Iluminacion;
 import com.tallerwebi.dominio.Mueble;
+import com.tallerwebi.dominio.Recomendacion;
 import com.tallerwebi.dominio.RepositorioCatalogo;
 import com.tallerwebi.integracion.config.HibernateTestConfig;
 import com.tallerwebi.integracion.config.SpringWebTestConfig;
@@ -144,6 +146,43 @@ public class ControladorRedisenoTest {
 
   @Test
   @Transactional
+  public void dadoQueVeoElResultado_cuandoLoHago_entoncesElModeloTraeLaPaletaYLaIluminacionRecomendadas()
+    throws Exception {
+    MvcResult result =
+      this.mockMvc.perform(
+          get("/muebles/redisenar/resultado")
+            .param("estilo", "Japandi")
+            .param("presupuesto", "60000")
+        )
+        .andExpect(status().isOk())
+        .andReturn();
+
+    Recomendacion recomendacion = (Recomendacion) this.obtenerDelModel(result, "recomendacion");
+    assertThat(recomendacion.getEstilo(), is(Estilo.Japandi));
+    assertThat(recomendacion.getColores(), hasSize(3));
+    assertThat(recomendacion.getIluminacion(), is(Iluminacion.CALIDA));
+  }
+
+  @Test
+  @Transactional
+  public void dadoQueElijoOtroEstilo_cuandoVeoElResultado_entoncesCambiaLaIluminacionRecomendada()
+    throws Exception {
+    MvcResult result =
+      this.mockMvc.perform(
+          get("/muebles/redisenar/resultado")
+            .param("estilo", "Industrial")
+            .param("presupuesto", "60000")
+        )
+        .andExpect(status().isOk())
+        .andReturn();
+
+    Recomendacion recomendacion = (Recomendacion) this.obtenerDelModel(result, "recomendacion");
+    assertThat(recomendacion.getEstilo(), is(Estilo.Industrial));
+    assertThat(recomendacion.getIluminacion(), is(Iluminacion.FRIA));
+  }
+
+  @Test
+  @Transactional
   public void dadoQueEnvioElFormularioDeRediseno_conUnEstiloQueNoExiste_entoncesVuelvoAlFormulario()
     throws Exception {
     MvcResult result =
@@ -210,5 +249,15 @@ public class ControladorRedisenoTest {
       is(notNullValue())
     );
     return (List<Mueble>) modelAndView.getModel().get("muebles");
+  }
+
+  private Object obtenerDelModel(MvcResult result, String clave) {
+    ModelAndView modelAndView = result.getModelAndView();
+    assertThat(
+      "El controlador deberia devolver la vista con '" + clave + "'",
+      modelAndView,
+      is(notNullValue())
+    );
+    return modelAndView.getModel().get(clave);
   }
 }

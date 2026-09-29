@@ -37,6 +37,37 @@
       </p>
 
       <div>
+        <h2>Paleta e iluminación recomendadas</h2>
+
+        <p>
+          Estos son los colores y el tipo de luz que mejor combinan con el estilo
+          <strong th:text="${estilo}">Japandi</strong>.
+        </p>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          <div th:each="color : ${recomendacion.colores}" class="col">
+            <div class="card h-100">
+              <div class="card-body d-flex align-items-center">
+                <span class="d-inline-block rounded-circle me-3"
+                      th:style="'width: 40px; height: 40px; background-color:' + ${color.hex}"></span>
+                <span class="card-text mb-0" th:text="${color.nombre}">Arena</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-3">
+          Iluminación:
+          <strong th:text="${recomendacion.iluminacion.descripcion}">Cálida</strong>
+          <span class="text-muted" th:text="${'(~' + recomendacion.iluminacion.kelvin + 'K)'}">
+            (~2700K)
+          </span>
+        </p>
+      </div>
+
+      <hr>
+
+      <div>
         <h2>Muebles sugeridos</h2>
 
         <p th:if="${#lists.isEmpty(muebles)}" class="alert alert-info">

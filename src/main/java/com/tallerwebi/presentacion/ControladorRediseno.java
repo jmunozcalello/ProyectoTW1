@@ -2,6 +2,7 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.ServicioCatalogo;
+import com.tallerwebi.dominio.ServicioRediseño;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
 import java.util.HashMap;
@@ -17,13 +18,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class ControladorRediseno {
 
   private final ServicioCatalogo servicioCatalogo;
+  private final ServicioRediseño servicioRediseño;
 
   private static final String PRESUPUESTO = "presupuesto";
   private static final String ESTILO = "estilo";
 
   @Autowired
-  public ControladorRediseno(ServicioCatalogo servicioCatalogo) {
+  public ControladorRediseno(ServicioCatalogo servicioCatalogo, ServicioRediseño servicioRediseño) {
     this.servicioCatalogo = servicioCatalogo;
+    this.servicioRediseño = servicioRediseño;
   }
 
   @RequestMapping(path = "/muebles/redisenar", method = RequestMethod.GET)
@@ -84,6 +87,7 @@ public class ControladorRediseno {
     Map<String, Object> modelo = new HashMap<>();
     modelo.put(ESTILO, propuesta.getEstilo());
     modelo.put(PRESUPUESTO, propuesta.getPrecioMaximo());
+    modelo.put("recomendacion", this.servicioRediseño.recomendar(propuesta.getEstilo()));
     modelo.put(
       "muebles",
       this.servicioCatalogo.ObtenerMueblesQueCumplan(
