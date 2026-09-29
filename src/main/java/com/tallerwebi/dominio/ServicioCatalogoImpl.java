@@ -1,11 +1,11 @@
 package com.tallerwebi.dominio;
 
+import com.tallerwebi.dominio.excepcion.MuebleNoEncontrado;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.dominio.excepcion.PresupuestoNuloException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,8 +119,12 @@ public class ServicioCatalogoImpl implements ServicioCatalogo {
   }
 
   @Override
-  public Optional<Mueble> ObtenerMueblePorId(int id) {
-    return this.repositorioCatalogo.ObtenerMueblePorId(id);
+  public Mueble ObtenerMueblePorId(int id) throws MuebleNoEncontrado {
+    Mueble mueble = this.repositorioCatalogo.ObtenerMueblePorId(id);
+    if (mueble == null) {
+      throw new MuebleNoEncontrado("Mueble no encontrado");
+    }
+    return mueble;
   }
 
   private boolean cumpleElFiltroDeEstilo(Mueble mueble, Estilo estilo) {

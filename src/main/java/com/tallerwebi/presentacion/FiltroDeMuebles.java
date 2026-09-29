@@ -1,8 +1,8 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.Estilo;
+import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
 import java.util.Arrays;
-import java.util.Optional;
 
 public final class FiltroDeMuebles {
 
@@ -14,27 +14,31 @@ public final class FiltroDeMuebles {
     this.precioMaximo = precioMaximo;
   }
 
-  public static Optional<FiltroDeMuebles> delCatalogo(String estilo, String precioMaximo) {
+  public static FiltroDeMuebles delCatalogo(String estilo, String precioMaximo)
+    throws FiltroDeMueblesInvalidoException {
     if (esUnEstiloDesconocido(estilo) || esUnPrecioInvalido(precioMaximo)) {
-      return Optional.empty();
+      throw new FiltroDeMueblesInvalidoException(
+        "El filtro del catalogo tiene criterios invalidos"
+      );
     }
 
-    return Optional.of(new FiltroDeMuebles(aEstilo(estilo), aPrecioMaximo(precioMaximo)));
+    return new FiltroDeMuebles(aEstilo(estilo), aPrecioMaximo(precioMaximo));
   }
 
-  public static Optional<FiltroDeMuebles> deUnaPropuesta(String estilo, String presupuesto) {
+  public static FiltroDeMuebles deUnaPropuesta(String estilo, String presupuesto)
+    throws FiltroDeMueblesInvalidoException {
     if (
       estaVacio(estilo) ||
       estaVacio(presupuesto) ||
       esUnEstiloDesconocido(estilo) ||
       esUnPrecioInvalido(presupuesto)
     ) {
-      return Optional.empty();
+      throw new FiltroDeMueblesInvalidoException(
+        "La propuesta necesita un estilo y un presupuesto validos"
+      );
     }
 
-    return Optional.of(
-      new FiltroDeMuebles(Estilo.valueOf(estilo), Double.parseDouble(presupuesto))
-    );
+    return new FiltroDeMuebles(Estilo.valueOf(estilo), Double.parseDouble(presupuesto));
   }
 
   public Estilo getEstilo() {

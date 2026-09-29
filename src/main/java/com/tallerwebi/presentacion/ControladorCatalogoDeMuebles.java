@@ -3,10 +3,11 @@ package com.tallerwebi.presentacion;
 import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.ServicioCatalogo;
+import com.tallerwebi.dominio.excepcion.MuebleNoEncontrado;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
+import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,13 +31,15 @@ public class ControladorCatalogoDeMuebles {
     @RequestParam(name = "estilo", required = false) String estilo,
     @RequestParam(name = "precioMax", required = false) String precioMaximo
   ) throws PresupuestoNegativoException {
-    Optional<FiltroDeMuebles> filtro = FiltroDeMuebles.delCatalogo(estilo, precioMaximo);
+    FiltroDeMuebles filtro;
 
-    if (filtro.isEmpty()) {
+    try {
+      filtro = FiltroDeMuebles.delCatalogo(estilo, precioMaximo);
+    } catch (FiltroDeMueblesInvalidoException e) {
       return new ModelAndView("redirect:/catalogo");
     }
 
-    return new ModelAndView("catalogo", this.modeloDelCatalogo(filtro.get()));
+    return new ModelAndView("catalogo", this.modeloDelCatalogo(filtro));
   }
 
   @RequestMapping(path = "/muebles", method = RequestMethod.GET)
@@ -51,13 +54,15 @@ public class ControladorCatalogoDeMuebles {
 
   @RequestMapping(path = "/muebles/{id}", method = RequestMethod.GET)
   public ModelAndView detalleMueble(@PathVariable("id") int id) {
-    Optional<Mueble> mueble = this.servicioCatalogo.ObtenerMueblePorId(id);
+    Mueble mueble;
 
-    if (mueble.isEmpty()) {
+    try {
+      mueble = this.servicioCatalogo.ObtenerMueblePorId(id);
+    } catch (MuebleNoEncontrado e) {
       return new ModelAndView("redirect:/catalogo");
     }
 
-    return new ModelAndView("mueble", Map.of("mueble", mueble.get()));
+    return new ModelAndView("mueble", Map.of("mueble", mueble));
   }
 
   private Map<String, Object> modeloDelCatalogo(FiltroDeMuebles filtro)
