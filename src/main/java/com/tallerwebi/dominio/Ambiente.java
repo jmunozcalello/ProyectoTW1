@@ -10,7 +10,6 @@ public class Ambiente {
         this.largo = largo;
     }
 
-
     public Double getAncho() {
         return ancho;
     }

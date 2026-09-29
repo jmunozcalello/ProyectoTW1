@@ -23,5 +23,4 @@ public class MuebleUbicado {
     public Double getPosicionY() {
         return y;
     }
-
 }

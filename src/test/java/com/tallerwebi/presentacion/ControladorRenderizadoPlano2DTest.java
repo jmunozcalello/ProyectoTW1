@@ -18,17 +18,8 @@ import org.junit.jupiter.api.Test;
  * entonces el sistema define un criterio de orden de colocación (ej. por tamaño o por orden de carga) y lo aplica de forma consistente.
  */
 
-
-
 public class ControladorRenderizadoPlano2DTest {
 
-    @Test
-    public void ejemplo() {
-
-    }
-
-
-
-
-
+  @Test
+  public void ejemplo() {}
 }
