@@ -1,12 +1,31 @@
 package com.tallerwebi.dominio;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Mueble {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     private String nombre;
+    private String descripcion;
+    private double precio;
     private Double ancho;
     private Double largo;
-    private double precio;
+
+    @Enumerated(EnumType.STRING)
     private Estilo estilo;
+
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     /**
      * Convención de coordenadas: origen (0,0) en la esquina superior izquierda.
@@ -21,10 +40,6 @@ public class Mueble {
         this.nombre = nombre;
         this.ancho = ancho;
         this.largo = largo;
-    }
-
-    public String getNombre() {
-        return nombre;
     }
 
     public void setPrecio(double _precio) {
@@ -49,5 +64,21 @@ public class Mueble {
 
     public Estilo getEstilo() {
         return this.estilo;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getNombre() {
+        return this.nombre;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getDescripcion() {
+        return this.descripcion;
     }
 }

@@ -1,0 +1,83 @@
+package com.tallerwebi.presentacion;
+
+import com.tallerwebi.dominio.Estilo;
+import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
+import java.util.Arrays;
+
+public final class FiltroDeMuebles {
+
+  private final Estilo estilo;
+  private final Double precioMaximo;
+
+  private FiltroDeMuebles(Estilo estilo, Double precioMaximo) {
+    this.estilo = estilo;
+    this.precioMaximo = precioMaximo;
+  }
+
+  public static FiltroDeMuebles delCatalogo(String estilo, String precioMaximo)
+    throws FiltroDeMueblesInvalidoException {
+    if (esUnEstiloDesconocido(estilo) || esUnPrecioInvalido(precioMaximo)) {
+      throw new FiltroDeMueblesInvalidoException(
+        "El filtro del catalogo tiene criterios invalidos"
+      );
+    }
+
+    return new FiltroDeMuebles(aEstilo(estilo), aPrecioMaximo(precioMaximo));
+  }
+
+  public static FiltroDeMuebles deUnaPropuesta(String estilo, String presupuesto)
+    throws FiltroDeMueblesInvalidoException {
+    if (
+      estaVacio(estilo) ||
+      estaVacio(presupuesto) ||
+      esUnEstiloDesconocido(estilo) ||
+      esUnPrecioInvalido(presupuesto)
+    ) {
+      throw new FiltroDeMueblesInvalidoException(
+        "La propuesta necesita un estilo y un presupuesto validos"
+      );
+    }
+
+    return new FiltroDeMuebles(Estilo.valueOf(estilo), Double.parseDouble(presupuesto));
+  }
+
+  public Estilo getEstilo() {
+    return this.estilo;
+  }
+
+  public Double getPrecioMaximo() {
+    return this.precioMaximo;
+  }
+
+  private static boolean estaVacio(String valor) {
+    return valor == null || valor.isBlank();
+  }
+
+  private static boolean esUnEstiloDesconocido(String estilo) {
+    return (
+      !estaVacio(estilo) &&
+      Arrays.stream(Estilo.values()).noneMatch(candidato -> candidato.name().equals(estilo))
+    );
+  }
+
+  private static boolean esUnPrecioInvalido(String precio) {
+    return !estaVacio(precio) && (noEsUnNumero(precio) || Double.parseDouble(precio) < 0);
+  }
+
+  private static boolean noEsUnNumero(String valor) {
+    try {
+      Double.parseDouble(valor);
+      return false;
+    } catch (NumberFormatException e) {
+      return true;
+    }
+  }
+
+  private static Estilo aEstilo(String estilo) {
+    return estaVacio(estilo) ? null : Estilo.valueOf(estilo);
+  }
+
+  private static Double aPrecioMaximo(String precio) {
+    return estaVacio(precio) ? null : Double.parseDouble(precio);
+  }
+}
