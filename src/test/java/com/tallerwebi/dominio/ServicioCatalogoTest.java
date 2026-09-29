@@ -4,15 +4,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.tallerwebi.dominio.excepcion.MuebleNoEncontrado;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.dominio.excepcion.PresupuestoNuloException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +47,7 @@ public class ServicioCatalogoTest {
 
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(precioMaximo);
 
-    Assertions.assertTrue(muebles.isEmpty());
+    assertTrue(muebles.isEmpty());
   }
 
   @Test
@@ -52,7 +57,7 @@ public class ServicioCatalogoTest {
 
     List<Mueble> catalogo = servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(1000.0);
 
-    Assertions.assertTrue(catalogo.isEmpty());
+    assertTrue(catalogo.isEmpty());
   }
 
   @Test
@@ -67,9 +72,9 @@ public class ServicioCatalogoTest {
 
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(precioMaximo);
 
-    Assertions.assertTrue(muebles.contains(mueble));
-    Assertions.assertEquals(1, muebles.size());
-    Assertions.assertEquals(precioMaximo, muebles.get(0).getPrecio());
+    assertTrue(muebles.contains(mueble));
+    assertEquals(1, muebles.size());
+    assertEquals(precioMaximo, muebles.get(0).getPrecio());
   }
 
   @Test
@@ -84,7 +89,7 @@ public class ServicioCatalogoTest {
 
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(precioMaximo);
 
-    Assertions.assertFalse(muebles.contains(mueble));
+    assertFalse(muebles.contains(mueble));
   }
 
   @Test
@@ -92,7 +97,7 @@ public class ServicioCatalogoTest {
     Estilo estilo = Estilo.Retro;
     when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(List.of());
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesDeEstilo(estilo);
-    Assertions.assertTrue(muebles.isEmpty());
+    assertTrue(muebles.isEmpty());
   }
 
   @Test
@@ -112,7 +117,7 @@ public class ServicioCatalogoTest {
 
     Mueble resultado = servicioCatalogo.ObtenerMuebleMasBaratoDeCategoria(categoria);
 
-    Assertions.assertEquals(100.0, resultado.getPrecio());
+    assertEquals(100.0, resultado.getPrecio());
   }
 
   @Test
@@ -132,21 +137,11 @@ public class ServicioCatalogoTest {
 
     List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesDeEstilos(estilos);
 
-    Assertions.assertEquals(
-      2,
-      muebles.size(),
-      "La lista de muebles debería contener los muebles de las categorías especificadas."
-    );
+    assertEquals(2, muebles.size());
 
-    Assertions.assertTrue(
-      muebles.contains(muebleRetro),
-      "La lista de muebles debería contener el mueble de estilo Retro."
-    );
+    assertTrue(muebles.contains(muebleRetro));
 
-    Assertions.assertTrue(
-      muebles.contains(muebleMinimalista),
-      "La lista de muebles debería contener el mueble de estilo Minimalista."
-    );
+    assertTrue(muebles.contains(muebleMinimalista));
   }
 
   @Test
@@ -158,7 +153,7 @@ public class ServicioCatalogoTest {
       () -> this.servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(precioMaximo)
     );
 
-    Assertions.assertNotNull(exception);
+    assertNotNull(exception);
   }
 
   @Test
@@ -170,7 +165,7 @@ public class ServicioCatalogoTest {
       () -> this.servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(precioMaximo)
     );
 
-    Assertions.assertNotNull(exception);
+    assertNotNull(exception);
   }
 
   @Test
@@ -189,10 +184,10 @@ public class ServicioCatalogoTest {
 
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesOrdenadosPorPrecioDesc();
 
-    Assertions.assertEquals(3, muebles.size());
-    Assertions.assertEquals(mueble3, muebles.get(0));
-    Assertions.assertEquals(mueble1, muebles.get(1));
-    Assertions.assertEquals(mueble2, muebles.get(2));
+    assertEquals(3, muebles.size());
+    assertEquals(mueble3, muebles.get(0));
+    assertEquals(mueble1, muebles.get(1));
+    assertEquals(mueble2, muebles.get(2));
   }
 
   @Test
@@ -215,6 +210,7 @@ public class ServicioCatalogoTest {
     List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(null, 50000.0);
 
     assertThat(muebles, contains(barato));
+    assertEquals(muebles.size(), 1);
   }
 
   @Test
@@ -237,6 +233,7 @@ public class ServicioCatalogoTest {
     List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(Estilo.Retro, null);
 
     assertThat(muebles, containsInAnyOrder(retro, otroRetro));
+    assertEquals(muebles.size(), 2);
   }
 
   @Test
@@ -258,7 +255,7 @@ public class ServicioCatalogoTest {
 
     List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(Estilo.Escandinavo, null);
 
-    Assertions.assertTrue(muebles.isEmpty());
+    assertTrue(muebles.isEmpty());
   }
 
   @Test
@@ -270,29 +267,31 @@ public class ServicioCatalogoTest {
       () -> this.servicioCatalogo.ObtenerMueblesQueCumplan(Estilo.Retro, precioMaximo)
     );
 
-    Assertions.assertNotNull(exception);
+    assertNotNull(exception);
   }
 
   @Test
-  public void dadoUnMuebleEnElCatalogo_cuandoLoBuscoPorId_entoncesDevuelvoEseMueble() {
+  public void dadoUnMuebleEnElCatalogo_cuandoLoBuscoPorId_entoncesDevuelvoEseMueble()
+    throws MuebleNoEncontrado {
     Mueble retro = this.dadoQueElCatalogoTieneUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
     retro.setId(7);
     this.dadoQueElCatalogoTieneUnMueble("Mesa Japandi", 150000.0, Estilo.Japandi);
-    when(this.repositorioCatalogoMock.ObtenerMueblePorId(7)).thenReturn(Optional.of(retro));
+    when(this.repositorioCatalogoMock.ObtenerMueblePorId(7)).thenReturn(retro);
 
-    Optional<Mueble> mueble = this.servicioCatalogo.ObtenerMueblePorId(7);
+    Mueble mueble = this.servicioCatalogo.ObtenerMueblePorId(7);
 
-    assertThat(mueble.isPresent(), is(true));
-    assertThat(mueble.get().getNombre(), is("Sillón Retró"));
+    assertThat(mueble, is(notNullValue()));
+    assertThat(mueble.getNombre(), is("Sillón Retró"));
   }
 
   @Test
-  public void dadoQueNoHayNingunMuebleConEseId_cuandoLoBuscoPorId_entoncesDevuelvoUnOptionalVacio() {
-    when(this.repositorioCatalogoMock.ObtenerMueblePorId(999)).thenReturn(Optional.empty());
+  public void dadoQueNoHayNingunMuebleConEseId_cuandoLoBuscoPorId_entoncesLanzaUnaExceptionMuebleNoEncontrado() {
+    MuebleNoEncontrado exception = assertThrows(
+      MuebleNoEncontrado.class,
+      () -> this.servicioCatalogo.ObtenerMueblePorId(999)
+    );
 
-    Optional<Mueble> mueble = this.servicioCatalogo.ObtenerMueblePorId(999);
-
-    assertThat(mueble.isPresent(), is(false));
+    assertNotNull(exception);
   }
 
   private Mueble dadoQueElCatalogoTieneUnMueble(String nombre, double precio, Estilo estilo) {

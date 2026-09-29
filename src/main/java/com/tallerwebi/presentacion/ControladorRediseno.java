@@ -3,9 +3,9 @@ package com.tallerwebi.presentacion;
 import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.ServicioCatalogo;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
+import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,13 +39,15 @@ public class ControladorRediseno {
     @RequestParam(name = ESTILO, required = false) String estilo,
     @RequestParam(name = PRESUPUESTO, required = false) String presupuesto
   ) {
-    Optional<FiltroDeMuebles> propuesta = FiltroDeMuebles.deUnaPropuesta(estilo, presupuesto);
+    FiltroDeMuebles propuesta;
 
-    if (propuesta.isEmpty()) {
+    try {
+      propuesta = FiltroDeMuebles.deUnaPropuesta(estilo, presupuesto);
+    } catch (FiltroDeMueblesInvalidoException e) {
       return new ModelAndView("redirect:/muebles/redisenar");
     }
 
-    return new ModelAndView(this.urlDelResultado(propuesta.get()));
+    return new ModelAndView(this.urlDelResultado(propuesta));
   }
 
   @RequestMapping(path = "/muebles/redisenar/resultado", method = RequestMethod.GET)
@@ -53,13 +55,15 @@ public class ControladorRediseno {
     @RequestParam(name = ESTILO, required = false) String estilo,
     @RequestParam(name = PRESUPUESTO, required = false) String presupuesto
   ) throws PresupuestoNegativoException {
-    Optional<FiltroDeMuebles> propuesta = FiltroDeMuebles.deUnaPropuesta(estilo, presupuesto);
+    FiltroDeMuebles propuesta;
 
-    if (propuesta.isEmpty()) {
+    try {
+      propuesta = FiltroDeMuebles.deUnaPropuesta(estilo, presupuesto);
+    } catch (FiltroDeMueblesInvalidoException e) {
       return new ModelAndView("redirect:/muebles/redisenar");
     }
 
-    return new ModelAndView("resultadosRediseno", this.modeloDelResultado(propuesta.get()));
+    return new ModelAndView("resultadosRediseno", this.modeloDelResultado(propuesta));
   }
 
   private String urlDelResultado(FiltroDeMuebles propuesta) {

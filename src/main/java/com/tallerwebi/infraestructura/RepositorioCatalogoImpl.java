@@ -3,7 +3,6 @@ package com.tallerwebi.infraestructura;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.RepositorioCatalogo;
 import java.util.List;
-import java.util.Optional;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +31,10 @@ public class RepositorioCatalogoImpl implements RepositorioCatalogo {
   }
 
   @Override
-  public Optional<Mueble> ObtenerMueblePorId(int id) {
+  public Mueble ObtenerMueblePorId(int id) {
     String hql = "FROM Mueble WHERE id = :id";
     Query<Mueble> query = sessionFactory.getCurrentSession().createQuery(hql, Mueble.class);
     query.setParameter("id", id);
-    return Optional.ofNullable(query.uniqueResult());
+    return query.uniqueResult();
   }
 }

@@ -3,6 +3,8 @@ package com.tallerwebi.infraestructura;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.tallerwebi.dominio.Estilo;
@@ -11,7 +13,6 @@ import com.tallerwebi.dominio.RepositorioCatalogo;
 import com.tallerwebi.infraestructura.config.HibernateInfraestructuraTestConfig;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,12 +77,12 @@ public class RepositorioCatalogoTest {
     mueble.setDescripcion("Sillón de voluteadas tapizado en terciopelo.");
     this.cuandoGuardoUnMueble(mueble);
 
-    Optional<Mueble> muebleObtenido = this.repositorioCatalogo.ObtenerMueblePorId(mueble.getId());
+    Mueble muebleObtenido = this.repositorioCatalogo.ObtenerMueblePorId(mueble.getId());
 
-    assertThat(muebleObtenido.isPresent(), is(true));
-    assertThat(muebleObtenido.get().getNombre(), is(equalTo("Sillón Retró")));
+    assertThat(muebleObtenido, is(notNullValue()));
+    assertThat(muebleObtenido.getNombre(), is(equalTo("Sillón Retró")));
     assertThat(
-      muebleObtenido.get().getDescripcion(),
+      muebleObtenido.getDescripcion(),
       is(equalTo("Sillón de voluteadas tapizado en terciopelo."))
     );
   }
@@ -89,14 +90,13 @@ public class RepositorioCatalogoTest {
   @Test
   @Transactional
   @Rollback
-  public void DadoQueNoHayNingunMuebleConEseIdCuandoLoBuscoEntoncesObtengoUnOptionalVacio() {
+  public void DadoQueNoHayNingunMuebleConEseIdCuandoLoBuscoEntoncesObtengoUnMuebleNull() {
     Mueble mueble = this.dadoQueTengoUnMueble("Mueble 1", 150.0, Estilo.Retro);
     this.cuandoGuardoUnMueble(mueble);
 
-    Optional<Mueble> muebleObtenido =
-      this.repositorioCatalogo.ObtenerMueblePorId(mueble.getId() + 1000);
+    Mueble muebleObtenido = this.repositorioCatalogo.ObtenerMueblePorId(mueble.getId() + 1000);
 
-    assertThat(muebleObtenido.isPresent(), is(false));
+    assertThat(muebleObtenido, is(nullValue()));
   }
 
   private Mueble dadoQueTengoUnMueble(String nombre, double precio, Estilo estilo) {

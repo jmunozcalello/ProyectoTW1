@@ -1,9 +1,9 @@
 package com.tallerwebi.dominio;
 
+import com.tallerwebi.dominio.excepcion.MuebleNoEncontrado;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.dominio.excepcion.PresupuestoNuloException;
 import java.util.List;
-import java.util.Optional;
 
 public interface ServicioCatalogo {
   List<Mueble> ObtenerMueblesConUnPrecioMenorAl(Double precioMaximo)
@@ -16,5 +16,5 @@ public interface ServicioCatalogo {
   List<Mueble> ObtenerMueblesOrdenadosPorPrecioDesc();
   List<Mueble> ObtenerMueblesQueCumplan(Estilo estilo, Double precioMaximo)
     throws PresupuestoNegativoException;
-  Optional<Mueble> ObtenerMueblePorId(int id);
+  Mueble ObtenerMueblePorId(int id) throws MuebleNoEncontrado;
 }
