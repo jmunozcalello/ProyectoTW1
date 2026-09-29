@@ -2,25 +2,25 @@ package com.tallerwebi.dominio;
 
 public class MuebleUbicado {
 
-    private Mueble mueble;
-    private Double x;
-    private Double y;
+  private Mueble mueble;
+  private Double coordenadaX;
+  private Double coordenadaY;
 
-    public MuebleUbicado(Mueble mueble, Double x, Double y) {
-        this.mueble = mueble;
-        this.x = x;
-        this.y = y;
-    }
+  public MuebleUbicado(Mueble mueble, Double coordenadaX, Double coordenadaY) {
+    this.mueble = mueble;
+    this.coordenadaX = coordenadaX;
+    this.coordenadaY = coordenadaY;
+  }
 
-    public Mueble getMueble() {
-        return mueble;
-    }
+  public Mueble getMueble() {
+    return mueble;
+  }
 
-    public Double getPosicionX() {
-        return x;
-    }
+  public Double getPosicionX() {
+    return coordenadaX;
+  }
 
-    public Double getPosicionY() {
-        return y;
-    }
+  public Double getPosicionY() {
+    return coordenadaY;
+  }
 }
