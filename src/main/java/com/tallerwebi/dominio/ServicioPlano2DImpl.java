@@ -1,5 +1,6 @@
 package com.tallerwebi.dominio;
 
+import com.tallerwebi.dominio.excepcion.ValidacionException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,6 +13,11 @@ public class ServicioPlano2DImpl implements ServicioPlano2D {
 
   @Override
   public Plano generarPlano(Ambiente ambiente, List<Mueble> muebles) {
+    Double ancho = ambiente.getAncho();
+    if (ancho == null || ancho <= 0) {
+      throw new ValidacionException("El ancho del ambiente debe ser mayor a 0");
+    }
+
     List<MuebleUbicado> mueblesUbicados = new ArrayList<>();
     List<Mueble> mueblesExcluidos = new ArrayList<>();
     List<String> motivosDeExclusion = new ArrayList<>();

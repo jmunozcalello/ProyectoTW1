@@ -2,6 +2,7 @@ package com.tallerwebi.dominio;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.tallerwebi.dominio.excepcion.ValidacionException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,42 @@ public class ServicioRenderizadoPlano2DTest {
   private final Mueble silla = new Mueble("Silla", 0.5, 0.5);
   private final Mueble mesa = new Mueble("Mesa", 1.0, 1.0);
   private final List<Mueble> muebles = List.of(silla, mesa);
+
+  @Test
+  public void deberiaLanzarValidacionExceptionCuandoElAnchoDelAmbienteEsNegativo() {
+    // preparacion
+    Ambiente ambienteConAnchoNegativo = new Ambiente(-5.0, 3.0);
+
+    // ejecucion y validacion
+    assertThrows(
+      ValidacionException.class,
+      () -> servicioPlano2D.generarPlano(ambienteConAnchoNegativo, muebles)
+    );
+  }
+
+  @Test
+  public void deberiaLanzarValidacionExceptionCuandoElAnchoDelAmbienteEsCero() {
+    // preparacion
+    Ambiente ambienteSinAncho = new Ambiente(0.0, 3.0);
+
+    // ejecucion y validacion
+    assertThrows(
+      ValidacionException.class,
+      () -> servicioPlano2D.generarPlano(ambienteSinAncho, muebles)
+    );
+  }
+
+  @Test
+  public void deberiaLanzarValidacionExceptionCuandoElAnchoDelAmbienteEsNulo() {
+    // preparacion
+    Ambiente ambienteSinAncho = new Ambiente(null, 3.0);
+
+    // ejecucion y validacion
+    assertThrows(
+      ValidacionException.class,
+      () -> servicioPlano2D.generarPlano(ambienteSinAncho, muebles)
+    );
+  }
 
   @Test
   public void deberiaConservarElAmbienteDelPlanoCuandoLasDimensionesYMueblesSonValidos() {
