@@ -1,62 +1,36 @@
 <!DOCTYPE HTML>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <title>Taller Web I</title>
-
-  <!-- Boostrap core css -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-
-  <!-- custom style -->
-  <link rel="stylesheet" th:href="@{/css/main.css}" />
-
-</head>
+<head th:replace="~{fragments/layout :: head(${mueble.nombre})}"></head>
 
 <body>
+  <nav th:replace="~{fragments/layout :: navbar('ambientes')}"></nav>
 
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">UNLAM</a>
-  </nav>
-
-<main role="main" class="container">
-    <div class="container">
-
+  <main class="container">
+    <header class="hb-page-header">
+      <div>
+        <span class="hb-eyebrow">Mueble</span>
         <h1 th:text="${mueble.nombre}">Sillón Retró</h1>
+        <p th:text="${mueble.descripcion}">Sillón de voluteadas tapizado en terciopelo color mostaza, con patas de madera maciza.</p>
+      </div>
+    </header>
 
-        <p th:text="${mueble.descripcion}">
-            Sillón de voluteadas tapizado en terciopelo color mostaza, con patas de madera maciza.
-        </p>
-
-        <div>
-            <p>
-                Precio:
-                <span th:text="${'$ ' + #numbers.formatDecimal(mueble.precio, 1, 'COMMA', 0, 'POINT')}">
-                    $ 85.000
-                </span>
-            </p>
-            <p th:text="${'Estilo: ' + mueble.estilo}">Estilo: Retro</p>
-        </div>
-
-        <hr>
-
-        <a th:href="@{/catalogo}"
-           class="btn btn-secondary">
-            Volver al catálogo
-        </a>
-
+    <div class="card">
+      <div class="card-body">
+        <dl class="hb-datos">
+          <dt>Precio</dt>
+          <dd th:text="${'$ ' + #numbers.formatDecimal(mueble.precio, 1, 'COMMA', 0, 'POINT')}">$ 85.000</dd>
+          <dt>Estilo</dt>
+          <dd th:text="${mueble.estilo}">Retro</dd>
+        </dl>
+      </div>
     </div>
-</main>
-  <!-- /.container -->
 
-  <!-- Boostrap core js -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-    crossorigin="anonymous"></script>
+    <a th:href="@{/catalogo}" class="btn btn-secondary mt-4"><i class="bi bi-arrow-left"></i> Volver al catálogo</a>
+  </main>
 
+  <footer th:replace="~{fragments/layout :: footer}"></footer>
+  <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 
 </html>

@@ -1,115 +1,78 @@
 <!DOCTYPE HTML>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <title>Taller Web I</title>
-
-  <!-- Boostrap core css -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-
-  <!-- custom style -->
-  <link rel="stylesheet" th:href="@{/css/main.css}" />
-
-</head>
+<head th:replace="~{fragments/layout :: head('Catálogo de muebles')}"></head>
 
 <body>
+  <nav th:replace="~{fragments/layout :: navbar('catalogo')}"></nav>
 
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">UNLAM</a>
-  </nav>
-
-  <main role="main" class="container">
-    <div class="container">
-
-      <h1>Catálogo de muebles</h1>
-
-      <p>
-        Todos los muebles disponibles. Filtrá por estilo y por precio para encontrar lo que buscás.
-      </p>
-
-      <form th:action="@{/catalogo}" method="get">
-
-        <div class="row g-3 align-items-end">
-
-          <div class="col-auto">
-            <label for="estilo" class="form-label">Estilo</label>
-            <select id="estilo" name="estilo" class="form-select">
-              <option value="">Todos los estilos</option>
-              <option th:each="estilo : ${estilos}" th:value="${estilo.name()}" th:text="${estilo}"
-                th:selected="${estilo == estiloSeleccionado}"></option>
-            </select>
-          </div>
-
-          <div class="col-auto">
-            <label for="precioMax" class="form-label">Precio máximo</label>
-            <input type="number" id="precioMax" name="precioMax" class="form-control" min="0" 
-              placeholder="$" th:value="${precioMaximo}">
-          </div>
-
-          <div class="col-auto">
-            <button type="submit" class="btn btn-primary">
-              Filtrar
-            </button>
-          </div>
-
-          <div class="col-auto">
-            <a th:href="@{/catalogo}" class="btn btn-secondary">
-              Limpiar filtros
-            </a>
-          </div>
-
-        </div>
-      </form>
-
-      <hr>
-
+  <main class="container">
+    <header class="hb-page-header">
       <div>
-        <h2>Muebles encontrados</h2>
+        <span class="hb-eyebrow">Catálogo</span>
+        <h1>Catálogo de muebles</h1>
+        <p>Todos los muebles disponibles. Filtrá por estilo y por precio para encontrar lo que buscás.</p>
+      </div>
+    </header>
 
-        <p th:if="${#lists.isEmpty(muebles)}" class="alert alert-info">
-          No encontramos muebles con esos filtros.
-        </p>
-
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-          <div th:each="mueble : ${muebles}" class="col">
-            <div class="card h-100" th:id="${'mueble-' + mueble.id}">
-              <div class="card-body">
-                <h3 class="card-title" th:text="${mueble.nombre}">Sillón Retró</h3>
-                <p class="card-text" th:text="${mueble.descripcion}">
-                  Sillón de voluteadas tapizado en terciopelo color mostaza.
-                </p>
-                <p class="card-text" th:text="${'$ ' + #numbers.formatDecimal(mueble.precio, 1, 'COMMA', 0, 'POINT')}">
-                  $ 85.000
-                </p>
-                <p class="card-text" th:text="${'Estilo: ' + mueble.estilo}">Estilo: Retro</p>
-                <a th:href="@{/muebles/{id}(id=${mueble.id})}" class="btn btn-primary">
-                  Detalle
-                </a>
+    <div class="card">
+      <div class="card-body p-4">
+        <form th:action="@{/catalogo}" method="get">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label for="estilo" class="form-label">Estilo</label>
+              <select id="estilo" name="estilo" class="form-select">
+                <option value="">Todos los estilos</option>
+                <option th:each="estilo : ${estilos}" th:value="${estilo.name()}" th:text="${estilo}"
+                  th:selected="${estilo == estiloSeleccionado}">Retro</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="precioMax" class="form-label">Precio máximo</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" id="precioMax" name="precioMax" class="form-control" min="0"
+                  placeholder="Sin límite" th:value="${precioMaximo}">
               </div>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+              <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Filtrar</button>
+              <a th:href="@{/catalogo}" class="btn btn-secondary">Limpiar filtros</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <h2 class="hb-section-title">Muebles encontrados</h2>
+
+    <div th:if="${#lists.isEmpty(muebles)}" class="alert alert-info">
+      <i class="bi bi-search"></i> No encontramos muebles con esos filtros.
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <div th:each="mueble : ${muebles}" class="col">
+        <div class="card h-100 hb-card-hover" th:id="${'mueble-' + mueble.id}">
+          <div class="card-body d-flex flex-column">
+            <span class="hb-chip hb-chip-salvia mb-2 align-self-start" th:text="${mueble.estilo}">Retro</span>
+            <h3 class="h5" th:text="${mueble.nombre}">Sillón Retró</h3>
+            <p class="text-secondary" th:text="${mueble.descripcion}">
+              Sillón de voluteadas tapizado en terciopelo color mostaza.
+            </p>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <strong class="fs-5" th:text="${'$ ' + #numbers.formatDecimal(mueble.precio, 1, 'COMMA', 0, 'POINT')}">$ 85.000</strong>
+              <a th:href="@{/muebles/{id}(id=${mueble.id})}" class="btn btn-primary">Detalle</a>
             </div>
           </div>
         </div>
       </div>
-
-      <hr>
-
-      <a th:href="@{/home}" class="btn btn-secondary">
-        Volver
-      </a>
-
     </div>
+
+    <a th:href="@{/home}" class="btn btn-secondary mt-4"><i class="bi bi-arrow-left"></i> Volver</a>
   </main>
-  <!-- /.container -->
 
-  <!-- Boostrap core js -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-    crossorigin="anonymous"></script>
-
+  <footer th:replace="~{fragments/layout :: footer}"></footer>
+  <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 
 </html>

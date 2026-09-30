@@ -49,9 +49,9 @@ public class VistaLoginE2E {
   }
 
   @Test
-  void deberiaDecirUNLAMEnElNavbar() throws MalformedURLException {
+  void deberiaDecirHabitatEnElNavbar() throws MalformedURLException {
     dadoQueElUsuarioEstaEnLaVistaDeLogin();
-    entoncesDeberiaVerUNLAMEnElNavbar();
+    entoncesDeberiaVerHabitatEnElNavbar();
   }
 
   @Test
@@ -78,9 +78,9 @@ public class VistaLoginE2E {
     entoncesDeberiaSerRedirigidoALaVistaDeHome();
   }
 
-  private void entoncesDeberiaVerUNLAMEnElNavbar() {
+  private void entoncesDeberiaVerHabitatEnElNavbar() {
     String texto = vistaLogin.obtenerTextoDeLaBarraDeNavegacion();
-    assertThat("UNLAM", equalToIgnoringCase(texto));
+    assertThat("Habitat", equalToIgnoringCase(texto.strip()));
   }
 
   private void dadoQueElUsuarioEstaEnLaVistaDeLogin() throws MalformedURLException {
