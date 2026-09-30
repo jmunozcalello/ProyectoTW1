@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Taller Web I</title>
+
+  <!-- Boostrap core css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+  <!-- custom style -->
+  <link rel="stylesheet" th:href="@{/css/main.css}" />
+
+  <style>
+    .pasos .list-group-item.active {
+      font-weight: 600;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">UNLAM</a>
+  </nav>
+
+  <main role="main" class="container">
+    <div class="container">
+
+      <h1>Definición espacial</h1>
+
+      <ol class="list-group list-group-horizontal pasos mb-4">
+        <li class="list-group-item active">1 · Espacio</li>
+        <li class="list-group-item">2 · Muebles</li>
+        <li class="list-group-item">3 · Plano</li>
+        <li class="list-group-item disabled">4 · Presupuesto</li>
+        <li class="list-group-item disabled">5 · Resumen</li>
+      </ol>
+
+      <form th:action="@{/plano/generar}" method="post">
+
+        <fieldset class="mb-4">
+          <legend class="h5">Dimensiones del ambiente</legend>
+
+          <div class="row row-cols-1 row-cols-md-2 g-3">
+            <div class="col">
+              <label for="ancho" class="form-label">Ancho (m)</label>
+              <input type="number" step="0.1" min="0" class="form-control" id="ancho"
+                name="ancho" value="4" required>
+            </div>
+            <div class="col">
+              <label for="largo" class="form-label">Largo (m)</label>
+              <input type="number" step="0.1" min="0" class="form-control" id="largo"
+                name="largo" value="3" required>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="mb-4">
+          <legend class="h5">Muebles cargados</legend>
+
+          <p class="text-muted">
+            En el wireframe los muebles se cargan en un paso aparte (inventario-muebles.html, FU-08).
+            Como esa pantalla todavía no existe, este paso los carga también.
+          </p>
+
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Ancho (m)</th>
+                <th scope="col">Profundidad (m)</th>
+                <th scope="col"><span class="visually-hidden">Quitar</span></th>
+              </tr>
+            </thead>
+            <tbody id="filas-muebles">
+              <tr>
+                <td><input type="text" class="form-control" name="muebles[0].nombre" value="Sofa"></td>
+                <td><input type="number" step="0.1" min="0" class="form-control" name="muebles[0].ancho" value="2.1"></td>
+                <td><input type="number" step="0.1" min="0" class="form-control" name="muebles[0].profundidad" value="0.9"></td>
+                <td><button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button></td>
+              </tr>
+              <tr>
+                <td><input type="text" class="form-control" name="muebles[1].nombre" value="Rack TV"></td>
+                <td><input type="number" step="0.1" min="0" class="form-control" name="muebles[1].ancho" value="1.6"></td>
+                <td><input type="number" step="0.1" min="0" class="form-control" name="muebles[1].profundidad" value="0.4"></td>
+                <td><button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <template id="plantilla-mueble">
+            <tr>
+              <td><input type="text" class="form-control" name="__NOMBRE__"></td>
+              <td><input type="number" step="0.1" min="0" class="form-control" name="__ANCHO__"></td>
+              <td><input type="number" step="0.1" min="0" class="form-control" name="__PROFUNDIDAD__"></td>
+              <td><button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button></td>
+            </tr>
+          </template>
+
+          <button type="button" id="agregar-mueble" class="btn btn-outline-primary">
+            Agregar mueble
+          </button>
+        </fieldset>
+
+        <hr>
+
+        <a th:href="@{/ambientes}" class="btn btn-secondary">Atrás</a>
+        <button type="submit" class="btn btn-primary">Siguiente →</button>
+
+      </form>
+
+    </div>
+  </main>
+  <!-- /.container -->
+
+  <script>
+    // Renumera los indices de "muebles[n]" para que al borrar una fila el POST no deje huecos.
+    function renumerar() {
+      document.querySelectorAll('#filas-muebles tr').forEach(function (fila, indice) {
+        fila.querySelectorAll('input').forEach(function (campo) {
+          campo.name = campo.name.replace(/muebles\[\d+\]/, 'muebles[' + indice + ']');
+        });
+      });
+    }
+
+    document.getElementById('agregar-mueble').addEventListener('click', function () {
+      var cuerpo = document.querySelector('#filas-muebles');
+      var indice = cuerpo.querySelectorAll('tr').length;
+      var html = document.getElementById('plantilla-mueble').innerHTML
+        .replaceAll('__NOMBRE__', 'muebles[' + indice + '].nombre')
+        .replaceAll('__ANCHO__', 'muebles[' + indice + '].ancho')
+        .replaceAll('__PROFUNDIDAD__', 'muebles[' + indice + '].profundidad');
+      var fila = document.createElement('tbody');
+      fila.innerHTML = html;
+      cuerpo.appendChild(fila.firstElementChild);
+    });
+
+    document.getElementById('filas-muebles').addEventListener('click', function (evento) {
+      if (evento.target.classList.contains('btn-outline-danger')) {
+        evento.target.closest('tr').remove();
+        renumerar();
+      }
+    });
+
+    document.getElementById('filas-muebles').addEventListener('input', renumerar);
+  </script>
+
+  <!-- Boostrap core js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"></script>
+
+</body>
+
+</html>

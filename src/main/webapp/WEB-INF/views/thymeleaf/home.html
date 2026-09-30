@@ -4,78 +4,86 @@
 <head th:replace="~{fragments/layout :: head('Inicio')}"></head>
 
 <body>
-  <nav th:replace="~{fragments/layout :: navbar('inicio')}"></nav>
+<nav th:replace="~{fragments/layout :: navbar('inicio')}"></nav>
 
-  <main class="container">
+<main class="container">
     <header class="hb-page-header">
-      <div>
-        <h1>Hola de nuevo</h1>
-        <p>Retomá tus ambientes o descubrí recomendaciones para renovarlos.</p>
-      </div>
-      <a th:href="@{/ambientes/crear}" class="btn btn-lg btn-primary"><i class="bi bi-plus-lg"></i> Crear ambiente</a>
+        <div>
+            <h2>Mis Ambientes</h2>
+            <a th:href="@{/ambientes/crear}" class="btn btn-primary">Crear ambiente</a>
+            <a th:href="@{/plano/ambiente}" class="btn btn-outline-primary">Crear ambiente con distribución
+                automática</a>
+            <div>
+                <p>Habitacion De...</p>
+                <p>Descripcion del ambiente</p>
+            </div>
+            <h1>Hola de nuevo</h1>
+            <p>Retomá tus ambientes o descubrí recomendaciones para renovarlos.</p>
+        </div>
+        <a th:href="@{/ambientes/crear}" class="btn btn-lg btn-primary"><i class="bi bi-plus-lg"></i> Crear ambiente</a>
     </header>
 
     <h2 class="hb-section-title">Mis ambientes</h2>
     <div class="row g-4">
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 hb-card-hover">
-          <div class="card-body">
-            <span class="hb-eyebrow">Dormitorio</span>
-            <h3 class="h5">Habitación de...</h3>
-            <p class="text-secondary">Descripción del ambiente</p>
-            <div class="d-flex gap-2">
-              <a th:href="@{/ambientes/1}" class="btn btn-primary">Detalle</a>
-              <a th:href="@{/ambientes/1/propuestas}" class="btn btn-secondary">Ver propuestas</a>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 hb-card-hover">
+                <div class="card-body">
+                    <span class="hb-eyebrow">Dormitorio</span>
+                    <h3 class="h5">Habitación de...</h3>
+                    <p class="text-secondary">Descripción del ambiente</p>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/ambientes/1}" class="btn btn-primary">Detalle</a>
+                        <a th:href="@{/ambientes/1/propuestas}" class="btn btn-secondary">Ver propuestas</a>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 hb-card-hover">
-          <div class="card-body">
-            <span class="hb-eyebrow">Cocina</span>
-            <h3 class="h5">Cocina</h3>
-            <p class="text-secondary">Descripción del ambiente</p>
-            <div class="d-flex gap-2">
-              <a th:href="@{/ambientes/1}" class="btn btn-primary">Detalle</a>
-              <a th:href="@{/ambientes/1/propuestas}" class="btn btn-secondary">Ver propuestas</a>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 hb-card-hover">
+                <div class="card-body">
+                    <span class="hb-eyebrow">Cocina</span>
+                    <h3 class="h5">Cocina</h3>
+                    <p class="text-secondary">Descripción del ambiente</p>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/ambientes/1}" class="btn btn-primary">Detalle</a>
+                        <a th:href="@{/ambientes/1/propuestas}" class="btn btn-secondary">Ver propuestas</a>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
 
     <h2 class="hb-section-title">Recomendaciones</h2>
     <div class="row g-4">
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <span class="hb-chip hb-chip-salvia mb-2"><i class="bi bi-stars"></i> Recomendado</span>
-            <h3 class="h5">Recomendación de mueble</h3>
-            <p class="text-secondary">Ideal para Habitación de...</p>
-            <a th:href="@{/muebles/1}" class="btn btn-secondary">Detalle</a>
-          </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <span class="hb-chip hb-chip-salvia mb-2"><i class="bi bi-stars"></i> Recomendado</span>
+                    <h3 class="h5">Recomendación de mueble</h3>
+                    <p class="text-secondary">Ideal para Habitación de...</p>
+                    <a th:href="@{/muebles/1}" class="btn btn-secondary">Detalle</a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <h2 class="hb-section-title">Muebles</h2>
     <div class="row g-4">
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 hb-card-hover">
-          <div class="card-body">
-            <span class="hb-eyebrow">Catálogo</span>
-            <h3 class="h5">Explorá el catálogo</h3>
-            <p class="text-secondary">Filtrá muebles por estilo y precio para tus ambientes.</p>
-            <a th:href="@{/catalogo}" class="btn btn-primary"><i class="bi bi-grid"></i> Ver catálogo</a>
-          </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 hb-card-hover">
+                <div class="card-body">
+                    <span class="hb-eyebrow">Catálogo</span>
+                    <h3 class="h5">Explorá el catálogo</h3>
+                    <p class="text-secondary">Filtrá muebles por estilo y precio para tus ambientes.</p>
+                    <a th:href="@{/catalogo}" class="btn btn-primary"><i class="bi bi-grid"></i> Ver catálogo</a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </main>
+</main>
 
-  <footer th:replace="~{fragments/layout :: footer}"></footer>
-  <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 
 </html>
