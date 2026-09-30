@@ -17,34 +17,20 @@
 
     <div class="card">
       <div class="card-body p-4">
-        <form>
+        <form th:action="@{/muebles/redisenar}" method="post">
           <div class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-6">
               <label for="estilo" class="form-label">Estilo</label>
               <select id="estilo" name="estilo" class="form-select">
-                <option>Minimalista</option>
-                <option>Industrial</option>
-                <option>Retro</option>
-                <option>Boho</option>
-                <option>Japandi</option>
-                <option>Escandinavo</option>
+                <option th:each="estilo : ${estilos}" th:value="${estilo.name()}" th:text="${estilo}">Minimalista</option>
               </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
               <label for="presupuesto" class="form-label">Presupuesto</label>
               <div class="input-group">
                 <span class="input-group-text">$</span>
-                <input type="number" id="presupuesto" name="presupuesto" class="form-control" placeholder="0">
+                <input type="number" id="presupuesto" name="presupuesto" class="form-control" min="0" placeholder="0" required>
               </div>
-            </div>
-            <div class="col-md-4">
-              <label for="prioridad" class="form-label">Prioridad</label>
-              <select id="prioridad" name="prioridad" class="form-select">
-                <option>Espacio libre</option>
-                <option>Comodidad</option>
-                <option>Estética</option>
-                <option>Funcionalidad</option>
-              </select>
             </div>
           </div>
 

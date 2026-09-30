@@ -1,17 +1,24 @@
 package com.tallerwebi.dominio;
 
+import com.tallerwebi.dominio.excepcion.MuebleNoEncontrado;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.dominio.excepcion.PresupuestoNuloException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Service("servicioCatalogo")
+@Transactional
 public class ServicioCatalogoImpl implements ServicioCatalogo {
 
-  private List<Mueble> catalogo;
+  private RepositorioCatalogo repositorioCatalogo;
 
-  public ServicioCatalogoImpl(List<Mueble> catalogo) {
-    this.catalogo = new ArrayList<>(catalogo);
+  @Autowired
+  public ServicioCatalogoImpl(RepositorioCatalogo repositorioCatalogo) {
+    this.repositorioCatalogo = repositorioCatalogo;
   }
 
   @Override
@@ -26,6 +33,8 @@ public class ServicioCatalogoImpl implements ServicioCatalogo {
     }
 
     List<Mueble> mueblesFiltrados = new ArrayList<>();
+    List<Mueble> catalogo = repositorioCatalogo.ObtenerTodosLosMuebles();
+
     for (Mueble mueble : catalogo) {
       if (mueble.getPrecio() <= precioPresupuestoMaximo) {
         mueblesFiltrados.add(mueble);
@@ -38,6 +47,7 @@ public class ServicioCatalogoImpl implements ServicioCatalogo {
   @Override
   public List<Mueble> ObtenerMueblesDeEstilos(List<Estilo> estilos) {
     List<Mueble> mueblesFiltrados = new ArrayList<>();
+    List<Mueble> catalogo = repositorioCatalogo.ObtenerTodosLosMuebles();
     for (Mueble mueble : catalogo) {
       if (estilos.contains(mueble.getEstilo())) {
         mueblesFiltrados.add(mueble);
@@ -49,6 +59,7 @@ public class ServicioCatalogoImpl implements ServicioCatalogo {
   @Override
   public List<Mueble> ObtenerMueblesDeEstilo(Estilo estilo) {
     List<Mueble> mueblesFiltrados = new ArrayList<>();
+    List<Mueble> catalogo = repositorioCatalogo.ObtenerTodosLosMuebles();
     for (Mueble mueble : catalogo) {
       if (mueble.getEstilo() == estilo) {
         mueblesFiltrados.add(mueble);
@@ -60,6 +71,7 @@ public class ServicioCatalogoImpl implements ServicioCatalogo {
   @Override
   public Mueble ObtenerMuebleMasBaratoDeCategoria(Estilo categoria) {
     Mueble muebleMasBarato = null;
+    List<Mueble> catalogo = repositorioCatalogo.ObtenerTodosLosMuebles();
     for (Mueble mueble : catalogo) {
       if (mueble.getEstilo() == categoria) {
         if (muebleMasBarato == null || mueble.getPrecio() < muebleMasBarato.getPrecio()) {
@@ -72,20 +84,54 @@ public class ServicioCatalogoImpl implements ServicioCatalogo {
 
   @Override
   public void RegistrarMueble(Mueble mueble) {
-    this.catalogo.add(mueble);
+    this.repositorioCatalogo.guardarMueble(mueble);
   }
 
   @Override
   public List<Mueble> ObtenerMueblesOrdenadosPorPrecioAsc() {
-    List<Mueble> mueblesOrdenados = new ArrayList<>(catalogo);
-    mueblesOrdenados.sort(Comparator.comparing(Mueble::getPrecio));
-    return mueblesOrdenados;
+    List<Mueble> muebles = repositorioCatalogo.ObtenerTodosLosMuebles();
+
+    return muebles.stream().sorted(Comparator.comparing(Mueble::getPrecio)).toList();
   }
 
   @Override
   public List<Mueble> ObtenerMueblesOrdenadosPorPrecioDesc() {
-    List<Mueble> mueblesOrdenados = new ArrayList<>(catalogo);
-    mueblesOrdenados.sort(Comparator.comparing(Mueble::getPrecio).reversed());
-    return mueblesOrdenados;
+    List<Mueble> muebles = repositorioCatalogo.ObtenerTodosLosMuebles();
+
+    return muebles.stream().sorted(Comparator.comparing(Mueble::getPrecio).reversed()).toList();
+  }
+
+  @Override
+  public List<Mueble> ObtenerMueblesQueCumplan(Estilo estilo, Double precioMaximo)
+    throws PresupuestoNegativoException {
+    if (precioMaximo != null && precioMaximo < 0) {
+      throw new PresupuestoNegativoException("El presupuesto máximo no puede ser negativo");
+    }
+
+    List<Mueble> mueblesFiltrados = new ArrayList<>();
+    for (Mueble mueble : repositorioCatalogo.ObtenerTodosLosMuebles()) {
+      if (cumpleElFiltroDeEstilo(mueble, estilo) && cumpleElFiltroDePrecio(mueble, precioMaximo)) {
+        mueblesFiltrados.add(mueble);
+      }
+    }
+
+    return mueblesFiltrados;
+  }
+
+  @Override
+  public Mueble ObtenerMueblePorId(int id) throws MuebleNoEncontrado {
+    Mueble mueble = this.repositorioCatalogo.ObtenerMueblePorId(id);
+    if (mueble == null) {
+      throw new MuebleNoEncontrado("Mueble no encontrado");
+    }
+    return mueble;
+  }
+
+  private boolean cumpleElFiltroDeEstilo(Mueble mueble, Estilo estilo) {
+    return estilo == null || mueble.getEstilo() == estilo;
+  }
+
+  private boolean cumpleElFiltroDePrecio(Mueble mueble, Double precioMaximo) {
+    return precioMaximo == null || mueble.getPrecio() <= precioMaximo;
   }
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Cama')}"></head>
+<head th:replace="~{fragments/layout :: head(${mueble.nombre})}"></head>
 
 <body>
   <nav th:replace="~{fragments/layout :: navbar('ambientes')}"></nav>
@@ -10,27 +10,23 @@
     <header class="hb-page-header">
       <div>
         <span class="hb-eyebrow">Mueble</span>
-        <h1>Cama</h1>
-        <p>Detalle del mueble.</p>
+        <h1 th:text="${mueble.nombre}">Sillón Retró</h1>
+        <p th:text="${mueble.descripcion}">Sillón de voluteadas tapizado en terciopelo color mostaza, con patas de madera maciza.</p>
       </div>
     </header>
 
     <div class="card">
       <div class="card-body">
         <dl class="hb-datos">
-          <dt>Tipo</dt>
-          <dd>Cama</dd>
-          <dt>Ancho</dt>
-          <dd>160cm</dd>
-          <dt>Profundidad</dt>
-          <dd>200cm</dd>
-          <dt>Alto</dt>
-          <dd>50cm</dd>
+          <dt>Precio</dt>
+          <dd th:text="${'$ ' + #numbers.formatDecimal(mueble.precio, 1, 'COMMA', 0, 'POINT')}">$ 85.000</dd>
+          <dt>Estilo</dt>
+          <dd th:text="${mueble.estilo}">Retro</dd>
         </dl>
       </div>
     </div>
 
-    <a th:href="@{/muebles}" class="btn btn-secondary mt-4"><i class="bi bi-arrow-left"></i> Volver</a>
+    <a th:href="@{/catalogo}" class="btn btn-secondary mt-4"><i class="bi bi-arrow-left"></i> Volver al catálogo</a>
   </main>
 
   <footer th:replace="~{fragments/layout :: footer}"></footer>

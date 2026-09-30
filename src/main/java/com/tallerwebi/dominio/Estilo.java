@@ -4,4 +4,7 @@ public enum Estilo {
   Retro,
   Minimalista,
   Japandi,
+  Industrial,
+  Boho,
+  Escandinavo,
 }
