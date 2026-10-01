@@ -21,7 +21,6 @@ import com.tallerwebi.dominio.ServicioRediseño;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.presentacion.ControladorRediseno;
 import com.tallerwebi.presentacion.DatosPropuesta;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +42,8 @@ public class ControladorRedisenoTest {
   public void init() {
     this.servicioCatalogo = mock(ServicioCatalogo.class);
     this.servicioRediseño = mock(ServicioRediseño.class);
-    this.controladorRediseno = new ControladorRediseno(this.servicioCatalogo, this.servicioRediseño);
+    this.controladorRediseno =
+      new ControladorRediseno(this.servicioCatalogo, this.servicioRediseño);
   }
 
   @Test
@@ -144,7 +144,7 @@ public class ControladorRedisenoTest {
     Recomendacion recomendacionObtenida = (Recomendacion) modelAndView
       .getModel()
       .get("recomendacion");
-      
+
     assertThat(recomendacionObtenida.getEstilo(), is(Estilo.Industrial));
     assertThat(recomendacionObtenida.getIluminacion(), is(Iluminacion.FRIA));
   }
