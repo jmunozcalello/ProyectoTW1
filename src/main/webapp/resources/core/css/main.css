@@ -304,3 +304,15 @@ h1, h2, h3, h4, h5, h6,
   color: var(--hb-texto-suave);
   font-size: 0.875rem;
 }
+
+/* Pasos de un flujo (list-group): el paso actual con el color de la marca */
+.list-group-item.active {
+  background-color: var(--hb-terracota);
+  border-color: var(--hb-terracota);
+}
+
+/* Tabla editable de muebles: en pantallas chicas se desplaza adentro en vez de aplastar los campos */
+.hb-tabla-muebles .form-control,
+.hb-tabla-muebles .form-select {
+  min-width: 7rem;
+}
