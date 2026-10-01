@@ -28,6 +28,6 @@ public class RepositorioCategoriaDeMuebleImpl implements RepositorioCategoriaDeM
 
   @Override
   public CategoriaDeMueble buscarPorId(Long id) {
-    return null;
+    return sessionFactory.getCurrentSession().get(CategoriaDeMueble.class, id);
   }
 }
