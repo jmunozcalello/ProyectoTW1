@@ -25,4 +25,9 @@ public class RepositorioCategoriaDeMuebleImpl implements RepositorioCategoriaDeM
       .createQuery("FROM CategoriaDeMueble ORDER BY nombre", CategoriaDeMueble.class)
       .getResultList();
   }
+
+  @Override
+  public CategoriaDeMueble buscarPorId(Long id) {
+    return null;
+  }
 }

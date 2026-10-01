@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import com.tallerwebi.dominio.CategoriaDeMueble;
 import com.tallerwebi.dominio.RepositorioCategoriaDeMueble;
@@ -70,9 +71,35 @@ public class RepositorioCategoriaDeMuebleTest {
     assertThat(categorias, is(empty()));
   }
 
-  private void dadoQueExisteLaCategoria(String nombre, Double ancho, Double profundidad) {
-    this.sessionFactory.getCurrentSession()
-      .persist(new CategoriaDeMueble(nombre, ancho, profundidad));
+  @Test
+  @Transactional
+  @Rollback
+  public void dadoQueGuardeUnaCategoria_cuandoLaBuscoPorSuId_entoncesLaObtengo() {
+    this.dadoQueExisteLaCategoria("Sofá", 2.1, 0.9);
+    CategoriaDeMueble cama = this.dadoQueExisteLaCategoria("Cama doble", 1.4, 1.9);
+
+    CategoriaDeMueble encontrada = repositorioCategoriaDeMueble.buscarPorId(cama.getId());
+
+    assertThat(encontrada.getNombre(), is("Cama doble"));
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  public void dadoQueNoExisteLaCategoria_cuandoLaBuscoPorSuId_entoncesNoObtengoNada() {
+    CategoriaDeMueble encontrada = repositorioCategoriaDeMueble.buscarPorId(999L);
+
+    assertThat(encontrada, is(nullValue()));
+  }
+
+  private CategoriaDeMueble dadoQueExisteLaCategoria(
+    String nombre,
+    Double ancho,
+    Double profundidad
+  ) {
+    CategoriaDeMueble categoria = new CategoriaDeMueble(nombre, ancho, profundidad);
+    this.sessionFactory.getCurrentSession().persist(categoria);
+    return categoria;
   }
 
   private List<CategoriaDeMueble> cuandoPidoTodasLasCategorias() {
