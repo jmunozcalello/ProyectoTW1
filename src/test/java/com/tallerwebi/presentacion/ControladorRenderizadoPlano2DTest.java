@@ -13,6 +13,7 @@ import com.tallerwebi.dominio.Ambiente;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.MuebleUbicado;
 import com.tallerwebi.dominio.Plano;
+import com.tallerwebi.dominio.ServicioCategoriaDeMueble;
 import com.tallerwebi.dominio.ServicioPlano2D;
 import com.tallerwebi.dominio.excepcion.ValidacionException;
 import java.lang.reflect.Method;
@@ -52,7 +53,8 @@ public class ControladorRenderizadoPlano2DTest {
   @BeforeEach
   public void init() {
     servicioPlano2D = mock(ServicioPlano2D.class);
-    controladorPlano2D = new ControladorPlano2D(servicioPlano2D);
+    controladorPlano2D =
+      new ControladorPlano2D(servicioPlano2D, mock(ServicioCategoriaDeMueble.class));
   }
 
   @Test

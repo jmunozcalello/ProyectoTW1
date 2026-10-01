@@ -3,6 +3,7 @@ package com.tallerwebi.presentacion;
 import com.tallerwebi.dominio.Ambiente;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.Plano;
+import com.tallerwebi.dominio.ServicioCategoriaDeMueble;
 import com.tallerwebi.dominio.ServicioPlano2D;
 import com.tallerwebi.dominio.excepcion.ValidacionException;
 import java.util.ArrayList;
@@ -19,15 +20,24 @@ import org.springframework.web.servlet.ModelAndView;
 public class ControladorPlano2D {
 
   private ServicioPlano2D servicioPlano2D;
+  private ServicioCategoriaDeMueble servicioCategoriaDeMueble;
 
   @Autowired
-  public ControladorPlano2D(ServicioPlano2D servicioPlano2D) {
+  public ControladorPlano2D(
+    ServicioPlano2D servicioPlano2D,
+    ServicioCategoriaDeMueble servicioCategoriaDeMueble
+  ) {
     this.servicioPlano2D = servicioPlano2D;
+    this.servicioCategoriaDeMueble = servicioCategoriaDeMueble;
   }
 
   @RequestMapping(path = "/plano/ambiente", method = RequestMethod.GET)
   public ModelAndView irAConfigurarAmbiente() {
-    return new ModelAndView("ambiente-config");
+    return new ModelAndView(
+      "ambiente-config",
+      "categorias",
+      servicioCategoriaDeMueble.obtenerCategorias()
+    );
   }
 
   public ModelAndView generarPlano(Ambiente ambiente, List<Mueble> muebles) {

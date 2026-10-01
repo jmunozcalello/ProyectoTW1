@@ -71,6 +71,7 @@
           <table class="table align-middle">
             <thead>
               <tr>
+                <th scope="col">Categoría</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Ancho (m)</th>
                 <th scope="col">Profundidad (m)</th>
@@ -79,15 +80,27 @@
             </thead>
             <tbody id="filas-muebles">
               <tr>
+                <td>
+                  <!-- HU-08: elegir una categoría autocompleta ancho y profundidad (ver js/dimensiones.js).
+                       No tiene "name": es solo una ayuda de carga y no viaja en el POST. -->
+                  <select th:fragment="selectorDeCategoria" class="form-select" data-categoria
+                    aria-label="Categoría del mueble">
+                    <option value="">Sin categoría</option>
+                    <option th:each="categoria : ${categorias}" th:text="${categoria.nombre}"
+                      th:attr="data-ancho=${categoria.anchoPromedio},data-profundidad=${categoria.profundidadPromedio}">
+                      Cama doble</option>
+                  </select>
+                </td>
                 <td><input type="text" class="form-control" name="muebles[0].nombre" value="Sofa"></td>
-                <td><input type="number" step="0.1" min="0" class="form-control" name="muebles[0].ancho" value="2.1"></td>
-                <td><input type="number" step="0.1" min="0" class="form-control" name="muebles[0].profundidad" value="0.9"></td>
+                <td><input type="number" step="0.01" min="0" class="form-control" name="muebles[0].ancho" value="2.1"></td>
+                <td><input type="number" step="0.01" min="0" class="form-control" name="muebles[0].profundidad" value="0.9"></td>
                 <td><button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button></td>
               </tr>
               <tr>
+                <td><select th:replace="~{this :: selectorDeCategoria}"></select></td>
                 <td><input type="text" class="form-control" name="muebles[1].nombre" value="Rack TV"></td>
-                <td><input type="number" step="0.1" min="0" class="form-control" name="muebles[1].ancho" value="1.6"></td>
-                <td><input type="number" step="0.1" min="0" class="form-control" name="muebles[1].profundidad" value="0.4"></td>
+                <td><input type="number" step="0.01" min="0" class="form-control" name="muebles[1].ancho" value="1.6"></td>
+                <td><input type="number" step="0.01" min="0" class="form-control" name="muebles[1].profundidad" value="0.4"></td>
                 <td><button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button></td>
               </tr>
             </tbody>
@@ -95,9 +108,10 @@
 
           <template id="plantilla-mueble">
             <tr>
+              <td><select th:replace="~{this :: selectorDeCategoria}"></select></td>
               <td><input type="text" class="form-control" name="__NOMBRE__"></td>
-              <td><input type="number" step="0.1" min="0" class="form-control" name="__ANCHO__"></td>
-              <td><input type="number" step="0.1" min="0" class="form-control" name="__PROFUNDIDAD__"></td>
+              <td><input type="number" step="0.01" min="0" class="form-control" name="__ANCHO__"></td>
+              <td><input type="number" step="0.01" min="0" class="form-control" name="__PROFUNDIDAD__"></td>
               <td><button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button></td>
             </tr>
           </template>
@@ -149,6 +163,9 @@
 
     document.getElementById('filas-muebles').addEventListener('input', renumerar);
   </script>
+
+  <!-- HU-08: autocompletado de medidas al elegir la categoría -->
+  <script type="module" th:src="@{/js/dimensiones.js}"></script>
 
   <!-- Boostrap core js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"

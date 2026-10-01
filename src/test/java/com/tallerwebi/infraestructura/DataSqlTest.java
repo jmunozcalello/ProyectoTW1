@@ -2,10 +2,13 @@ package com.tallerwebi.infraestructura;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import com.tallerwebi.datos.HsqldbConDatosTestConfig;
+import com.tallerwebi.dominio.CategoriaDeMueble;
 import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.Mueble;
 import jakarta.transaction.Transactional;
@@ -61,6 +64,38 @@ public class DataSqlTest {
         .toList();
 
     assertThat(descripcionesVacias, hasSize(0));
+  }
+
+  @Test
+  @Transactional
+  public void dadoQueArrancaLaAplicacion_cuandoConsultoLasCategorias_entoncesEstanSembradas() {
+    assertThat(this.obtenerCategorias(), is(not(empty())));
+  }
+
+  @Test
+  @Transactional
+  public void dadoQueArrancaLaAplicacion_cuandoConsultoLasCategorias_entoncesTodasTienenMedidasPositivas() {
+    List<String> categoriasConMedidasInvalidas =
+      this.obtenerCategorias()
+        .stream()
+        .filter(categoria ->
+          !esPositivo(categoria.getAnchoPromedio()) ||
+          !esPositivo(categoria.getProfundidadPromedio())
+        )
+        .map(CategoriaDeMueble::getNombre)
+        .toList();
+
+    assertThat(categoriasConMedidasInvalidas, hasSize(0));
+  }
+
+  private List<CategoriaDeMueble> obtenerCategorias() {
+    return this.sessionFactory.getCurrentSession()
+      .createQuery("FROM CategoriaDeMueble", CategoriaDeMueble.class)
+      .getResultList();
+  }
+
+  private static boolean esPositivo(Double medida) {
+    return medida != null && medida > 0;
   }
 
   private List<Mueble> obtenerMuebles() {
