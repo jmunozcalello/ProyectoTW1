@@ -2,261 +2,235 @@ package com.tallerwebi.integracion;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
+import com.tallerwebi.dominio.Color;
 import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.Iluminacion;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.Recomendacion;
-import com.tallerwebi.dominio.RepositorioCatalogo;
-import com.tallerwebi.integracion.config.HibernateTestConfig;
-import com.tallerwebi.integracion.config.SpringWebTestConfig;
+import com.tallerwebi.dominio.ServicioCatalogo;
+import com.tallerwebi.dominio.ServicioRediseño;
+import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
+import com.tallerwebi.presentacion.ControladorRediseno;
 import com.tallerwebi.presentacion.DatosPropuesta;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
-@ExtendWith(SpringExtension.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = { SpringWebTestConfig.class, HibernateTestConfig.class })
 public class ControladorRedisenoTest {
 
-  @Autowired
-  private WebApplicationContext wac;
+  private static final String FORMULARIO = "redirect:/muebles/redisenar";
+  private static final String RESULTADOS = "resultadosRediseno";
+  private static final Double PRESUPUESTO = 60000.0;
+  private static final Estilo ESTILO = Estilo.Japandi;
 
-  @Autowired
-  private RepositorioCatalogo repositorioCatalogo;
-
-  //Usar Mockito
-  private MockMvc mockMvc;
+  private ServicioCatalogo servicioCatalogo;
+  private ServicioRediseño servicioRediseño;
+  private ControladorRediseno controladorRediseno;
 
   @BeforeEach
   public void init() {
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    this.servicioCatalogo = mock(ServicioCatalogo.class);
+    this.servicioRediseño = mock(ServicioRediseño.class);
+    this.controladorRediseno = new ControladorRediseno(this.servicioCatalogo, this.servicioRediseño);
   }
 
   @Test
-  @Transactional
   public void dadoQueNavegoAlFormularioDeRediseno_cuandoLoHago_entoncesReciboLosEstilosParaElegir()
     throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(get("/muebles/redisenar")).andExpect(status().isOk()).andReturn();
+    ModelAndView modelAndView = this.controladorRediseno.redisenar();
 
-    ModelAndView modelAndView = result.getModelAndView();
-    assertThat(modelAndView != null ? modelAndView.getViewName() : null, is("redisenar"));
-    assertThat(
-      modelAndView != null ? modelAndView.getModel().get("estilos") : null,
-      is(Estilo.values())
-    );
+    assertThat(modelAndView.getViewName(), is("redisenar"));
+    assertThat(modelAndView.getModel().get("estilos"), is(Estilo.values()));
   }
 
   @Test
-  @Transactional
   public void dadoQueCompletoElFormularioDeRediseno_cuandoLoEnvio_entoncesVeoElResultadoConLoElegido()
     throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(
-          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "60000")
-        )
-        .andExpect(status().isOk())
-        .andReturn();
+    List<Mueble> muebles = new ArrayList<>();
+    this.dadoQueElCatalogoCumpleCon(ESTILO, PRESUPUESTO, muebles);
 
-    ModelAndView modelAndView = result.getModelAndView();
-    assertThat(modelAndView != null ? modelAndView.getViewName() : null, is("resultadosRediseno"));
+    ModelAndView modelAndView = this.cuandoEnvioElFormulario(ESTILO, PRESUPUESTO);
+
+    assertThat(modelAndView.getViewName(), is(RESULTADOS));
     DatosPropuesta propuesta = this.obtenerPropuestaDelModel(modelAndView);
-    assertThat(propuesta.getEstilo(), is(Estilo.Japandi));
-    assertThat(propuesta.getPresupuesto(), is(60000.0));
+    assertThat(propuesta.getEstilo(), is(ESTILO));
+    assertThat(propuesta.getPresupuesto(), is(PRESUPUESTO));
   }
 
   @Test
-  @Transactional
+  public void dadoQueEnvioElFormularioDeRediseno_cuandoLoHago_entoncesLePidoAlCatalogoLosMueblesDeLoElegido()
+    throws Exception {
+    List<Mueble> muebles = new ArrayList<>();
+    this.dadoQueElCatalogoCumpleCon(ESTILO, PRESUPUESTO, muebles);
+
+    this.cuandoEnvioElFormulario(ESTILO, PRESUPUESTO);
+
+    verify(this.servicioCatalogo).ObtenerMueblesQueCumplan(ESTILO, PRESUPUESTO);
+    verify(this.servicioRediseño).recomendar(ESTILO);
+  }
+
+  @Test
   public void dadoUnMuebleQueCumpleConLoElegido_cuandoVeoElResultado_entoncesVeoEseMueble()
     throws Exception {
-    Mueble affordable =
-      this.dadoQueElCatalogoTieneUnMueble("Sillón Japandi", 60000.0, Estilo.Japandi);
-    this.dadoQueElCatalogoTieneUnMueble("Mesa Japandi", 150000.0, Estilo.Japandi);
-    this.dadoQueElCatalogoTieneUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
+    Mueble affordable = unMueble("Sillón Japandi", 60000.0, ESTILO);
+    List<Mueble> muebles = new ArrayList<>();
+    muebles.add(affordable);
+    this.dadoQueElCatalogoCumpleCon(ESTILO, PRESUPUESTO, muebles);
 
-    MvcResult result =
-      this.mockMvc.perform(
-          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "60000")
-        )
-        .andExpect(status().isOk())
-        .andReturn();
+    ModelAndView modelAndView = this.cuandoEnvioElFormulario(ESTILO, PRESUPUESTO);
 
-    ModelAndView modelAndView = result.getModelAndView();
-    assertThat(modelAndView != null ? modelAndView.getViewName() : null, is("resultadosRediseno"));
     assertThat(this.obtenerMueblesDelModel(modelAndView), contains(affordable));
   }
 
   @Test
-  @Transactional
   public void dadoQueNingunMuebleCumpleConLoElegido_cuandoVeoElResultado_entoncesVeoLaVistaSinMuebles()
     throws Exception {
-    this.dadoQueElCatalogoTieneUnMueble("Mesa Japandi", 150000.0, Estilo.Japandi);
+    List<Mueble> muebles = new ArrayList<>();
+    this.dadoQueElCatalogoCumpleCon(ESTILO, PRESUPUESTO, muebles);
 
-    MvcResult result =
-      this.mockMvc.perform(
-          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "60000")
-        )
-        .andExpect(status().isOk())
-        .andReturn();
+    ModelAndView modelAndView = this.cuandoEnvioElFormulario(ESTILO, PRESUPUESTO);
 
-    assertThat(this.obtenerMueblesDelModel(result.getModelAndView()), hasSize(0));
+    assertThat(this.obtenerMueblesDelModel(modelAndView), empty());
   }
 
   @Test
-  @Transactional
-  public void dadoQueVeoElResultado_cuandoLoHago_entoncesElModeloTraeElEstiloYElPresupuestoElegidos()
+  public void dadoQueEnvioElFormularioDeRediseno_cuandoLoHago_entoncesElModeloTraeLaPaletaYLaIluminacionRecomendadas()
     throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(
-          post("/muebles/redisenar").param("estilo", "Boho").param("presupuesto", "180000")
-        )
-        .andExpect(status().isOk())
-        .andReturn();
+    Recomendacion recomendacion = new Recomendacion(
+      ESTILO,
+      List.of(
+        new Color("Arena", "#E6D5BC"),
+        new Color("Madera clara", "#C8A27A"),
+        new Color("Gris", "#9E9E9E")
+      ),
+      Iluminacion.CALIDA
+    );
+    when(this.servicioRediseño.recomendar(ESTILO)).thenReturn(recomendacion);
+    List<Mueble> muebles = new ArrayList<>();
+    this.dadoQueElCatalogoCumpleCon(ESTILO, PRESUPUESTO, muebles);
 
-    DatosPropuesta propuesta = this.obtenerPropuestaDelModel(result.getModelAndView());
-    assertThat(propuesta.getEstilo(), is(Estilo.Boho));
-    assertThat(propuesta.getPresupuesto(), is(180000.0));
+    ModelAndView modelAndView = this.cuandoEnvioElFormulario(ESTILO, PRESUPUESTO);
+
+    Recomendacion recomendacionObtenida = (Recomendacion) modelAndView
+      .getModel()
+      .get("recomendacion");
+    assertThat(recomendacionObtenida.getEstilo(), is(ESTILO));
+    assertThat(recomendacionObtenida.getColores(), hasSize(3));
+    assertThat(recomendacionObtenida.getIluminacion(), is(Iluminacion.CALIDA));
   }
 
   @Test
-  @Transactional
-  public void dadoQueVeoElResultado_cuandoLoHago_entoncesElModeloTraeLaPaletaYLaIluminacionRecomendadas()
-    throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(
-          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "60000")
-        )
-        .andExpect(status().isOk())
-        .andReturn();
-
-    Recomendacion recomendacion = (Recomendacion) this.obtenerDelModel(result, "recomendacion");
-    assertThat(recomendacion.getEstilo(), is(Estilo.Japandi));
-    assertThat(recomendacion.getColores(), hasSize(3));
-    assertThat(recomendacion.getIluminacion(), is(Iluminacion.CALIDA));
-  }
-
-  @Test
-  @Transactional
   public void dadoQueElijoOtroEstilo_cuandoVeoElResultado_entoncesCambiaLaIluminacionRecomendada()
     throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(
-          post("/muebles/redisenar").param("estilo", "Industrial").param("presupuesto", "60000")
-        )
-        .andExpect(status().isOk())
-        .andReturn();
+    Recomendacion recomendacion = new Recomendacion(Estilo.Industrial, List.of(), Iluminacion.FRIA);
+    when(this.servicioRediseño.recomendar(Estilo.Industrial)).thenReturn(recomendacion);
+    List<Mueble> muebles = new ArrayList<>();
+    this.dadoQueElCatalogoCumpleCon(Estilo.Industrial, PRESUPUESTO, muebles);
 
-    Recomendacion recomendacion = (Recomendacion) this.obtenerDelModel(result, "recomendacion");
-    assertThat(recomendacion.getEstilo(), is(Estilo.Industrial));
-    assertThat(recomendacion.getIluminacion(), is(Iluminacion.FRIA));
+    ModelAndView modelAndView = this.cuandoEnvioElFormulario(Estilo.Industrial, PRESUPUESTO);
+
+    Recomendacion recomendacionObtenida = (Recomendacion) modelAndView
+      .getModel()
+      .get("recomendacion");
+      
+    assertThat(recomendacionObtenida.getEstilo(), is(Estilo.Industrial));
+    assertThat(recomendacionObtenida.getIluminacion(), is(Iluminacion.FRIA));
   }
 
   @Test
-  @Transactional
+  public void dadoQueElCatalogoRechazaElPresupuesto_cuandoVeoElResultado_entoncesVeoElErrorYNoLosMuebles()
+    throws Exception {
+    when(this.servicioRediseño.recomendar(ESTILO)).thenReturn(this.unaRecomendacion(ESTILO));
+    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(ESTILO, PRESUPUESTO))
+      .thenThrow(new PresupuestoNegativoException("El presupuesto no puede ser negativo"));
+
+    ModelAndView modelAndView = this.cuandoEnvioElFormulario(ESTILO, PRESUPUESTO);
+
+    assertThat(modelAndView.getViewName(), is(RESULTADOS));
+    assertThat(modelAndView.getModel().get("error"), is("El presupuesto no puede ser negativo"));
+    assertThat(modelAndView.getModel().get("muebles"), is(nullValue()));
+  }
+
+  @Test
   public void dadoQueEnvioElFormularioDeRediseno_conUnEstiloQueNoExiste_entoncesVuelvoAlFormulario()
     throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(
-          post("/muebles/redisenar").param("estilo", "NoExiste").param("presupuesto", "60000")
-        )
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
+    ModelAndView modelAndView = this.cuandoEnvioElFormularioConTexto("NoExiste", "60000");
 
-    assertThat(result.getResponse().getRedirectedUrl(), is("/muebles/redisenar"));
+    this.entoncesVuelvoAlFormulario(modelAndView);
   }
 
   @Test
-  @Transactional
   public void dadoQueEnvioElFormularioDeRediseno_sinPresupuesto_entoncesVuelvoAlFormulario()
     throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(post("/muebles/redisenar").param("estilo", "Japandi"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
+    ModelAndView modelAndView = this.cuandoEnvioElFormularioConTexto("Japandi", null);
 
-    assertThat(result.getResponse().getRedirectedUrl(), is("/muebles/redisenar"));
+    this.entoncesVuelvoAlFormulario(modelAndView);
   }
 
   @Test
-  @Transactional
   public void dadoQueEnvioElFormularioDeRediseno_conUnPresupuestoNegativo_entoncesVuelvoAlFormulario()
     throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(
-          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "-1")
-        )
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
+    ModelAndView modelAndView = this.cuandoEnvioElFormularioConTexto("Japandi", "-1");
 
-    assertThat(result.getResponse().getRedirectedUrl(), is("/muebles/redisenar"));
+    this.entoncesVuelvoAlFormulario(modelAndView);
   }
 
   @Test
-  @Transactional
   public void dadoQueEnvioElFormularioDeRediseno_sinParametros_entoncesVuelvoAlFormulario()
     throws Exception {
-    MvcResult result =
-      this.mockMvc.perform(post("/muebles/redisenar"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
+    ModelAndView modelAndView = this.cuandoEnvioElFormularioConTexto(null, null);
 
-    assertThat(result.getResponse().getRedirectedUrl(), is("/muebles/redisenar"));
+    this.entoncesVuelvoAlFormulario(modelAndView);
   }
 
-  private Mueble dadoQueElCatalogoTieneUnMueble(String nombre, double precio, Estilo estilo) {
+  private void entoncesVuelvoAlFormulario(ModelAndView modelAndView) {
+    assertThat(modelAndView.getViewName(), is(FORMULARIO));
+    verifyNoInteractions(this.servicioCatalogo, this.servicioRediseño);
+  }
+
+  private ModelAndView cuandoEnvioElFormularioConTexto(String estilo, String presupuesto) {
+    return this.controladorRediseno.generarPropuesta(estilo, presupuesto);
+  }
+
+  private ModelAndView cuandoEnvioElFormulario(Estilo estilo, Double presupuesto) {
+    return this.cuandoEnvioElFormularioConTexto(estilo.name(), String.valueOf(presupuesto));
+  }
+
+  private void dadoQueElCatalogoCumpleCon(Estilo estilo, Double presupuesto, List<Mueble> muebles)
+    throws Exception {
+    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(estilo, presupuesto)).thenReturn(muebles);
+  }
+
+  private Recomendacion unaRecomendacion(Estilo estilo) {
+    return new Recomendacion(estilo, List.of(), Iluminacion.CALIDA);
+  }
+
+  private static Mueble unMueble(String nombre, double precio, Estilo estilo) {
     Mueble mueble = new Mueble();
     mueble.setNombre(nombre);
     mueble.setPrecio(precio);
     mueble.SetEstilo(estilo);
-    this.repositorioCatalogo.guardarMueble(mueble);
     return mueble;
   }
 
   @SuppressWarnings("unchecked")
   private List<Mueble> obtenerMueblesDelModel(ModelAndView modelAndView) {
-    assertThat(
-      "El controlador deberia devolver la vista con los muebles",
-      modelAndView,
-      is(notNullValue())
-    );
     return (List<Mueble>) modelAndView.getModel().get("muebles");
   }
 
   private DatosPropuesta obtenerPropuestaDelModel(ModelAndView modelAndView) {
-    assertThat(
-      "El controlador deberia devolver la vista con la propuesta",
-      modelAndView,
-      is(notNullValue())
-    );
     return (DatosPropuesta) modelAndView.getModel().get("propuesta");
-  }
-
-  private Object obtenerDelModel(MvcResult result, String clave) {
-    ModelAndView modelAndView = result.getModelAndView();
-    assertThat(
-      "El controlador deberia devolver la vista con '" + clave + "'",
-      modelAndView,
-      is(notNullValue())
-    );
-    return modelAndView.getModel().get(clave);
   }
 }
