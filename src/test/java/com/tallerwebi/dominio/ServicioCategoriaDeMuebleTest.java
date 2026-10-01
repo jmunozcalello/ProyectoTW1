@@ -2,9 +2,11 @@ package com.tallerwebi.dominio;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.tallerwebi.dominio.excepcion.ValidacionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,6 +62,16 @@ public class ServicioCategoriaDeMuebleTest {
     Mueble mueble = this.cuandoCreoElMueble("Baúl", SIN_CATEGORIA, 0.9, 0.45);
 
     this.entoncesSusMedidasSon(0.9, 0.45, mueble);
+  }
+
+  @Test
+  public void dadoQueLaCategoriaElegidaNoExiste_cuandoCreoElMueble_entoncesInformaElError() {
+    ValidacionException error = assertThrows(
+      ValidacionException.class,
+      () -> this.cuandoCreoElMueble("Mi cama", 999L, null, null)
+    );
+
+    assertThat(error.getMessage(), is("La categoría elegida para Mi cama no existe"));
   }
 
   private void dadoQueExisteLaCamaDoble() {
