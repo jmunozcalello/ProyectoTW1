@@ -238,7 +238,7 @@ public class ControladorCatalogoDeMueblesTest {
     retro.setDescripcion("Sillón de voluteadas tapizado en terciopelo.");
 
     MvcResult result =
-      this.mockMvc.perform(get("/muebles/{id}", retro.getId()))
+      this.mockMvc.perform(get("/mueble/{id}", retro.getId()))
         .andExpect(status().isOk())
         .andReturn();
 
@@ -252,7 +252,7 @@ public class ControladorCatalogoDeMueblesTest {
   public void dadoQueNavegoAlDetalleDeUnMuebleQueNoExiste_cuandoLoHago_entoncesVuelvoAlCatalogo()
     throws Exception {
     MvcResult result =
-      this.mockMvc.perform(get("/muebles/{id}", 999))
+      this.mockMvc.perform(get("/mueble/{id}", 999))
         .andExpect(status().is3xxRedirection())
         .andReturn();
 

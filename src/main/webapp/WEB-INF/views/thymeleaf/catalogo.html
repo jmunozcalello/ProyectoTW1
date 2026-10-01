@@ -61,7 +61,7 @@
             </p>
             <div class="d-flex justify-content-between align-items-center mt-auto">
               <strong class="fs-5" th:text="${'$ ' + #numbers.formatDecimal(mueble.precio, 1, 'COMMA', 0, 'POINT')}">$ 85.000</strong>
-              <a th:href="@{/muebles/{id}(id=${mueble.id})}" class="btn btn-primary">Detalle</a>
+              <a th:href="@{/mueble/{id}(id=${mueble.id})}" class="btn btn-primary">Detalle</a>
             </div>
           </div>
         </div>

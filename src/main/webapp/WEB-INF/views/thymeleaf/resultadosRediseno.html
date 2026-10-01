@@ -29,9 +29,9 @@
 
       <p>
         Estos son los muebles que combinan con el estilo
-        <strong th:text="${estilo}">Japandi</strong>
+        <strong th:text="${propuesta.estilo}">Japandi</strong>
         y entran en tu presupuesto de
-        <strong th:text="${'$ ' + #numbers.formatDecimal(presupuesto, 1, 'COMMA', 0, 'POINT')}">
+        <strong th:text="${'$ ' + #numbers.formatDecimal(propuesta.presupuesto, 1, 'COMMA', 0, 'POINT')}">
           $ 60.000
         </strong>.
       </p>
@@ -41,7 +41,7 @@
 
         <p>
           Estos son los colores y el tipo de luz que mejor combinan con el estilo
-          <strong th:text="${estilo}">Japandi</strong>.
+          <strong th:text="${propuesta.estilo}">Japandi</strong>.
         </p>
 
         <div class="row row-cols-1 row-cols-md-3 g-4">

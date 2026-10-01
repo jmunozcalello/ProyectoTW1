@@ -11,6 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository("repositorioCatalogo")
 public class RepositorioCatalogoImpl implements RepositorioCatalogo {
 
+  /* No implemnte Critera Clásico ya que en Hibernate 6 fue eliminado y no esta disponible
+  Desconozco y ahora hay un 'CriteriaBuilder'/'CriteriaQuery'. Voy a esperar a la clase de
+  Repositorio antes de refactorizar este codigo */
+
   private final SessionFactory sessionFactory;
 
   @Autowired

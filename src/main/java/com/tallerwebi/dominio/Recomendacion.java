@@ -14,6 +14,12 @@ public final class Recomendacion {
     this.iluminacion = iluminacion;
   }
 
+  public Recomendacion() {
+    this.estilo = null;
+    this.colores = null;
+    this.iluminacion = null;
+  }
+
   public Estilo getEstilo() {
     return this.estilo;
   }
@@ -23,6 +29,18 @@ public final class Recomendacion {
   }
 
   public Iluminacion getIluminacion() {
+    return this.iluminacion;
+  }
+
+  public Estilo setEstilo(Estilo estilo) {
+    return this.estilo;
+  }
+
+  public List<Color> setColores(List<Color> colores) {
+    return this.colores;
+  }
+
+  public Iluminacion setIluminacion(Iluminacion iluminacion) {
     return this.iluminacion;
   }
 }

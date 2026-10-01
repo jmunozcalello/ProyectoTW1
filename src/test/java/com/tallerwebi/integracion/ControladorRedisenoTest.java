@@ -16,6 +16,7 @@ import com.tallerwebi.dominio.Recomendacion;
 import com.tallerwebi.dominio.RepositorioCatalogo;
 import com.tallerwebi.integracion.config.HibernateTestConfig;
 import com.tallerwebi.integracion.config.SpringWebTestConfig;
+import com.tallerwebi.presentacion.DatosPropuesta;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,7 @@ public class ControladorRedisenoTest {
   @Autowired
   private RepositorioCatalogo repositorioCatalogo;
 
+  //Usar Mockito
   private MockMvc mockMvc;
 
   @BeforeEach
@@ -66,19 +68,20 @@ public class ControladorRedisenoTest {
 
   @Test
   @Transactional
-  public void dadoQueCompletoElFormularioDeRediseno_cuandoLoEnvio_entoncesMeRedirigeAlResultadoConLoElegido()
+  public void dadoQueCompletoElFormularioDeRediseno_cuandoLoEnvio_entoncesVeoElResultadoConLoElegido()
     throws Exception {
     MvcResult result =
       this.mockMvc.perform(
           post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "60000")
         )
-        .andExpect(status().is3xxRedirection())
+        .andExpect(status().isOk())
         .andReturn();
 
-    assertThat(
-      result.getResponse().getRedirectedUrl(),
-      is("/muebles/redisenar/resultado?estilo=Japandi&presupuesto=60000.0")
-    );
+    ModelAndView modelAndView = result.getModelAndView();
+    assertThat(modelAndView != null ? modelAndView.getViewName() : null, is("resultadosRediseno"));
+    DatosPropuesta propuesta = this.obtenerPropuestaDelModel(modelAndView);
+    assertThat(propuesta.getEstilo(), is(Estilo.Japandi));
+    assertThat(propuesta.getPresupuesto(), is(60000.0));
   }
 
   @Test
@@ -92,9 +95,7 @@ public class ControladorRedisenoTest {
 
     MvcResult result =
       this.mockMvc.perform(
-          get("/muebles/redisenar/resultado")
-            .param("estilo", "Japandi")
-            .param("presupuesto", "60000")
+          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "60000")
         )
         .andExpect(status().isOk())
         .andReturn();
@@ -112,9 +113,7 @@ public class ControladorRedisenoTest {
 
     MvcResult result =
       this.mockMvc.perform(
-          get("/muebles/redisenar/resultado")
-            .param("estilo", "Japandi")
-            .param("presupuesto", "60000")
+          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "60000")
         )
         .andExpect(status().isOk())
         .andReturn();
@@ -128,20 +127,14 @@ public class ControladorRedisenoTest {
     throws Exception {
     MvcResult result =
       this.mockMvc.perform(
-          get("/muebles/redisenar/resultado").param("estilo", "Boho").param("presupuesto", "180000")
+          post("/muebles/redisenar").param("estilo", "Boho").param("presupuesto", "180000")
         )
         .andExpect(status().isOk())
         .andReturn();
 
-    ModelAndView modelAndView = result.getModelAndView();
-    assertThat(
-      modelAndView != null ? modelAndView.getModel().get("estilo") : null,
-      is(Estilo.Boho)
-    );
-    assertThat(
-      modelAndView != null ? modelAndView.getModel().get("presupuesto") : null,
-      is(180000.0)
-    );
+    DatosPropuesta propuesta = this.obtenerPropuestaDelModel(result.getModelAndView());
+    assertThat(propuesta.getEstilo(), is(Estilo.Boho));
+    assertThat(propuesta.getPresupuesto(), is(180000.0));
   }
 
   @Test
@@ -150,9 +143,7 @@ public class ControladorRedisenoTest {
     throws Exception {
     MvcResult result =
       this.mockMvc.perform(
-          get("/muebles/redisenar/resultado")
-            .param("estilo", "Japandi")
-            .param("presupuesto", "60000")
+          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "60000")
         )
         .andExpect(status().isOk())
         .andReturn();
@@ -169,9 +160,7 @@ public class ControladorRedisenoTest {
     throws Exception {
     MvcResult result =
       this.mockMvc.perform(
-          get("/muebles/redisenar/resultado")
-            .param("estilo", "Industrial")
-            .param("presupuesto", "60000")
+          post("/muebles/redisenar").param("estilo", "Industrial").param("presupuesto", "60000")
         )
         .andExpect(status().isOk())
         .andReturn();
@@ -209,11 +198,11 @@ public class ControladorRedisenoTest {
 
   @Test
   @Transactional
-  public void dadoQueNavegoAlResultado_conUnPresupuestoNegativo_entoncesVuelvoAlFormulario()
+  public void dadoQueEnvioElFormularioDeRediseno_conUnPresupuestoNegativo_entoncesVuelvoAlFormulario()
     throws Exception {
     MvcResult result =
       this.mockMvc.perform(
-          get("/muebles/redisenar/resultado").param("estilo", "Japandi").param("presupuesto", "-1")
+          post("/muebles/redisenar").param("estilo", "Japandi").param("presupuesto", "-1")
         )
         .andExpect(status().is3xxRedirection())
         .andReturn();
@@ -223,9 +212,10 @@ public class ControladorRedisenoTest {
 
   @Test
   @Transactional
-  public void dadoQueNavegoAlResultado_sinParametros_entoncesVuelvoAlFormulario() throws Exception {
+  public void dadoQueEnvioElFormularioDeRediseno_sinParametros_entoncesVuelvoAlFormulario()
+    throws Exception {
     MvcResult result =
-      this.mockMvc.perform(get("/muebles/redisenar/resultado"))
+      this.mockMvc.perform(post("/muebles/redisenar"))
         .andExpect(status().is3xxRedirection())
         .andReturn();
 
@@ -249,6 +239,15 @@ public class ControladorRedisenoTest {
       is(notNullValue())
     );
     return (List<Mueble>) modelAndView.getModel().get("muebles");
+  }
+
+  private DatosPropuesta obtenerPropuestaDelModel(ModelAndView modelAndView) {
+    assertThat(
+      "El controlador deberia devolver la vista con la propuesta",
+      modelAndView,
+      is(notNullValue())
+    );
+    return (DatosPropuesta) modelAndView.getModel().get("propuesta");
   }
 
   private Object obtenerDelModel(MvcResult result, String clave) {

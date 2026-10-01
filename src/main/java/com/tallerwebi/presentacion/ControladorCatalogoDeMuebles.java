@@ -6,10 +6,11 @@ import com.tallerwebi.dominio.ServicioCatalogo;
 import com.tallerwebi.dominio.excepcion.MuebleNoEncontrado;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,7 +31,7 @@ public class ControladorCatalogoDeMuebles {
   public ModelAndView catalogo(
     @RequestParam(name = "estilo", required = false) String estilo,
     @RequestParam(name = "precioMax", required = false) String precioMaximo
-  ) throws PresupuestoNegativoException {
+  ) {
     FiltroDeMuebles filtro;
 
     try {
@@ -52,7 +53,7 @@ public class ControladorCatalogoDeMuebles {
     return new ModelAndView("crearMueble");
   }
 
-  @RequestMapping(path = "/muebles/{id}", method = RequestMethod.GET)
+  @RequestMapping(path = "/mueble/{id}", method = RequestMethod.GET)
   public ModelAndView detalleMueble(@PathVariable("id") int id) {
     Mueble mueble;
 
@@ -62,19 +63,29 @@ public class ControladorCatalogoDeMuebles {
       return new ModelAndView("redirect:/catalogo");
     }
 
-    return new ModelAndView("mueble", Map.of("mueble", mueble));
+    Map<String, Object> modelo = new ModelMap();
+    modelo.put("mueble", mueble);
+
+    return new ModelAndView("mueble", modelo);
   }
 
-  private Map<String, Object> modeloDelCatalogo(FiltroDeMuebles filtro)
-    throws PresupuestoNegativoException {
-    Map<String, Object> modelo = new HashMap<>();
+  private Map<String, Object> modeloDelCatalogo(FiltroDeMuebles filtro) {
+    Map<String, Object> modelo = new ModelMap();
     modelo.put("estilos", Estilo.values());
     modelo.put("estiloSeleccionado", filtro.getEstilo());
     modelo.put("precioMaximo", filtro.getPrecioMaximo());
-    modelo.put(
-      "muebles",
-      this.servicioCatalogo.ObtenerMueblesQueCumplan(filtro.getEstilo(), filtro.getPrecioMaximo())
-    );
+    List<Mueble> muebles = null;
+
+    try {
+      muebles =
+        this.servicioCatalogo.ObtenerMueblesQueCumplan(
+            filtro.getEstilo(),
+            filtro.getPrecioMaximo()
+          );
+    } catch (PresupuestoNegativoException e) {
+      modelo.put("error", "El presupuesto no puede ser negativo");
+    }
+    modelo.put("muebles", muebles);
 
     return modelo;
   }
