@@ -25,6 +25,7 @@ public class ServicioCategoriaDeMuebleImpl implements ServicioCategoriaDeMueble 
   @Override
   public Mueble crearMueble(String nombre, Long idCategoria, Double ancho, Double profundidad) {
     CategoriaDeMueble categoria = repositorioCategoriaDeMueble.buscarPorId(idCategoria);
-    return new Mueble(nombre, categoria.getAnchoPromedio(), categoria.getProfundidadPromedio());
+    Double anchoFinal = ancho != null ? ancho : categoria.getAnchoPromedio();
+    return new Mueble(nombre, anchoFinal, categoria.getProfundidadPromedio());
   }
 }
