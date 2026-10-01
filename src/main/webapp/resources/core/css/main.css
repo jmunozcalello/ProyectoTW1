@@ -304,3 +304,24 @@ h1, h2, h3, h4, h5, h6,
   color: var(--hb-texto-suave);
   font-size: 0.875rem;
 }
+
+.list-group-item.active {
+  background-color: var(--hb-terracota);
+  border-color: var(--hb-terracota);
+}
+
+.list-group-item-success {
+  background-color: var(--hb-salvia-suave);
+  color: var(--hb-salvia-oscuro);
+}
+
+.plano-svg {
+  background: var(--hb-superficie);
+  border: 1px solid var(--hb-borde);
+  border-radius: var(--hb-radio);
+}
+
+.hb-tabla-muebles .form-control,
+.hb-tabla-muebles .form-select {
+  min-width: 7rem;
+}

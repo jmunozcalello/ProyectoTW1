@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<select th:fragment="selector(campo)" th:name="${campo}" class="form-select" data-categoria
+  aria-label="Categoría del mueble">
+  <option value="">Sin categoría</option>
+  <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}"
+    th:attr="data-ancho=${categoria.anchoPromedio},data-profundidad=${categoria.profundidadPromedio}">
+    Cama doble</option>
+</select>
+</body>
+</html>

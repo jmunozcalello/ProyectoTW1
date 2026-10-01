@@ -10,6 +10,7 @@ public class DatosMueble {
   private String nombre;
   private Double ancho;
   private Double profundidad;
+  private Long categoria;
 
   public DatosMueble() {}
 
@@ -41,5 +42,13 @@ public class DatosMueble {
 
   public void setProfundidad(Double profundidad) {
     this.profundidad = profundidad;
+  }
+
+  public Long getCategoria() {
+    return categoria;
+  }
+
+  public void setCategoria(Long categoria) {
+    this.categoria = categoria;
   }
 }

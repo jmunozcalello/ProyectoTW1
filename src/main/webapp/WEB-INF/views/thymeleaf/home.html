@@ -9,18 +9,14 @@
 <main class="container">
     <header class="hb-page-header">
         <div>
-            <h2>Mis Ambientes</h2>
-            <a th:href="@{/ambientes/crear}" class="btn btn-primary">Crear ambiente</a>
-            <a th:href="@{/plano/ambiente}" class="btn btn-outline-primary">Crear ambiente con distribución
-                automática</a>
-            <div>
-                <p>Habitacion De...</p>
-                <p>Descripcion del ambiente</p>
-            </div>
             <h1>Hola de nuevo</h1>
             <p>Retomá tus ambientes o descubrí recomendaciones para renovarlos.</p>
         </div>
-        <a th:href="@{/ambientes/crear}" class="btn btn-lg btn-primary"><i class="bi bi-plus-lg"></i> Crear ambiente</a>
+        <div class="d-flex flex-wrap gap-2">
+            <a th:href="@{/plano/ambiente}" class="btn btn-lg btn-outline-primary text-wrap"><i class="bi bi-grid-1x2"></i>
+                Crear ambiente con distribución automática</a>
+            <a th:href="@{/ambientes/crear}" class="btn btn-lg btn-primary"><i class="bi bi-plus-lg"></i> Crear ambiente</a>
+        </div>
     </header>
 
     <h2 class="hb-section-title">Mis ambientes</h2>
