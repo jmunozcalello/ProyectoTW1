@@ -62,7 +62,12 @@ public class ControladorPlano2D {
     List<Mueble> muebles = new ArrayList<>();
     for (DatosMueble datosMueble : datosDelFormulario.getMuebles()) {
       muebles.add(
-        new Mueble(datosMueble.getNombre(), datosMueble.getAncho(), datosMueble.getProfundidad())
+        servicioCategoriaDeMueble.crearMueble(
+          datosMueble.getNombre(),
+          datosMueble.getCategoria(),
+          datosMueble.getAncho(),
+          datosMueble.getProfundidad()
+        )
       );
     }
     return generarPlano(ambiente, muebles);

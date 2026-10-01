@@ -13,7 +13,8 @@ import com.tallerwebi.dominio.Ambiente;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.MuebleUbicado;
 import com.tallerwebi.dominio.Plano;
-import com.tallerwebi.dominio.ServicioCategoriaDeMueble;
+import com.tallerwebi.dominio.RepositorioCategoriaDeMueble;
+import com.tallerwebi.dominio.ServicioCategoriaDeMuebleImpl;
 import com.tallerwebi.dominio.ServicioPlano2D;
 import com.tallerwebi.dominio.excepcion.ValidacionException;
 import java.lang.reflect.Method;
@@ -53,8 +54,14 @@ public class ControladorRenderizadoPlano2DTest {
   @BeforeEach
   public void init() {
     servicioPlano2D = mock(ServicioPlano2D.class);
+    // Servicio de categorías real: los muebles de estos tests no tienen categoría, así que pasan
+    // con las medidas que trae el formulario (los casos con categoría están en
+    // ControladorPlano2DDimensionesTest).
     controladorPlano2D =
-      new ControladorPlano2D(servicioPlano2D, mock(ServicioCategoriaDeMueble.class));
+      new ControladorPlano2D(
+        servicioPlano2D,
+        new ServicioCategoriaDeMuebleImpl(mock(RepositorioCategoriaDeMueble.class))
+      );
   }
 
   @Test
