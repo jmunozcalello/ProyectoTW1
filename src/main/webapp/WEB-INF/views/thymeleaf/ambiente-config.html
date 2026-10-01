@@ -80,24 +80,14 @@
             </thead>
             <tbody id="filas-muebles">
               <tr>
-                <td>
-                  <!-- HU-08: elegir una categoría autocompleta ancho y profundidad (ver js/dimensiones.js).
-                       No tiene "name": es solo una ayuda de carga y no viaja en el POST. -->
-                  <select th:fragment="selectorDeCategoria" class="form-select" data-categoria
-                    aria-label="Categoría del mueble">
-                    <option value="">Sin categoría</option>
-                    <option th:each="categoria : ${categorias}" th:text="${categoria.nombre}"
-                      th:attr="data-ancho=${categoria.anchoPromedio},data-profundidad=${categoria.profundidadPromedio}">
-                      Cama doble</option>
-                  </select>
-                </td>
+                <td><select th:replace="~{fragments/selector-categoria :: selector('muebles[0].categoria')}"></select></td>
                 <td><input type="text" class="form-control" name="muebles[0].nombre" value="Sofa"></td>
                 <td><input type="number" step="0.01" min="0" class="form-control" name="muebles[0].ancho" value="2.1"></td>
                 <td><input type="number" step="0.01" min="0" class="form-control" name="muebles[0].profundidad" value="0.9"></td>
                 <td><button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button></td>
               </tr>
               <tr>
-                <td><select th:replace="~{this :: selectorDeCategoria}"></select></td>
+                <td><select th:replace="~{fragments/selector-categoria :: selector('muebles[1].categoria')}"></select></td>
                 <td><input type="text" class="form-control" name="muebles[1].nombre" value="Rack TV"></td>
                 <td><input type="number" step="0.01" min="0" class="form-control" name="muebles[1].ancho" value="1.6"></td>
                 <td><input type="number" step="0.01" min="0" class="form-control" name="muebles[1].profundidad" value="0.4"></td>
@@ -108,7 +98,7 @@
 
           <template id="plantilla-mueble">
             <tr>
-              <td><select th:replace="~{this :: selectorDeCategoria}"></select></td>
+              <td><select th:replace="~{fragments/selector-categoria :: selector('CAMPO_CATEGORIA')}"></select></td>
               <td><input type="text" class="form-control" name="__NOMBRE__"></td>
               <td><input type="number" step="0.01" min="0" class="form-control" name="__ANCHO__"></td>
               <td><input type="number" step="0.01" min="0" class="form-control" name="__PROFUNDIDAD__"></td>
@@ -136,7 +126,7 @@
     // Renumera los indices de "muebles[n]" para que al borrar una fila el POST no deje huecos.
     function renumerar() {
       document.querySelectorAll('#filas-muebles tr').forEach(function (fila, indice) {
-        fila.querySelectorAll('input').forEach(function (campo) {
+        fila.querySelectorAll('input, select').forEach(function (campo) {
           campo.name = campo.name.replace(/muebles\[\d+\]/, 'muebles[' + indice + ']');
         });
       });
@@ -146,6 +136,7 @@
       var cuerpo = document.querySelector('#filas-muebles');
       var indice = cuerpo.querySelectorAll('tr').length;
       var html = document.getElementById('plantilla-mueble').innerHTML
+        .replaceAll('CAMPO_CATEGORIA', 'muebles[' + indice + '].categoria')
         .replaceAll('__NOMBRE__', 'muebles[' + indice + '].nombre')
         .replaceAll('__ANCHO__', 'muebles[' + indice + '].ancho')
         .replaceAll('__PROFUNDIDAD__', 'muebles[' + indice + '].profundidad');

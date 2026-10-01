@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- HU-08: selector de categoría de una fila de mueble. Viaja en el POST con el id de la categoría;
+     data-ancho y data-profundidad los usa js/dimensiones.js para autocompletar mientras se carga. -->
+<select th:fragment="selector(campo)" th:name="${campo}" class="form-select" data-categoria
+  aria-label="Categoría del mueble">
+  <option value="">Sin categoría</option>
+  <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}"
+    th:attr="data-ancho=${categoria.anchoPromedio},data-profundidad=${categoria.profundidadPromedio}">
+    Cama doble</option>
+</select>
+</body>
+</html>
