@@ -22,11 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * HU-08: dimensiones estandarizadas por categoría.
- * Dado que elijo una categoría, cuando confirmo el formulario, entonces el plano se genera con las
- * medidas que arma el servicio de categorías (promedio o lo que escribí a mano).
- */
 public class ControladorPlano2DDimensionesTest {
 
   private static final Long ID_CAMA_DOBLE = 2L;
@@ -46,46 +41,37 @@ public class ControladorPlano2DDimensionesTest {
 
   @Test
   public void deberiaGenerarElPlanoConElMuebleQueArmaElServicioDeCategorias() {
-    // preparacion
     Mueble camaConMedidasPromedio = new Mueble("Mi cama", 1.4, 1.9);
     when(servicioCategoriaDeMueble.crearMueble("Mi cama", ID_CAMA_DOBLE, null, null))
       .thenReturn(camaConMedidasPromedio);
     DatosPlano formulario = givenUnFormularioConElMueble("Mi cama", ID_CAMA_DOBLE, null, null);
 
-    // ejecucion
     whenConfirmoElFormulario(formulario);
 
-    // validacion
     thenElPlanoSeGeneraCon(camaConMedidasPromedio);
   }
 
   @Test
   public void deberiaMostrarElErrorEnElPlanoCuandoElServicioDeCategoriasRechazaUnMueble() {
-    // preparacion
     when(servicioCategoriaDeMueble.crearMueble("Baúl", null, 0.9, null))
       .thenThrow(new ValidacionException("Completá las medidas de Baúl o elegí una categoría"));
     DatosPlano formulario = givenUnFormularioConElMueble("Baúl", null, 0.9, null);
 
-    // ejecucion
     ModelAndView mav = whenConfirmoElFormulario(formulario);
 
-    // validacion
     thenSeMuestraElError("Completá las medidas de Baúl o elegí una categoría", mav);
   }
 
   @Test
   public void deberiaOfrecerEnElFormularioLasCategoriasDelServicio() {
-    // preparacion
     List<CategoriaDeMueble> categorias = List.of(
       new CategoriaDeMueble("Cama doble", 1.4, 1.9),
       new CategoriaDeMueble("Silla", 0.45, 0.5)
     );
     when(servicioCategoriaDeMueble.obtenerCategorias()).thenReturn(categorias);
 
-    // ejecucion
     ModelAndView mav = controladorPlano2D.irAConfigurarAmbiente();
 
-    // validacion
     assertSame(categorias, mav.getModel().get("categorias"));
   }
 
@@ -115,10 +101,6 @@ public class ControladorPlano2DDimensionesTest {
     assertEquals(mensajeEsperado, mav.getModel().get("error"));
   }
 
-  /**
-   * Compara por identidad: el controlador no debe rearmar el mueble, tiene que pasar al plano
-   * exactamente el que decidió el servicio de categorías.
-   */
   @SuppressWarnings("unchecked")
   private void thenElPlanoSeGeneraCon(Mueble muebleEsperado) {
     ArgumentCaptor<List<Mueble>> muebles = ArgumentCaptor.forClass(List.class);

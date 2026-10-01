@@ -10,12 +10,6 @@ import com.tallerwebi.dominio.excepcion.ValidacionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * HU-08: dimensiones estandarizadas por categoría.
- * Dado que elijo una categoría, cuando cargo el mueble, entonces sus medidas se completan con el
- * promedio de la categoría.
- * Dado que escribí una medida a mano, cuando cargo el mueble, entonces se respeta mi valor.
- */
 public class ServicioCategoriaDeMuebleTest {
 
   private static final Long ID_CAMA_DOBLE = 2L;

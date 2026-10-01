@@ -54,9 +54,6 @@ public class ControladorRenderizadoPlano2DTest {
   @BeforeEach
   public void init() {
     servicioPlano2D = mock(ServicioPlano2D.class);
-    // Servicio de categorías real: los muebles de estos tests no tienen categoría, así que pasan
-    // con las medidas que trae el formulario (los casos con categoría están en
-    // ControladorPlano2DDimensionesTest).
     controladorPlano2D =
       new ControladorPlano2D(
         servicioPlano2D,

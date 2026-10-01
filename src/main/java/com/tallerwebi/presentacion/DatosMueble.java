@@ -44,7 +44,6 @@ public class DatosMueble {
     this.profundidad = profundidad;
   }
 
-  /** Id de la categoría elegida en el formulario (HU-08), o null si no eligió ninguna. */
   public Long getCategoria() {
     return categoria;
   }

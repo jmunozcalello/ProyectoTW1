@@ -1,6 +1,4 @@
 /**
-HU-08: al elegir una categoría se autocompletan ancho y profundidad con sus medidas promedio,
-respetando los valores que el usuario haya escrito a mano.
 DOCU DE JASMINE: https://jasmine.github.io/api/5.8/global
 **/
 import { JSDOM } from "jsdom";

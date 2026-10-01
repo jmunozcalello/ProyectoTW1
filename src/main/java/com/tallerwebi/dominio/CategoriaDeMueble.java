@@ -5,10 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-/**
- * Tipo de mueble (cama, sofá, escritorio...) con sus medidas promedio en metros. Se usa para
- * autocompletar el ancho y la profundidad cuando el usuario carga un mueble (HU-08).
- */
 @Entity
 public class CategoriaDeMueble {
 

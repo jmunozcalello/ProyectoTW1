@@ -1,13 +1,3 @@
-/**
- * HU-08: autocompletado de dimensiones por categoría de mueble.
- *
- * Cada fila del formulario tiene un <select data-categoria> cuyas opciones traen las medidas
- * promedio en data-ancho y data-profundidad. Al elegir una categoría se completan el ancho y la
- * profundidad de esa fila, salvo los campos que el usuario escribió a mano.
- *
- * Se escucha en el contenedor (delegación de eventos) para que también funcione en las filas que
- * se agregan después con "Agregar mueble".
- */
 const CAMPO_ANCHO = "input[name$='.ancho']";
 const CAMPO_PROFUNDIDAD = "input[name$='.profundidad']";
 const CAMPOS_DE_MEDIDA = `${CAMPO_ANCHO}, ${CAMPO_PROFUNDIDAD}`;
