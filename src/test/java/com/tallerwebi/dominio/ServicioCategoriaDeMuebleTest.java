@@ -45,6 +45,15 @@ public class ServicioCategoriaDeMuebleTest {
     this.entoncesSusMedidasSon(1.5, 1.9, mueble);
   }
 
+  @Test
+  public void dadoQueElijoUnaCategoriaYEscriboLaProfundidad_cuandoCreoElMueble_entoncesRespetaMiProfundidad() {
+    this.dadoQueExisteLaCamaDoble();
+
+    Mueble mueble = this.cuandoCreoElMueble("Mi cama", ID_CAMA_DOBLE, null, 2.0);
+
+    this.entoncesSusMedidasSon(1.4, 2.0, mueble);
+  }
+
   private void dadoQueExisteLaCamaDoble() {
     when(repositorioCategoriaDeMueble.buscarPorId(ID_CAMA_DOBLE))
       .thenReturn(new CategoriaDeMueble("Cama doble", 1.4, 1.9));
