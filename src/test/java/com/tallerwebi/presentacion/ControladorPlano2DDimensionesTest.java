@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.tallerwebi.dominio.Ambiente;
+import com.tallerwebi.dominio.CategoriaDeMueble;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.Plano;
 import com.tallerwebi.dominio.ServicioCategoriaDeMueble;
@@ -70,6 +71,22 @@ public class ControladorPlano2DDimensionesTest {
 
     // validacion
     thenSeMuestraElError("Completá las medidas de Baúl o elegí una categoría", mav);
+  }
+
+  @Test
+  public void deberiaOfrecerEnElFormularioLasCategoriasDelServicio() {
+    // preparacion
+    List<CategoriaDeMueble> categorias = List.of(
+      new CategoriaDeMueble("Cama doble", 1.4, 1.9),
+      new CategoriaDeMueble("Silla", 0.45, 0.5)
+    );
+    when(servicioCategoriaDeMueble.obtenerCategorias()).thenReturn(categorias);
+
+    // ejecucion
+    ModelAndView mav = controladorPlano2D.irAConfigurarAmbiente();
+
+    // validacion
+    assertSame(categorias, mav.getModel().get("categorias"));
   }
 
   private DatosPlano givenUnFormularioConElMueble(
