@@ -74,6 +74,16 @@ public class ServicioCategoriaDeMuebleTest {
     assertThat(error.getMessage(), is("La categoría elegida para Mi cama no existe"));
   }
 
+  @Test
+  public void dadoQueNoElijoCategoriaYDejoUnaMedidaVacia_cuandoCreoElMueble_entoncesMePideCompletarla() {
+    ValidacionException error = assertThrows(
+      ValidacionException.class,
+      () -> this.cuandoCreoElMueble("Baúl", SIN_CATEGORIA, 0.9, null)
+    );
+
+    assertThat(error.getMessage(), is("Completá las medidas de Baúl o elegí una categoría"));
+  }
+
   private void dadoQueExisteLaCamaDoble() {
     when(repositorioCategoriaDeMueble.buscarPorId(ID_CAMA_DOBLE))
       .thenReturn(new CategoriaDeMueble("Cama doble", 1.4, 1.9));
