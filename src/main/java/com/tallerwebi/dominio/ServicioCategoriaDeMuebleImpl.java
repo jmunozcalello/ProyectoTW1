@@ -1,5 +1,6 @@
 package com.tallerwebi.dominio;
 
+import com.tallerwebi.dominio.excepcion.ValidacionException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class ServicioCategoriaDeMuebleImpl implements ServicioCategoriaDeMueble 
       return new Mueble(nombre, ancho, profundidad);
     }
     CategoriaDeMueble categoria = repositorioCategoriaDeMueble.buscarPorId(idCategoria);
+    if (categoria == null) {
+      throw new ValidacionException("La categoría elegida para " + nombre + " no existe");
+    }
     return new Mueble(
       nombre,
       medidaFinal(ancho, categoria.getAnchoPromedio()),
