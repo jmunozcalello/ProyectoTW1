@@ -1,5 +1,6 @@
 package com.tallerwebi.presentacion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
@@ -12,6 +13,7 @@ import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.Plano;
 import com.tallerwebi.dominio.ServicioCategoriaDeMueble;
 import com.tallerwebi.dominio.ServicioPlano2D;
+import com.tallerwebi.dominio.excepcion.ValidacionException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +58,20 @@ public class ControladorPlano2DDimensionesTest {
     thenElPlanoSeGeneraCon(camaConMedidasPromedio);
   }
 
+  @Test
+  public void deberiaMostrarElErrorEnElPlanoCuandoElServicioDeCategoriasRechazaUnMueble() {
+    // preparacion
+    when(servicioCategoriaDeMueble.crearMueble("Baúl", null, 0.9, null))
+      .thenThrow(new ValidacionException("Completá las medidas de Baúl o elegí una categoría"));
+    DatosPlano formulario = givenUnFormularioConElMueble("Baúl", null, 0.9, null);
+
+    // ejecucion
+    ModelAndView mav = whenConfirmoElFormulario(formulario);
+
+    // validacion
+    thenSeMuestraElError("Completá las medidas de Baúl o elegí una categoría", mav);
+  }
+
   private DatosPlano givenUnFormularioConElMueble(
     String nombre,
     Long idCategoria,
@@ -75,6 +91,11 @@ public class ControladorPlano2DDimensionesTest {
 
   private ModelAndView whenConfirmoElFormulario(DatosPlano formulario) {
     return controladorPlano2D.generarPlanoDesdeFormulario(formulario);
+  }
+
+  private void thenSeMuestraElError(String mensajeEsperado, ModelAndView mav) {
+    assertEquals("plano-interactivo", mav.getViewName());
+    assertEquals(mensajeEsperado, mav.getModel().get("error"));
   }
 
   /**
