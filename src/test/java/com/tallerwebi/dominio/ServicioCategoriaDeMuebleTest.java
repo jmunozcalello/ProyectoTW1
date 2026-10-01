@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 public class ServicioCategoriaDeMuebleTest {
 
   private static final Long ID_CAMA_DOBLE = 2L;
+  private static final Long SIN_CATEGORIA = null;
 
   private RepositorioCategoriaDeMueble repositorioCategoriaDeMueble;
   private ServicioCategoriaDeMueble servicioCategoriaDeMueble;
@@ -52,6 +53,13 @@ public class ServicioCategoriaDeMuebleTest {
     Mueble mueble = this.cuandoCreoElMueble("Mi cama", ID_CAMA_DOBLE, null, 2.0);
 
     this.entoncesSusMedidasSon(1.4, 2.0, mueble);
+  }
+
+  @Test
+  public void dadoQueNoElijoCategoria_cuandoCreoElMueble_entoncesUsaLasMedidasQueCargue() {
+    Mueble mueble = this.cuandoCreoElMueble("Baúl", SIN_CATEGORIA, 0.9, 0.45);
+
+    this.entoncesSusMedidasSon(0.9, 0.45, mueble);
   }
 
   private void dadoQueExisteLaCamaDoble() {
