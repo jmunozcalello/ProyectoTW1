@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Implementación que delega en el repositorio de categorías. */
+/** Reglas de las categorías de mueble: completa las medidas que el usuario no cargó. */
 @Service("servicioCategoriaDeMueble")
 @Transactional
 public class ServicioCategoriaDeMuebleImpl implements ServicioCategoriaDeMueble {
@@ -20,5 +20,10 @@ public class ServicioCategoriaDeMuebleImpl implements ServicioCategoriaDeMueble 
   @Override
   public List<CategoriaDeMueble> obtenerCategorias() {
     return repositorioCategoriaDeMueble.obtenerTodas();
+  }
+
+  @Override
+  public Mueble crearMueble(String nombre, Long idCategoria, Double ancho, Double profundidad) {
+    return new Mueble(nombre, ancho, profundidad);
   }
 }
