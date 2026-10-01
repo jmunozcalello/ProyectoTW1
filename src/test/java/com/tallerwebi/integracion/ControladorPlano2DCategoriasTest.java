@@ -4,9 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.tallerwebi.dominio.CategoriaDeMueble;
+import com.tallerwebi.dominio.Mueble;
+import com.tallerwebi.dominio.Plano;
 import com.tallerwebi.integracion.config.HibernateTestConfig;
 import com.tallerwebi.integracion.config.SpringWebTestConfig;
 import java.util.List;
@@ -76,9 +79,50 @@ public class ControladorPlano2DCategoriasTest {
     assertThat(html, containsString(">Cama doble</option>"));
   }
 
-  private void dadoQueExisteLaCategoria(String nombre, Double ancho, Double profundidad) {
-    this.sessionFactory.getCurrentSession()
-      .persist(new CategoriaDeMueble(nombre, ancho, profundidad));
+  @Test
+  @Transactional
+  public void dadoQueHayUnaCategoria_cuandoAbroElFormularioDelPlano_entoncesElSelectorEnviaSuId()
+    throws Exception {
+    CategoriaDeMueble cama = this.dadoQueExisteLaCategoria("Cama doble", 1.4, 1.9);
+
+    String html = this.cuandoAbroElFormularioDelPlano().getResponse().getContentAsString();
+
+    assertThat(html, containsString("name=\"muebles[0].categoria\""));
+    assertThat(html, containsString("value=\"" + cama.getId() + "\""));
+  }
+
+  @Test
+  @Transactional
+  public void dadoQueEligoUnaCategoriaSinMedidas_cuandoConfirmoElFormulario_entoncesElPlanoUsaLosPromedios()
+    throws Exception {
+    CategoriaDeMueble cama = this.dadoQueExisteLaCategoria("Cama doble", 1.4, 1.9);
+
+    MvcResult resultado =
+      this.mockMvc.perform(
+          post("/plano/generar")
+            .param("ancho", "4")
+            .param("largo", "3")
+            .param("muebles[0].nombre", "Mi cama")
+            .param("muebles[0].categoria", cama.getId().toString())
+            .param("muebles[0].ancho", "")
+            .param("muebles[0].profundidad", "")
+        )
+        .andExpect(status().isOk())
+        .andReturn();
+
+    Plano plano = (Plano) resultado.getModelAndView().getModel().get("plano");
+    Mueble mueble = plano.getMuebles().get(0).getMueble();
+    assertThat(List.of(mueble.getAncho(), mueble.getLargo()), contains(1.4, 1.9));
+  }
+
+  private CategoriaDeMueble dadoQueExisteLaCategoria(
+    String nombre,
+    Double ancho,
+    Double profundidad
+  ) {
+    CategoriaDeMueble categoria = new CategoriaDeMueble(nombre, ancho, profundidad);
+    this.sessionFactory.getCurrentSession().persist(categoria);
+    return categoria;
   }
 
   private MvcResult cuandoAbroElFormularioDelPlano() throws Exception {
