@@ -18,7 +18,6 @@ import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.dominio.excepcion.PresupuestoNuloException;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +42,9 @@ public class ServicioCatalogoTest {
     Mueble mueble = new Mueble();
     mueble.setPrecio(20.0);
 
-    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(List.of(mueble));
+    List<Mueble> catalogo = new ArrayList<>();
+    catalogo.add(mueble);
+    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(catalogo);
 
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(precioMaximo);
 
@@ -53,7 +54,7 @@ public class ServicioCatalogoTest {
   @Test
   public void dadoUnCatalogoVacio_cuandoSeFiltraPorPrecio_entoncesLaListaResultanteEstaVacia()
     throws PresupuestoNegativoException, PresupuestoNuloException {
-    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(List.of());
+    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(new ArrayList<>());
 
     List<Mueble> catalogo = servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(1000.0);
 
@@ -68,7 +69,9 @@ public class ServicioCatalogoTest {
     Mueble mueble = new Mueble();
     mueble.setPrecio(500.0);
 
-    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(List.of(mueble));
+    List<Mueble> catalogo = new ArrayList<>();
+    catalogo.add(mueble);
+    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(catalogo);
 
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(precioMaximo);
 
@@ -85,7 +88,9 @@ public class ServicioCatalogoTest {
     Mueble mueble = new Mueble();
     mueble.setPrecio(500.0);
 
-    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(List.of(mueble));
+    List<Mueble> catalogo = new ArrayList<>();
+    catalogo.add(mueble);
+    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(catalogo);
 
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesConUnPrecioMenorAl(precioMaximo);
 
@@ -95,7 +100,7 @@ public class ServicioCatalogoTest {
   @Test
   public void dadoUnCatalogoSinMueblesDelEstiloBuscado_cuandoSeFiltraPorEstilo_entoncesLaListaResultanteEstaVacia() {
     Estilo estilo = Estilo.Retro;
-    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(List.of());
+    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(new ArrayList<>());
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesDeEstilo(estilo);
     assertTrue(muebles.isEmpty());
   }
@@ -112,8 +117,11 @@ public class ServicioCatalogoTest {
     muebleMasCaro.setPrecio(500.0);
     muebleMasCaro.SetEstilo(Estilo.Retro);
 
-    when(repositorioCatalogoMock.ObtenerTodosLosMuebles())
-      .thenReturn(List.of(muebleMasBarato, muebleMasCaro));
+    List<Mueble> catalogo = new ArrayList<>();
+    catalogo.add(muebleMasBarato);
+    catalogo.add(muebleMasCaro);
+
+    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(catalogo);
 
     Mueble resultado = servicioCatalogo.ObtenerMuebleMasBaratoDeCategoria(categoria);
 
@@ -122,7 +130,9 @@ public class ServicioCatalogoTest {
 
   @Test
   public void dadoMueblesDeDistintosEstilos_cuandoSeFiltraPorVariosEstilos_entoncesDevuelveSoloLosMueblesDeEsosEstilos() {
-    List<Estilo> estilos = List.of(Estilo.Retro, Estilo.Minimalista);
+    List<Estilo> estilos = new ArrayList<>();
+    estilos.add(Estilo.Retro);
+    estilos.add(Estilo.Minimalista);
 
     Mueble muebleRetro = new Mueble();
     Mueble muebleMinimalista = new Mueble();
@@ -132,8 +142,12 @@ public class ServicioCatalogoTest {
     muebleMinimalista.SetEstilo(Estilo.Minimalista);
     muebleOtroEstilo.SetEstilo(Estilo.Japandi);
 
-    when(this.repositorioCatalogoMock.ObtenerTodosLosMuebles())
-      .thenReturn(List.of(muebleRetro, muebleMinimalista, muebleOtroEstilo));
+    List<Mueble> catalogo = new ArrayList<>();
+    catalogo.add(muebleRetro);
+    catalogo.add(muebleMinimalista);
+    catalogo.add(muebleOtroEstilo);
+
+    when(this.repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(catalogo);
 
     List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesDeEstilos(estilos);
 
@@ -179,8 +193,12 @@ public class ServicioCatalogoTest {
     Mueble mueble3 = new Mueble();
     mueble3.setPrecio(400.0);
 
-    when(repositorioCatalogoMock.ObtenerTodosLosMuebles())
-      .thenReturn(List.of(mueble1, mueble2, mueble3));
+    List<Mueble> catalogo = new ArrayList<>();
+    catalogo.add(mueble1);
+    catalogo.add(mueble2);
+    catalogo.add(mueble3);
+
+    when(repositorioCatalogoMock.ObtenerTodosLosMuebles()).thenReturn(catalogo);
 
     List<Mueble> muebles = servicioCatalogo.ObtenerMueblesOrdenadosPorPrecioDesc();
 
