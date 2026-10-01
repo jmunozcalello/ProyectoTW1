@@ -25,7 +25,15 @@ public class ServicioCategoriaDeMuebleImpl implements ServicioCategoriaDeMueble 
   @Override
   public Mueble crearMueble(String nombre, Long idCategoria, Double ancho, Double profundidad) {
     CategoriaDeMueble categoria = repositorioCategoriaDeMueble.buscarPorId(idCategoria);
-    Double anchoFinal = ancho != null ? ancho : categoria.getAnchoPromedio();
-    return new Mueble(nombre, anchoFinal, categoria.getProfundidadPromedio());
+    return new Mueble(
+      nombre,
+      medidaFinal(ancho, categoria.getAnchoPromedio()),
+      medidaFinal(profundidad, categoria.getProfundidadPromedio())
+    );
+  }
+
+  /** Criterio 2 de la HU-08: lo que el usuario escribió a mano gana sobre el promedio. */
+  private static Double medidaFinal(Double escritaPorElUsuario, Double promedioDeLaCategoria) {
+    return escritaPorElUsuario != null ? escritaPorElUsuario : promedioDeLaCategoria;
   }
 }
