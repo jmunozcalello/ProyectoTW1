@@ -10,6 +10,7 @@ public class DatosMueble {
   private String nombre;
   private Double ancho;
   private Double profundidad;
+  private Long categoria;
 
   public DatosMueble() {}
 
@@ -41,5 +42,14 @@ public class DatosMueble {
 
   public void setProfundidad(Double profundidad) {
     this.profundidad = profundidad;
+  }
+
+  /** Id de la categoría elegida en el formulario (HU-08), o null si no eligió ninguna. */
+  public Long getCategoria() {
+    return categoria;
+  }
+
+  public void setCategoria(Long categoria) {
+    this.categoria = categoria;
   }
 }
