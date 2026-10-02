@@ -43,9 +43,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class ControladorRenderizadoPlano2DTest {
 
   private final Ambiente ambiente = new Ambiente(4.0, 3.0);
-  private final List<Mueble> muebles = List.of(
-    new Mueble("Silla", 0.5, 0.5),
-    new Mueble("Mesa", 1.0, 1.0)
+  private final List<Mueble> muebles = new ArrayList<>(
+    Arrays.asList(new Mueble("Silla", 0.5, 0.5), new Mueble("Mesa", 1.0, 1.0))
   );
 
   private ServicioPlano2D servicioPlano2D;
@@ -78,7 +77,7 @@ public class ControladorRenderizadoPlano2DTest {
   @Test
   public void deberiaUsarLaMismaVistaCuandoNoHayMueblesCargados() {
     // preparacion
-    List<Mueble> sinMuebles = List.of();
+    List<Mueble> sinMuebles = new ArrayList<>();
     Plano planoVacio = planoConLosMueblesUbicados(sinMuebles);
     planoVacio.setMensaje("No hay mobiliario para distribuir");
     when(servicioPlano2D.generarPlano(ambiente, sinMuebles)).thenReturn(planoVacio);
@@ -107,10 +106,12 @@ public class ControladorRenderizadoPlano2DTest {
   @Test
   public void deberiaDelegarLosDatosDelFormularioAlServicio() {
     // preparacion
-    List<Mueble> tresMuebles = List.of(
-      new Mueble("Silla", 0.5, 0.5),
-      new Mueble("Mesa", 1.0, 1.0),
-      new Mueble("Sillon", 0.8, 0.8)
+    List<Mueble> tresMuebles = new ArrayList<>(
+      Arrays.asList(
+        new Mueble("Silla", 0.5, 0.5),
+        new Mueble("Mesa", 1.0, 1.0),
+        new Mueble("Sillon", 0.8, 0.8)
+      )
     );
     when(servicioPlano2D.generarPlano(ambiente, tresMuebles))
       .thenReturn(planoConLosMueblesUbicados(tresMuebles));
@@ -167,7 +168,7 @@ public class ControladorRenderizadoPlano2DTest {
     datosDelFormulario.setAncho(4.0);
     datosDelFormulario.setLargo(3.0);
     when(servicioPlano2D.generarPlano(any(Ambiente.class), anyList()))
-      .thenReturn(planoConLosMueblesUbicados(List.of()));
+      .thenReturn(planoConLosMueblesUbicados(new ArrayList<>()));
 
     // ejecucion
     whenConfirmoElFormulario(datosDelFormulario);
@@ -187,13 +188,20 @@ public class ControladorRenderizadoPlano2DTest {
     datosDelFormulario.setLargo(3.0);
     datosDelFormulario.setMuebles(mueblesCargados);
     when(servicioPlano2D.generarPlano(any(Ambiente.class), anyList()))
-      .thenReturn(planoConLosMueblesUbicados(List.of()));
+      .thenReturn(planoConLosMueblesUbicados(new ArrayList<>()));
 
     // ejecucion
     whenConfirmoElFormulario(datosDelFormulario);
 
     // validacion
-    thenElServicioRecibeLosMuebles(List.of(List.of("Silla", 0.5, 0.5), List.of("Mesa", 1.0, 1.0)));
+    thenElServicioRecibeLosMuebles(
+      new ArrayList<>(
+        Arrays.<Object>asList(
+          new ArrayList<>(Arrays.asList("Silla", 0.5, 0.5)),
+          new ArrayList<>(Arrays.asList("Mesa", 1.0, 1.0))
+        )
+      )
+    );
   }
 
   @Test
@@ -231,7 +239,7 @@ public class ControladorRenderizadoPlano2DTest {
     for (Mueble mueble : mueblesAColocar) {
       ubicados.add(new MuebleUbicado(mueble, 0.0, 0.0));
     }
-    return new Plano(ambiente, ubicados, List.of(), List.of());
+    return new Plano(ambiente, ubicados, new ArrayList<>(), new ArrayList<>());
   }
 
   private ModelAndView whenGeneroElPlanoCon(Ambiente ambiente, List<Mueble> muebles) {
@@ -294,7 +302,9 @@ public class ControladorRenderizadoPlano2DTest {
     verify(servicioPlano2D).generarPlano(any(Ambiente.class), mueblesCapturados.capture());
     List<Object> mueblesRecibidos = new ArrayList<>();
     for (Mueble mueble : mueblesCapturados.getValue()) {
-      mueblesRecibidos.add(List.of(mueble.getNombre(), mueble.getAncho(), mueble.getLargo()));
+      mueblesRecibidos.add(
+        new ArrayList<>(Arrays.asList(mueble.getNombre(), mueble.getAncho(), mueble.getLargo()))
+      );
     }
     assertEquals(mueblesEsperados, mueblesRecibidos);
   }
@@ -309,8 +319,8 @@ public class ControladorRenderizadoPlano2DTest {
     verify(servicioPlano2D).generarPlano(ambienteCapturado.capture(), anyList());
     Ambiente entregado = ambienteCapturado.getValue();
     assertEquals(
-      List.of(anchoEsperado, largoEsperado),
-      List.of(entregado.getAncho(), entregado.getLargo())
+      new ArrayList<>(Arrays.asList(anchoEsperado, largoEsperado)),
+      new ArrayList<>(Arrays.asList(entregado.getAncho(), entregado.getLargo()))
     );
   }
 }
