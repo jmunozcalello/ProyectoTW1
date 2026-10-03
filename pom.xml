@@ -401,6 +401,7 @@
                     </httpConnector>
                     <webApp>
                         <contextPath>/spring</contextPath>
+                        <tempDirectory>${project.build.directory}/jetty-tmp</tempDirectory>
                     </webApp>
                 </configuration>
             </plugin>
