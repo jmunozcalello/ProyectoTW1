@@ -1,8 +1,20 @@
 package com.tallerwebi.dominio;
 
+import jakarta.persistence.*;
+
+@Entity
 public class MuebleUbicado {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  // Un Mueble del catalogo puede aparecer en muchos MuebleUbicado (uno por cada Plano donde se
+  // ubico, e incluso varias veces en el mismo Plano). La relacion es many-to-one, no one-to-one.
+  @ManyToOne
+  @JoinColumn(name = "mueble_id")
   private Mueble mueble;
+
   private Double coordenadaX;
   private Double coordenadaY;
 
@@ -11,6 +23,8 @@ public class MuebleUbicado {
     this.coordenadaX = coordenadaX;
     this.coordenadaY = coordenadaY;
   }
+
+  public MuebleUbicado() {}
 
   public Mueble getMueble() {
     return mueble;

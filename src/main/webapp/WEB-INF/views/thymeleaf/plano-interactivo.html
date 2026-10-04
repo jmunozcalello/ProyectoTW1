@@ -4,142 +4,191 @@
 <head th:replace="~{fragments/layout :: head('Plano 2D')}"></head>
 
 <body>
-  <nav th:replace="~{fragments/layout :: navbar('ambientes')}"></nav>
+<nav th:replace="~{fragments/layout :: navbar('ambientes')}"></nav>
 
-  <main class="container">
+<main class="container">
     <header class="hb-page-header">
-      <div>
-        <span class="hb-eyebrow">Distribución automática</span>
-        <h1>Plano 2D</h1>
-        <p>Así quedan ubicados tus muebles sobre los muros del ambiente.</p>
-      </div>
+        <div>
+            <span class="hb-eyebrow">Distribución automática</span>
+            <h1>Plano 2D</h1>
+            <p>Así quedan ubicados tus muebles sobre los muros del ambiente.</p>
+        </div>
     </header>
 
     <ol class="list-group list-group-horizontal-md mb-4">
-      <li class="list-group-item list-group-item-success">1 · Espacio ✓</li>
-      <li class="list-group-item list-group-item-success">2 · Muebles ✓</li>
-      <li class="list-group-item active fw-semibold">3 · Plano</li>
-      <li class="list-group-item disabled">4 · Presupuesto</li>
-      <li class="list-group-item disabled">5 · Resumen</li>
+        <li class="list-group-item list-group-item-success">1 · Espacio ✓</li>
+        <li class="list-group-item list-group-item-success">2 · Muebles ✓</li>
+        <li class="list-group-item active fw-semibold">3 · Plano</li>
+        <li class="list-group-item disabled">4 · Presupuesto</li>
+        <li class="list-group-item disabled">5 · Resumen</li>
     </ol>
 
-      <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}">
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}">
         Las dimensiones deben ser mayores a 0
-      </div>
+    </div>
 
-      <div th:if="${plano != null}">
+    <div th:if="${plano != null}">
 
         <p th:if="${plano.mensaje}" class="alert alert-info" th:text="${plano.mensaje}">
-          No hay mobiliario para distribuir
+            No hay mobiliario para distribuir
         </p>
 
-        <section class="mb-4">
-          <h2 class="h5">Plano 2D del ambiente</h2>
+        <section class="hb-plano-section mb-4">
+            <div class="hb-section-heading">
+                <div>
+                    <span class="hb-eyebrow">Vista superior</span>
+                    <h2 class="h4 mb-1">Plano 2D del ambiente</h2>
+                    <p class="text-muted mb-0">
+                        Distribución automática sobre los muros perimetrales.
+                    </p>
+                </div>
+                <div class="hb-plano-tools" aria-label="Información del plano">
+              <span class="hb-chip"><i class="bi bi-rulers"></i>
+                <span th:text="${#numbers.formatDecimal(plano.ambiente.ancho, 1, 1)}">4,0</span> ×
+                <span th:text="${#numbers.formatDecimal(plano.ambiente.largo, 1, 1)}">3,0</span> m
+              </span>
+                    <span class="hb-chip hb-chip-salvia"><i class="bi bi-check-circle"></i>
+                <span th:text="${#lists.size(plano.muebles)}">2</span> ubicados
+              </span>
+                </div>
+            </div>
 
-          <p class="text-muted">
-            Ambiente de
-            <span th:text="${#numbers.formatDecimal(plano.ambiente.ancho, 1, 1)}">4,0</span> m de ancho por
-            <span th:text="${#numbers.formatDecimal(plano.ambiente.largo, 1, 1)}">3,0</span> m de largo.
-            Los muebles se apoyan sobre los muros perimetrales, sin rotación.
-          </p>
+            <div class="hb-plano-card">
+                <div class="hb-plano-toolbar">
+                    <span><i class="bi bi-compass"></i> Vista superior</span>
+                    <span class="hb-plano-toolbar-help">Las medidas están expresadas en metros</span>
+                </div>
 
-          <!--
-            El viewBox esta expresado en metros, igual que el modelo, asi que cada mueble se dibuja
-            con las mismas coordenadas que devuelve el servicio. El margen de 0.3 deja lugar al
-            grosor del muro. Los grosores de trazo tambien van en metros, asi que escalan junto con
-            el plan (no se usa vector-effect, que los dejaria en pixeles y el muro seria invisible).
-          -->
-          <svg th:if="${not #lists.isEmpty(plano.muebles)}"
-            th:attr="viewBox=${'-0.3 -0.3 ' + (plano.ambiente.ancho + 0.6) + ' ' + (plano.ambiente.largo + 0.6)}"
-            class="plano-svg w-100" style="max-height: 60vh;" preserveAspectRatio="xMidYMid meet"
-            role="img" aria-label="Plano 2D del ambiente con los muebles ubicados">
+                <!-- El viewBox usa las mismas coordenadas en metros que devuelve el servicio. -->
+                <svg th:if="${not #lists.isEmpty(plano.muebles)}"
+                     th:attr="viewBox=${'-0.45 -0.45 ' + (plano.ambiente.ancho + 0.9) + ' ' + (plano.ambiente.largo + 0.9)}"
+                     class="plano-svg w-100" preserveAspectRatio="xMidYMid meet"
+                     role="img" aria-label="Plano 2D del ambiente con los muebles ubicados">
+                    <defs>
+                        <pattern id="plano-grid" width="0.5" height="0.5" patternUnits="userSpaceOnUse">
+                            <path d="M 0.5 0 L 0 0 0 0.5" fill="none" stroke="#d8cec2" stroke-width="0.012"></path>
+                        </pattern>
+                        <pattern id="plano-floor" width="0.22" height="0.22" patternUnits="userSpaceOnUse"
+                                 patternTransform="rotate(90)">
+                            <rect width="0.22" height="0.22" fill="#f7f1e9"></rect>
+                            <path d="M 0 0 L 0 0.22" stroke="#eadfd2" stroke-width="0.018"></path>
+                        </pattern>
+                    </defs>
 
-            <rect x="0" y="0" fill="#faf7f2" stroke="#2b2622"
-              th:attr="width=${plano.ambiente.ancho},height=${plano.ambiente.largo},
-                       stroke-width=${0.015 * plano.ambiente.ancho}"></rect>
+                    <rect x="0" y="0" fill="url(#plano-floor)"
+                          th:attr="width=${plano.ambiente.ancho},height=${plano.ambiente.largo}"></rect>
+                    <rect x="0" y="0" fill="url(#plano-grid)" opacity="0.7"
+                          th:attr="width=${plano.ambiente.ancho},height=${plano.ambiente.largo}"></rect>
+                    <rect x="0" y="0" fill="none" stroke="#3b332e" stroke-linejoin="round"
+                          th:attr="width=${plano.ambiente.ancho},height=${plano.ambiente.largo},
+                         stroke-width=${0.12}"></rect>
 
-            <g th:each="ubicado : ${plano.muebles}">
-              <rect fill="#a34e30" fill-opacity="0.18" stroke="#a34e30"
-                th:attr="x=${ubicado.posicionX}, y=${ubicado.posicionY},
-                         width=${ubicado.mueble.ancho}, height=${ubicado.mueble.largo},
-                         stroke-width=${0.01 * plano.ambiente.ancho}"></rect>
-              <text text-anchor="middle" dominant-baseline="central" fill="#86391f"
-                th:attr="x=${ubicado.posicionX + (ubicado.mueble.ancho / 2)},
-                         y=${ubicado.posicionY + (ubicado.mueble.largo / 2)},
-                         font-size=${0.06 * plano.ambiente.ancho}"
-                th:text="${ubicado.mueble.nombre}">Sofa</text>
-            </g>
+                    <g th:each="ubicado, i : ${plano.muebles}" class="plano-mueble">
+                        <rect class="plano-mueble-cuerpo" fill="#f6eae3" stroke="#a34e30"
+                              th:attr="x=${ubicado.posicionX}, y=${ubicado.posicionY},
+                           width=${ubicado.mueble.ancho}, height=${ubicado.mueble.largo}"></rect>
+                        <rect class="plano-mueble-borde" fill="none"
+                              th:attr="x=${ubicado.posicionX + 0.04}, y=${ubicado.posicionY + 0.04},
+                           width=${ubicado.mueble.ancho - 0.08}, height=${ubicado.mueble.largo - 0.08}"></rect>
+                        
+                        <!-- Thymeleaf bloquea el acceso estático a Math; el tamaño fijo mantiene la etiqueta legible. -->
+                        <text text-anchor="middle" dominant-baseline="central" class="plano-mueble-nombre"
+                              th:attr="x=${ubicado.posicionX + (ubicado.mueble.ancho / 2)},
+                                       y=${ubicado.posicionY + (ubicado.mueble.largo / 2)},
+                                       font-size=${0.16}"
+                              th:text="${ubicado.mueble.nombre}">Sofa
+                        </text>
+                    </g>
 
-          </svg>
+                    <text x="0.08" y="-0.18" class="plano-dimension"
+                          th:text="${#numbers.formatDecimal(plano.ambiente.ancho, 1, 1) + ' m'}">4,0 m
+                    </text>
+                    <text x="-0.18" y="0.12" class="plano-dimension" text-anchor="end"
+                          th:attr="transform=${'rotate(-90 -0.18 0.12)'}"
+                          th:text="${#numbers.formatDecimal(plano.ambiente.largo, 1, 1) + ' m'}">3,0 m
+                    </text>
+                    <g class="plano-norte"
+                       th:attr="transform=${'translate(' + (plano.ambiente.ancho - 0.2) + ',-0.2)'}">
+                        <path d="M 0 0 L 0.08 0.18 L 0 0.14 L -0.08 0.18 Z"></path>
+                        <text x="0" y="-0.04" text-anchor="middle">N</text>
+                    </g>
+                </svg>
 
-          <p th:if="${#lists.isEmpty(plano.muebles)}" class="alert alert-warning">
-            Ningún mueble pudo ubicarse en este ambiente.
-          </p>
+                <div class="hb-plano-legend">
+                    <span><i class="hb-legend-swatch"></i> Mueble ubicado</span>
+                    <span><i class="hb-legend-grid"></i> Cada cuadrícula representa 0,5 m</span>
+                </div>
+            </div>
+
+            <p th:if="${#lists.isEmpty(plano.muebles)}" class="alert alert-warning">
+                Ningún mueble pudo ubicarse en este ambiente.
+            </p>
         </section>
 
         <section th:if="${not #lists.isEmpty(plano.muebles)}" class="mb-4">
-          <h2 class="h5">Muebles ubicados</h2>
+            <h2 class="h5">Muebles ubicados</h2>
 
-          <div class="table-responsive">
-          <table class="table align-middle">
-            <thead>
-              <tr>
-                <th scope="col">Mueble</th>
-                <th scope="col">Ancho (m)</th>
-                <th scope="col">Profundidad (m)</th>
-                <th scope="col">X (m)</th>
-                <th scope="col">Y (m)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="ubicado : ${plano.muebles}">
-                <td th:text="${ubicado.mueble.nombre}">Sofa</td>
-                <td th:text="${#numbers.formatDecimal(ubicado.mueble.ancho, 1, 1)}">2,1</td>
-                <td th:text="${#numbers.formatDecimal(ubicado.mueble.largo, 1, 1)}">0,9</td>
-                <td th:text="${#numbers.formatDecimal(ubicado.posicionX, 1, 1)}">0,0</td>
-                <td th:text="${#numbers.formatDecimal(ubicado.posicionY, 1, 1)}">0,0</td>
-              </tr>
-            </tbody>
-          </table>
-          </div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th scope="col">Mueble</th>
+                        <th scope="col">Ancho (m)</th>
+                        <th scope="col">Profundidad (m)</th>
+                        <th scope="col">X (m)</th>
+                        <th scope="col">Y (m)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ubicado : ${plano.muebles}">
+                        <td th:text="${ubicado.mueble.nombre}">Sofa</td>
+                        <td th:text="${#numbers.formatDecimal(ubicado.mueble.ancho, 1, 1)}">2,1</td>
+                        <td th:text="${#numbers.formatDecimal(ubicado.mueble.largo, 1, 1)}">0,9</td>
+                        <td th:text="${#numbers.formatDecimal(ubicado.posicionX, 1, 1)}">0,0</td>
+                        <td th:text="${#numbers.formatDecimal(ubicado.posicionY, 1, 1)}">0,0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section th:if="${not #lists.isEmpty(plano.mueblesExcluidos)}" class="mb-4">
-          <h2 class="h5">Muebles excluidos</h2>
+            <h2 class="h5">Muebles excluidos</h2>
 
-          <div class="table-responsive">
-          <table class="table align-middle">
-            <thead>
-              <tr>
-                <th scope="col">Mueble</th>
-                <th scope="col">Motivo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="excluido, i : ${plano.mueblesExcluidos}">
-                <td th:text="${excluido.nombre}">Sillon</td>
-                <td th:with="motivo=${i.index < #lists.size(plano.motivosDeExclusion) ? plano.motivosDeExclusion[i.index] : ''}"
-                  th:text="${motivo}">No entra en el perimetro</td>
-              </tr>
-            </tbody>
-          </table>
-          </div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th scope="col">Mueble</th>
+                        <th scope="col">Motivo</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="excluido, i : ${plano.mueblesExcluidos}">
+                        <td th:text="${excluido.nombre}">Sillon</td>
+                        <td th:with="motivo=${i.index < #lists.size(plano.motivosDeExclusion) ? plano.motivosDeExclusion[i.index] : ''}"
+                            th:text="${motivo}">No entra en el perimetro
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
-      </div>
+    </div>
 
-      <hr>
+    <hr>
 
-      <a th:href="@{/plano/ambiente}" class="btn btn-secondary">Atrás</a>
-      <button type="button" class="btn btn-primary" disabled
-        title="Corresponde al planificador financiero (FU-02 y FU-03), todavia no implementado">
+    <a th:href="@{/plano/ambiente}" class="btn btn-secondary">Atrás</a>
+    <button type="button" class="btn btn-primary" disabled
+            title="Corresponde al planificador financiero (FU-02 y FU-03), todavia no implementado">
         Siguiente →
-      </button>
-  </main>
+    </button>
+</main>
 
-  <footer th:replace="~{fragments/layout :: footer}"></footer>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 
-  <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 
 </html>
