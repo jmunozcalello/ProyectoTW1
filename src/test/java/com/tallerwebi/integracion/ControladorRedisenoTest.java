@@ -242,7 +242,7 @@ public class ControladorRedisenoTest {
     Mueble mueble = new Mueble();
     mueble.setNombre(nombre);
     mueble.setPrecio(precio);
-    mueble.SetEstilo(estilo);
+    mueble.setEstilo(estilo);
     return mueble;
   }
 
