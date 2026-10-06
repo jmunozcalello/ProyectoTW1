@@ -1,5 +1,12 @@
 INSERT INTO Usuario(id, email, password, rol, activo) VALUES(null, 'test@unlam.edu.ar', 'test', 'ADMIN', true);
 
+INSERT INTO TipoDeAmbiente(id, nombre) VALUES
+  (1, 'Living'),
+  (2, 'Habitación'),
+  (3, 'Pasillo'),
+  (4, 'Cocina'),
+  (5, 'Comedor');
+
 INSERT INTO Mueble(id, nombre, descripcion, precio, estilo) VALUES
   (1, 'Sillón Retró', 'Sillón de voluteadas tapizado en terciopelo color mostaza, con patas de madera maciza.', 85000.0, 'Retro'),
   (2, 'Lámpara de Pie Retro', 'Lámpara de pie con pantalla de tela y base de metal esmaltado, para rincón de lectura.', 25000.0, 'Retro'),
@@ -9,7 +16,44 @@ INSERT INTO Mueble(id, nombre, descripcion, precio, estilo) VALUES
   (6, 'Sillón Japandi', 'Sillón bajo con cojines de lino natural y estructura de madera clara.', 60000.0, 'Japandi'),
   (7, 'Estantería Industrial', 'Estantería de hierro y madera con estantes reforzados, estilo fábrica.', 75000.0, 'Industrial'),
   (8, 'Cama Boho', 'Cama doble con dosel de telas livianas y estructura de madera clara.', 180000.0, 'Boho'),
-  (9, 'Escritorio Escandinavo', 'Escritorio de líneas escandinavas, con terminación clara y tiradores redondos.', 110000.0, 'Escandinavo');
+  (9, 'Escritorio Escandinavo', 'Escritorio de líneas escandinavas, con terminación clara y tiradores redondos.', 110000.0, 'Escandinavo'),
+  (10, 'Silla de Comedor Retro', 'Silla de comedor con estructura de madera curvada y asiento tapizado en tela afrutada.', 35000.0, 'Retro'),
+  (11, 'Mesada de Cocina Minimalista', 'Mesada de cocina con cajones ocultos y superficie continua sin tiradores.', 88000.0, 'Minimalista'),
+  (12, 'Mesa de Comedor Industrial', 'Mesa de comedor con estructura de hierro negro y tablero de madera rústica.', 135000.0, 'Industrial'),
+  (13, 'Cama Escandinava', 'Cama de madera clara con cabecero de listones y patas afinadas.', 165000.0, 'Escandinavo'),
+  (14, 'Butaca Boho', 'Butaca con flecos de algodón, cojines estampados y patas de madera tallada.', 48000.0, 'Boho'),
+  (15, 'Lámpara de Mesa Japandi', 'Lámpara de mesa con pantalla de papel de arroz y base de cerámica mate.', 18000.0, 'Japandi'),
+  (16, 'Zapatero Escandinavo', 'Zapatero bajo de madera clara con cajón y patas cónicas, ideal para pasillo.', 52000.0, 'Escandinavo'),
+  (17, 'Escritorio Boho', 'Escritorio de madera con detalle trenzado en las laterales y cajón espacioso.', 98000.0, 'Boho'),
+  (18, 'Alacena Industrial', 'Alacena cerrada de hierro y madera, ideal para ordenar la cocina.', 70000.0, 'Industrial');
+
+INSERT INTO mueble_tipos_de_ambiente(mueble_id, tipo_de_ambiente_id) VALUES
+  (1, 1),
+  (2, 1),
+  (2, 3),
+  (3, 2),
+  (3, 1),
+  (4, 1),
+  (4, 3),
+  (5, 5),
+  (6, 1),
+  (7, 3),
+  (7, 4),
+  (8, 2),
+  (9, 2),
+  (9, 1),
+  (10, 5),
+  (11, 4),
+  (12, 5),
+  (13, 2),
+  (14, 1),
+  (14, 2),
+  (15, 1),
+  (15, 2),
+  (16, 3),
+  (17, 1),
+  (17, 2),
+  (18, 4);
 
 INSERT INTO CategoriaDeMueble(id, nombre, anchoPromedio, profundidadPromedio) VALUES
   (1, 'Biblioteca', 0.80, 0.35),

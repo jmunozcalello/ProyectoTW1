@@ -1,6 +1,8 @@
 package com.tallerwebi.dominio;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Mueble {
@@ -17,6 +19,14 @@ public class Mueble {
 
   @Enumerated(EnumType.STRING)
   private Estilo estilo;
+
+  @ManyToMany
+  @JoinTable(
+    name = "mueble_tipos_de_ambiente",
+    joinColumns = @JoinColumn(name = "mueble_id"),
+    inverseJoinColumns = @JoinColumn(name = "tipo_de_ambiente_id")
+  )
+  private List<TipoDeAmbiente> tiposDeAmbiente = new ArrayList<>();
 
   public int getId() {
     return this.id;
@@ -78,5 +88,17 @@ public class Mueble {
 
   public String getDescripcion() {
     return this.descripcion;
+  }
+
+  public List<TipoDeAmbiente> getTiposDeAmbiente() {
+    return this.tiposDeAmbiente;
+  }
+
+  public void setTiposDeAmbiente(List<TipoDeAmbiente> tiposDeAmbiente) {
+    this.tiposDeAmbiente = tiposDeAmbiente;
+  }
+
+  public void agregarTipoDeAmbiente(TipoDeAmbiente tipoDeAmbiente) {
+    this.tiposDeAmbiente.add(tipoDeAmbiente);
   }
 }

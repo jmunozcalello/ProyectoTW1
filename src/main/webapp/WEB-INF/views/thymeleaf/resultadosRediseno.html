@@ -48,6 +48,10 @@
           <dd th:text="${'$ ' + #numbers.formatDecimal(propuesta.presupuesto, 1, 'COMMA', 0, 'POINT')}">
             $ 60.000
           </dd>
+          <dt th:if="${tipoDeAmbiente != null}">Tipo de ambiente</dt>
+          <dd th:if="${tipoDeAmbiente != null}">
+            <span class="hb-chip hb-chip-primario" th:text="${tipoDeAmbiente}">Habitación</span>
+          </dd>
         </dl>
       </div>
     </div>
@@ -78,9 +82,16 @@
 
     <h2 class="hb-section-title">Muebles sugeridos</h2>
 
-    <div th:if="${muebles != null and #lists.isEmpty(muebles)}" class="alert alert-info">
+    <div th:if="${muebles != null and #lists.isEmpty(muebles) and tipoDeAmbiente == null}" class="alert alert-info">
       <i class="bi bi-search"></i>
       No encontramos muebles para ese estilo dentro del presupuesto. Probá con otro estilo o aumentá el presupuesto.
+    </div>
+
+    <div th:if="${muebles != null and #lists.isEmpty(muebles) and tipoDeAmbiente != null}" class="alert alert-info">
+      <i class="bi bi-search"></i>
+      No encontramos muebles de tipo
+      <strong th:text="${tipoDeAmbiente}">Habitación</strong>
+      para ese estilo dentro del presupuesto. Probá con otro tipo de ambiente, otro estilo o aumentá el presupuesto.
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">

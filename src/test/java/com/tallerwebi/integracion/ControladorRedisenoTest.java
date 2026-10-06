@@ -18,6 +18,7 @@ import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.Recomendacion;
 import com.tallerwebi.dominio.ServicioCatalogo;
 import com.tallerwebi.dominio.ServicioRediseño;
+import com.tallerwebi.dominio.TipoDeAmbiente;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.presentacion.ControladorRediseno;
 import com.tallerwebi.presentacion.DatosPropuesta;
@@ -77,7 +78,7 @@ public class ControladorRedisenoTest {
 
     this.cuandoEnvioElFormulario(ESTILO, PRESUPUESTO);
 
-    verify(this.servicioCatalogo).ObtenerMueblesQueCumplan(ESTILO, PRESUPUESTO);
+    verify(this.servicioCatalogo).ObtenerMueblesQueCumplan(null, ESTILO, PRESUPUESTO);
     verify(this.servicioRediseño).recomendar(ESTILO);
   }
 
@@ -108,15 +109,11 @@ public class ControladorRedisenoTest {
   @Test
   public void dadoQueEnvioElFormularioDeRediseno_cuandoLoHago_entoncesElModeloTraeLaPaletaYLaIluminacionRecomendadas()
     throws Exception {
-    Recomendacion recomendacion = new Recomendacion(
-      ESTILO,
-      List.of(
-        new Color("Arena", "#E6D5BC"),
-        new Color("Madera clara", "#C8A27A"),
-        new Color("Gris", "#9E9E9E")
-      ),
-      Iluminacion.CALIDA
-    );
+    ArrayList<Color> colores = new ArrayList<>();
+    colores.add(new Color("Arena", "#E6D5BC"));
+    colores.add(new Color("Madera clara", "#C8A27A"));
+    colores.add(new Color("Gris", "#9E9E9E"));
+    Recomendacion recomendacion = new Recomendacion(ESTILO, colores, Iluminacion.CALIDA);
     when(this.servicioRediseño.recomendar(ESTILO)).thenReturn(recomendacion);
     List<Mueble> muebles = new ArrayList<>();
     this.dadoQueElCatalogoCumpleCon(ESTILO, PRESUPUESTO, muebles);
@@ -134,7 +131,11 @@ public class ControladorRedisenoTest {
   @Test
   public void dadoQueElijoOtroEstilo_cuandoVeoElResultado_entoncesCambiaLaIluminacionRecomendada()
     throws Exception {
-    Recomendacion recomendacion = new Recomendacion(Estilo.Industrial, List.of(), Iluminacion.FRIA);
+    Recomendacion recomendacion = new Recomendacion(
+      Estilo.Industrial,
+      new ArrayList<>(),
+      Iluminacion.FRIA
+    );
     when(this.servicioRediseño.recomendar(Estilo.Industrial)).thenReturn(recomendacion);
     List<Mueble> muebles = new ArrayList<>();
     this.dadoQueElCatalogoCumpleCon(Estilo.Industrial, PRESUPUESTO, muebles);
@@ -153,7 +154,7 @@ public class ControladorRedisenoTest {
   public void dadoQueElCatalogoRechazaElPresupuesto_cuandoVeoElResultado_entoncesVeoElErrorYNoLosMuebles()
     throws Exception {
     when(this.servicioRediseño.recomendar(ESTILO)).thenReturn(this.unaRecomendacion(ESTILO));
-    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(ESTILO, PRESUPUESTO))
+    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(null, ESTILO, PRESUPUESTO))
       .thenThrow(new PresupuestoNegativoException("El presupuesto no puede ser negativo"));
 
     ModelAndView modelAndView = this.cuandoEnvioElFormulario(ESTILO, PRESUPUESTO);
@@ -161,6 +162,25 @@ public class ControladorRedisenoTest {
     assertThat(modelAndView.getViewName(), is(RESULTADOS));
     assertThat(modelAndView.getModel().get("error"), is("El presupuesto no puede ser negativo"));
     assertThat(modelAndView.getModel().get("muebles"), is(nullValue()));
+  }
+
+  @Test
+  public void dadoQueElijoUnTipoDeAmbiente_cuandoEnvioElFormulario_entoncesSeLoPidoAlCatalogo()
+    throws Exception {
+    TipoDeAmbiente living = new TipoDeAmbiente("Living");
+    List<Mueble> muebles = new ArrayList<>();
+    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(living, ESTILO, PRESUPUESTO))
+      .thenReturn(muebles);
+
+    ModelAndView modelAndView =
+      this.controladorRediseno.generarPropuesta(
+          ESTILO.name(),
+          String.valueOf(PRESUPUESTO),
+          "Living"
+        );
+
+    verify(this.servicioCatalogo).ObtenerMueblesQueCumplan(living, ESTILO, PRESUPUESTO);
+    assertThat(modelAndView.getViewName(), is(RESULTADOS));
   }
 
   @Test
@@ -201,7 +221,7 @@ public class ControladorRedisenoTest {
   }
 
   private ModelAndView cuandoEnvioElFormularioConTexto(String estilo, String presupuesto) {
-    return this.controladorRediseno.generarPropuesta(estilo, presupuesto);
+    return this.controladorRediseno.generarPropuesta(estilo, presupuesto, null);
   }
 
   private ModelAndView cuandoEnvioElFormulario(Estilo estilo, Double presupuesto) {
@@ -210,11 +230,12 @@ public class ControladorRedisenoTest {
 
   private void dadoQueElCatalogoCumpleCon(Estilo estilo, Double presupuesto, List<Mueble> muebles)
     throws Exception {
-    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(estilo, presupuesto)).thenReturn(muebles);
+    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(null, estilo, presupuesto))
+      .thenReturn(muebles);
   }
 
   private Recomendacion unaRecomendacion(Estilo estilo) {
-    return new Recomendacion(estilo, List.of(), Iluminacion.CALIDA);
+    return new Recomendacion(estilo, new ArrayList<>(), Iluminacion.CALIDA);
   }
 
   private static Mueble unMueble(String nombre, double precio, Estilo estilo) {

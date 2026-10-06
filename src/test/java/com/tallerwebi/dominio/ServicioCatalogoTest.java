@@ -214,7 +214,7 @@ public class ServicioCatalogoTest {
     Mueble retro = this.dadoQueElCatalogoTieneUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
     Mueble japandi = this.dadoQueElCatalogoTieneUnMueble("Mesa Japandi", 150000.0, Estilo.Japandi);
 
-    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(null, null);
+    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(null, null, null);
 
     assertThat(muebles, containsInAnyOrder(retro, japandi));
   }
@@ -225,7 +225,7 @@ public class ServicioCatalogoTest {
     Mueble barato = this.dadoQueElCatalogoTieneUnMueble("Lámpara", 25000.0, Estilo.Retro);
     Mueble caro = this.dadoQueElCatalogoTieneUnMueble("Cama", 180000.0, Estilo.Boho);
 
-    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(null, 50000.0);
+    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(null, null, 50000.0);
 
     assertThat(muebles, contains(barato));
     assertEquals(muebles.size(), 1);
@@ -236,7 +236,7 @@ public class ServicioCatalogoTest {
     throws PresupuestoNegativoException {
     Mueble limite = this.dadoQueElCatalogoTieneUnMueble("Lámpara", 25000.0, Estilo.Retro);
 
-    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(null, 25000.0);
+    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(null, null, 25000.0);
 
     assertThat(muebles, contains(limite));
   }
@@ -248,7 +248,7 @@ public class ServicioCatalogoTest {
     Mueble otroRetro = this.dadoQueElCatalogoTieneUnMueble("Lámpara", 25000.0, Estilo.Retro);
     Mueble japandi = this.dadoQueElCatalogoTieneUnMueble("Mesa Japandi", 150000.0, Estilo.Japandi);
 
-    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(Estilo.Retro, null);
+    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(null, Estilo.Retro, null);
 
     assertThat(muebles, containsInAnyOrder(retro, otroRetro));
     assertEquals(muebles.size(), 2);
@@ -261,7 +261,8 @@ public class ServicioCatalogoTest {
     this.dadoQueElCatalogoTieneUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
     this.dadoQueElCatalogoTieneUnMueble("Mesa Japandi", 60000.0, Estilo.Japandi);
 
-    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(Estilo.Retro, 50000.0);
+    List<Mueble> muebles =
+      this.servicioCatalogo.ObtenerMueblesQueCumplan(null, Estilo.Retro, 50000.0);
 
     assertThat(muebles, contains(retroBarato));
   }
@@ -271,9 +272,127 @@ public class ServicioCatalogoTest {
     throws PresupuestoNegativoException {
     this.dadoQueElCatalogoTieneUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
 
-    List<Mueble> muebles = this.servicioCatalogo.ObtenerMueblesQueCumplan(Estilo.Escandinavo, null);
+    List<Mueble> muebles =
+      this.servicioCatalogo.ObtenerMueblesQueCumplan(null, Estilo.Escandinavo, null);
 
     assertTrue(muebles.isEmpty());
+  }
+
+  @Test
+  public void dadoQueFiltroPorTipoDeAmbiente_cuandoBuscoMueblesQueCumplan_entoncesDevuelveSoloLosDeEseTipo()
+    throws PresupuestoNegativoException {
+    Mueble paraLiving = this.dadoQueElCatalogoTieneUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
+    paraLiving.agregarTipoDeAmbiente(new TipoDeAmbiente("Living"));
+    Mueble paraComedor =
+      this.dadoQueElCatalogoTieneUnMueble("Mesa de Comedor", 60000.0, Estilo.Japandi);
+    paraComedor.agregarTipoDeAmbiente(new TipoDeAmbiente("Comedor"));
+    this.dadoQueElCatalogoTieneUnMueble("Lámpara", 25000.0, Estilo.Retro);
+
+    List<Mueble> muebles =
+      this.servicioCatalogo.ObtenerMueblesQueCumplan(new TipoDeAmbiente("Living"), null, null);
+
+    assertThat(muebles, contains(paraLiving));
+  }
+
+  @Test
+  public void dadoQueUnMuebleSirveParaVariosTipos_cuandoBuscoPorUnoDeEllos_entoncesElMuebleSeIncluye()
+    throws PresupuestoNegativoException {
+    Mueble multiservicio =
+      this.dadoQueElCatalogoTieneUnMueble("Escritorio", 40000.0, Estilo.Minimalista);
+    multiservicio.agregarTipoDeAmbiente(new TipoDeAmbiente("Pasillo"));
+    multiservicio.agregarTipoDeAmbiente(new TipoDeAmbiente("Habitación"));
+
+    List<Mueble> muebles =
+      this.servicioCatalogo.ObtenerMueblesQueCumplan(new TipoDeAmbiente("Habitación"), null, null);
+
+    assertThat(muebles, contains(multiservicio));
+  }
+
+  @Test
+  public void dadoUnPrecioMinimo_cuandoBuscoMueblesFiltrados_entoncesExcluyeLosQueNoLoAlcanzan()
+    throws PresupuestoNegativoException {
+    this.dadoQueElCatalogoTieneUnMueble("Lámpara", 25000.0, Estilo.Retro);
+    Mueble caro = this.dadoQueElCatalogoTieneUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
+
+    List<Mueble> muebles =
+      this.servicioCatalogo.ObtenerMueblesFiltrados(50000.0, null, null, null, null);
+
+    assertThat(muebles, contains(caro));
+  }
+
+  @Test
+  public void dadoVariosCriterios_cuandoBuscoMueblesFiltrados_entoncesDevuelveSoloLosQueCumplenTodos()
+    throws PresupuestoNegativoException {
+    Mueble cumple = this.dadoQueElCatalogoTieneUnMueble("Sillón Retró", 85000.0, Estilo.Retro);
+    cumple.agregarTipoDeAmbiente(new TipoDeAmbiente("Living"));
+    this.dadoQueElCatalogoTieneUnMueble("Mesa Japandi", 150000.0, Estilo.Japandi);
+    Mueble fueraDeRango = this.dadoQueElCatalogoTieneUnMueble("Lámpara", 25000.0, Estilo.Retro);
+    fueraDeRango.agregarTipoDeAmbiente(new TipoDeAmbiente("Living"));
+
+    List<Mueble> muebles =
+      this.servicioCatalogo.ObtenerMueblesFiltrados(
+          50000.0,
+          100000.0,
+          Estilo.Retro,
+          new TipoDeAmbiente("Living"),
+          null
+        );
+
+    assertThat(muebles, contains(cumple));
+  }
+
+  @Test
+  public void dadoQueOrdenoPorPrecioAscendente_cuandoBuscoMueblesFiltrados_entoncesQuedanDeMenorAMayor()
+    throws PresupuestoNegativoException {
+    Mueble trescientos = this.dadoQueElCatalogoTieneUnMueble("A", 300.0, Estilo.Retro);
+    Mueble doscientos = this.dadoQueElCatalogoTieneUnMueble("B", 200.0, Estilo.Retro);
+    Mueble cuatrocientos = this.dadoQueElCatalogoTieneUnMueble("C", 400.0, Estilo.Retro);
+
+    List<Mueble> muebles =
+      this.servicioCatalogo.ObtenerMueblesFiltrados(
+          null,
+          null,
+          null,
+          null,
+          OrdenDeMuebles.PRECIO_ASC
+        );
+
+    assertEquals(3, muebles.size());
+    assertEquals(doscientos, muebles.get(0));
+    assertEquals(trescientos, muebles.get(1));
+    assertEquals(cuatrocientos, muebles.get(2));
+  }
+
+  @Test
+  public void dadoQueOrdenoPorPrecioDescendente_cuandoBuscoMueblesFiltrados_entoncesQuedanDeMayorAMenor()
+    throws PresupuestoNegativoException {
+    Mueble doscientos = this.dadoQueElCatalogoTieneUnMueble("A", 200.0, Estilo.Retro);
+    Mueble cuatrocientos = this.dadoQueElCatalogoTieneUnMueble("B", 400.0, Estilo.Retro);
+    Mueble trescientos = this.dadoQueElCatalogoTieneUnMueble("C", 300.0, Estilo.Retro);
+
+    List<Mueble> muebles =
+      this.servicioCatalogo.ObtenerMueblesFiltrados(
+          null,
+          null,
+          null,
+          null,
+          OrdenDeMuebles.PRECIO_DESC
+        );
+
+    assertEquals(3, muebles.size());
+    assertEquals(cuatrocientos, muebles.get(0));
+    assertEquals(trescientos, muebles.get(1));
+    assertEquals(doscientos, muebles.get(2));
+  }
+
+  @Test
+  public void dadoUnPrecioMinimoNegativo_cuandoBuscoMueblesFiltrados_entoncesLanzaPresupuestoNegativoException() {
+    PresupuestoNegativoException exception = assertThrows(
+      PresupuestoNegativoException.class,
+      () -> this.servicioCatalogo.ObtenerMueblesFiltrados(-1.0, null, null, null, null)
+    );
+
+    assertNotNull(exception);
   }
 
   @Test
@@ -282,7 +401,7 @@ public class ServicioCatalogoTest {
 
     PresupuestoNegativoException exception = assertThrows(
       PresupuestoNegativoException.class,
-      () -> this.servicioCatalogo.ObtenerMueblesQueCumplan(Estilo.Retro, precioMaximo)
+      () -> this.servicioCatalogo.ObtenerMueblesQueCumplan(null, Estilo.Retro, precioMaximo)
     );
 
     assertNotNull(exception);
@@ -319,7 +438,7 @@ public class ServicioCatalogoTest {
     mueble.SetEstilo(estilo);
     this.mueblesSembrados.add(mueble);
     when(this.repositorioCatalogoMock.ObtenerTodosLosMuebles())
-      .thenReturn(List.copyOf(this.mueblesSembrados));
+      .thenReturn(new ArrayList<>(this.mueblesSembrados));
     return mueble;
   }
 }
