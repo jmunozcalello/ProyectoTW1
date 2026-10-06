@@ -111,11 +111,11 @@ public class ServicioCatalogoTest {
 
     Mueble muebleMasBarato = new Mueble();
     muebleMasBarato.setPrecio(100.0);
-    muebleMasBarato.SetEstilo(Estilo.Retro);
+    muebleMasBarato.setEstilo(Estilo.Retro);
 
     Mueble muebleMasCaro = new Mueble();
     muebleMasCaro.setPrecio(500.0);
-    muebleMasCaro.SetEstilo(Estilo.Retro);
+    muebleMasCaro.setEstilo(Estilo.Retro);
 
     List<Mueble> catalogo = new ArrayList<>();
     catalogo.add(muebleMasBarato);
@@ -138,9 +138,9 @@ public class ServicioCatalogoTest {
     Mueble muebleMinimalista = new Mueble();
     Mueble muebleOtroEstilo = new Mueble();
 
-    muebleRetro.SetEstilo(Estilo.Retro);
-    muebleMinimalista.SetEstilo(Estilo.Minimalista);
-    muebleOtroEstilo.SetEstilo(Estilo.Japandi);
+    muebleRetro.setEstilo(Estilo.Retro);
+    muebleMinimalista.setEstilo(Estilo.Minimalista);
+    muebleOtroEstilo.setEstilo(Estilo.Japandi);
 
     List<Mueble> catalogo = new ArrayList<>();
     catalogo.add(muebleRetro);
@@ -316,7 +316,7 @@ public class ServicioCatalogoTest {
     Mueble mueble = new Mueble();
     mueble.setNombre(nombre);
     mueble.setPrecio(precio);
-    mueble.SetEstilo(estilo);
+    mueble.setEstilo(estilo);
     this.mueblesSembrados.add(mueble);
     when(this.repositorioCatalogoMock.ObtenerTodosLosMuebles())
       .thenReturn(List.copyOf(this.mueblesSembrados));
