@@ -14,7 +14,17 @@ public interface ServicioCatalogo {
   void RegistrarMueble(Mueble mueble1);
   List<Mueble> ObtenerMueblesOrdenadosPorPrecioAsc();
   List<Mueble> ObtenerMueblesOrdenadosPorPrecioDesc();
-  List<Mueble> ObtenerMueblesQueCumplan(Estilo estilo, Double precioMaximo)
-    throws PresupuestoNegativoException;
+  List<Mueble> ObtenerMueblesQueCumplan(
+    TipoDeAmbiente tipoDeAmbiente,
+    Estilo estilo,
+    Double precioMaximo
+  ) throws PresupuestoNegativoException;
+  List<Mueble> ObtenerMueblesFiltrados(
+    Double precioMinimo,
+    Double precioMaximo,
+    Estilo estilo,
+    TipoDeAmbiente tipoDeAmbiente,
+    OrdenDeMuebles orden
+  ) throws PresupuestoNegativoException;
   Mueble ObtenerMueblePorId(int id) throws MuebleNoEncontrado;
 }

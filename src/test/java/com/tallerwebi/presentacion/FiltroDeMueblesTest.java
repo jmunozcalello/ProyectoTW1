@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.tallerwebi.dominio.Estilo;
+import com.tallerwebi.dominio.OrdenDeMuebles;
 import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ public class FiltroDeMueblesTest {
   @Test
   public void dadoQueNoVieneNingunParametro_cuandoCreoElFiltroDelCatalogo_entoncesNoFiltraPorNada()
     throws FiltroDeMueblesInvalidoException {
-    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo(null, null);
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo(null, null, null, null, null);
 
     assertThat(filtro.getEstilo(), is(nullValue()));
     assertThat(filtro.getPrecioMaximo(), is(nullValue()));
@@ -23,7 +24,7 @@ public class FiltroDeMueblesTest {
   @Test
   public void dadoQueVieneElEstiloEnBlanco_cuandoCreoElFiltroDelCatalogo_entoncesNoFiltraPorEstilo()
     throws FiltroDeMueblesInvalidoException {
-    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo("", "50000");
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo("", "50000", null, null, null);
 
     assertThat(filtro.getEstilo(), is(nullValue()));
     assertThat(filtro.getPrecioMaximo(), is(50000.0));
@@ -32,7 +33,7 @@ public class FiltroDeMueblesTest {
   @Test
   public void dadoQueVieneUnEstiloConocido_cuandoCreoElFiltroDelCatalogo_entoncesFiltraPorEseEstilo()
     throws FiltroDeMueblesInvalidoException {
-    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo("Boho", null);
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo("Boho", null, null, null, null);
 
     assertThat(filtro.getEstilo(), is(Estilo.Boho));
     assertThat(filtro.getPrecioMaximo(), is(nullValue()));
@@ -42,14 +43,14 @@ public class FiltroDeMueblesTest {
   public void dadoQueVieneUnEstiloDesconocido_cuandoCreoElFiltroDelCatalogo_entoncesNoHayFiltroValido() {
     assertThrows(
       FiltroDeMueblesInvalidoException.class,
-      () -> FiltroDeMuebles.delCatalogo("NoExiste", "50000")
+      () -> FiltroDeMuebles.delCatalogo("NoExiste", "50000", null, null, null)
     );
   }
 
   @Test
   public void dadoQueVieneSoloUnPrecioMaximo_cuandoCreoElFiltroDelCatalogo_entoncesFiltraPorPrecioYNoPorEstilo()
     throws FiltroDeMueblesInvalidoException {
-    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo(null, "50000");
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo(null, "50000", null, null, null);
 
     assertThat(filtro.getEstilo(), is(nullValue()));
     assertThat(filtro.getPrecioMaximo(), is(50000.0));
@@ -59,7 +60,7 @@ public class FiltroDeMueblesTest {
   public void dadoQueVieneUnPrecioMaximoNegativo_cuandoCreoElFiltroDelCatalogo_entoncesNoHayFiltroValido() {
     assertThrows(
       FiltroDeMueblesInvalidoException.class,
-      () -> FiltroDeMuebles.delCatalogo("Boho", "-1")
+      () -> FiltroDeMuebles.delCatalogo("Boho", "-1", null, null, null)
     );
   }
 
@@ -67,7 +68,7 @@ public class FiltroDeMueblesTest {
   public void dadoQueVieneUnPrecioMaximoQueNoEsNumero_cuandoCreoElFiltroDelCatalogo_entoncesNoHayFiltroValido() {
     assertThrows(
       FiltroDeMueblesInvalidoException.class,
-      () -> FiltroDeMuebles.delCatalogo("Boho", "caro")
+      () -> FiltroDeMuebles.delCatalogo("Boho", "caro", null, null, null)
     );
   }
 
@@ -121,9 +122,58 @@ public class FiltroDeMueblesTest {
   }
 
   @Test
+  public void dadoQueVieneUnPrecioMinimo_cuandoCreoElFiltroDelCatalogo_entoncesFiltraDesdeEsePrecio()
+    throws FiltroDeMueblesInvalidoException {
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo(null, null, "20000", null, null);
+
+    assertThat(filtro.getPrecioMinimo(), is(20000.0));
+    assertThat(filtro.getPrecioMaximo(), is(nullValue()));
+  }
+
+  @Test
+  public void dadoQueVieneUnPrecioMinimoNegativo_cuandoCreoElFiltroDelCatalogo_entoncesNoHayFiltroValido() {
+    assertThrows(
+      FiltroDeMueblesInvalidoException.class,
+      () -> FiltroDeMuebles.delCatalogo(null, null, "-1", null, null)
+    );
+  }
+
+  @Test
+  public void dadoQueVieneUnTipoDeAmbienteConocido_cuandoCreoElFiltroDelCatalogo_entoncesFiltraPorEseTipo()
+    throws FiltroDeMueblesInvalidoException {
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo(null, null, null, "Living", null);
+
+    assertThat(filtro.getTipoDeAmbiente(), is("Living"));
+  }
+
+  @Test
+  public void dadoQueVieneUnTipoDeAmbienteDesconocido_cuandoCreoElFiltroDelCatalogo_entoncesSeCreaElFiltroConEseTipo()
+    throws FiltroDeMueblesInvalidoException {
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo(null, null, null, "Garaje", null);
+
+    assertThat(filtro.getTipoDeAmbiente(), is("Garaje"));
+  }
+
+  @Test
+  public void dadoQueVieneUnOrdenValido_cuandoCreoElFiltroDelCatalogo_entoncesOrdenaPorEseCriterio()
+    throws FiltroDeMueblesInvalidoException {
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo(null, null, null, null, "PRECIO_DESC");
+
+    assertThat(filtro.getOrden(), is(OrdenDeMuebles.PRECIO_DESC));
+  }
+
+  @Test
+  public void dadoQueVieneUnOrdenDesconocido_cuandoCreoElFiltroDelCatalogo_entoncesNoHayFiltroValido() {
+    assertThrows(
+      FiltroDeMueblesInvalidoException.class,
+      () -> FiltroDeMuebles.delCatalogo(null, null, null, null, "CREADO")
+    );
+  }
+
+  @Test
   public void dadoUnFiltroDelCatalogo_cuandoConsultoSusCriterios_entornoLosMismoValoresDelFormulario()
     throws FiltroDeMueblesInvalidoException {
-    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo("Retro", "85000");
+    FiltroDeMuebles filtro = FiltroDeMuebles.delCatalogo("Retro", "85000", null, null, null);
 
     assertThat(filtro.getEstilo(), is(Estilo.Retro));
     assertThat(filtro.getPrecioMaximo(), is(85000.0));

@@ -14,9 +14,12 @@ import static org.mockito.Mockito.when;
 import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.ServicioCatalogo;
+import com.tallerwebi.dominio.TipoDeAmbiente;
 import com.tallerwebi.dominio.excepcion.MuebleNoEncontrado;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.presentacion.ControladorCatalogoDeMuebles;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +44,7 @@ public class ControladorCatalogoDeMueblesTest {
     throws Exception {
     Mueble retro = unMueble("Sillón Retró", 85000.0, Estilo.Retro);
     Mueble japandi = unMueble("Mesa Japandi", 150000.0, Estilo.Japandi);
-    this.dadoQueElCatalogoCumpleCon(null, null, List.of(retro, japandi));
+    this.dadoQueElCatalogoCumpleCon(null, null, Arrays.asList(retro, japandi));
 
     ModelAndView modelAndView = this.cuandoNavegoAlCatalogo(null, null);
 
@@ -64,58 +67,66 @@ public class ControladorCatalogoDeMueblesTest {
 
     assertThat(modelAndView.getModel().get("estiloSeleccionado"), is(nullValue()));
     assertThat(modelAndView.getModel().get("precioMaximo"), is(nullValue()));
+    assertThat(modelAndView.getModel().get("precioMinimo"), is(nullValue()));
+    assertThat(modelAndView.getModel().get("tipoDeAmbiente"), is(nullValue()));
+    assertThat(modelAndView.getModel().get("orden"), is(nullValue()));
   }
 
   @Test
   public void dadoQueFiltroPorEstilo_cuandoNavegoAlCatalogo_entoncesLePidoAlCatalogoSoloEseEstilo()
     throws Exception {
     Mueble retro = unMueble("Sillón Retró", 85000.0, Estilo.Retro);
-    this.dadoQueElCatalogoCumpleCon(Estilo.Retro, null, List.of(retro));
+    this.dadoQueElCatalogoCumpleCon(Estilo.Retro, null, Arrays.asList(retro));
 
     ModelAndView modelAndView = this.cuandoNavegoAlCatalogo("Retro", null);
 
     assertThat(this.obtenerMueblesDelModel(modelAndView), contains(retro));
     assertThat(modelAndView.getModel().get("estiloSeleccionado"), is(Estilo.Retro));
-    verify(this.servicioCatalogo).ObtenerMueblesQueCumplan(Estilo.Retro, null);
+    verify(this.servicioCatalogo).ObtenerMueblesFiltrados(null, null, Estilo.Retro, null, null);
   }
 
   @Test
   public void dadoQueFiltroPorPrecioMaximo_cuandoNavegoAlCatalogo_entoncesLePidoSoloLosMueblesQueNoLoSuperan()
     throws Exception {
     Mueble barato = unMueble("Lámpara de Pie Retro", 25000.0, Estilo.Retro);
-    this.dadoQueElCatalogoCumpleCon(null, 50000.0, List.of(barato));
+    ArrayList<Mueble> muebles = new ArrayList<>();
+    muebles.add(barato);
+    this.dadoQueElCatalogoCumpleCon(null, 50000.0, muebles);
 
     ModelAndView modelAndView = this.cuandoNavegoAlCatalogo(null, "50000");
 
     assertThat(this.obtenerMueblesDelModel(modelAndView), contains(barato));
     assertThat(modelAndView.getModel().get("precioMaximo"), is(50000.0));
-    verify(this.servicioCatalogo).ObtenerMueblesQueCumplan(null, 50000.0);
+    verify(this.servicioCatalogo).ObtenerMueblesFiltrados(null, 50000.0, null, null, null);
   }
 
   @Test
   public void dadoQueFiltroPorEstiloYPrecioMaximo_cuandoNavegoAlCatalogo_entoncesLePidoLosQueCumplenAmbos()
     throws Exception {
-    this.dadoQueElCatalogoCumpleCon(Estilo.Retro, 50000.0, List.of());
+    ArrayList<Mueble> muebles = new ArrayList<>();
+    this.dadoQueElCatalogoCumpleCon(Estilo.Retro, 50000.0, muebles);
 
     this.cuandoNavegoAlCatalogo("Retro", "50000");
 
-    verify(this.servicioCatalogo).ObtenerMueblesQueCumplan(Estilo.Retro, 50000.0);
+    verify(this.servicioCatalogo).ObtenerMueblesFiltrados(null, 50000.0, Estilo.Retro, null, null);
   }
 
   @Test
   public void dadoQueElijoTodosLosEstilos_cuandoFiltroPorElCatalogo_entoncesNoFiltroPorEstilo()
     throws Exception {
-    this.dadoQueElCatalogoCumpleCon(null, 50000.0, List.of());
+    ArrayList<Mueble> muebles = new ArrayList<>();
+    this.dadoQueElCatalogoCumpleCon(null, 50000.0, muebles);
 
     this.cuandoNavegoAlCatalogo("", "50000");
 
-    verify(this.servicioCatalogo).ObtenerMueblesQueCumplan(null, 50000.0);
+    verify(this.servicioCatalogo).ObtenerMueblesFiltrados(null, 50000.0, null, null, null);
   }
 
   @Test
   public void dadoQueElCatalogoEstaVacio_cuandoNavegoAlCatalogo_entoncesVeoLaVistaSinMuebles()
     throws Exception {
-    this.dadoQueElCatalogoCumpleCon(null, null, List.of());
+    List<Mueble> muebles = new ArrayList<>();
+    this.dadoQueElCatalogoCumpleCon(null, null, muebles);
 
     ModelAndView modelAndView = this.cuandoNavegoAlCatalogo(null, null);
 
@@ -125,7 +136,7 @@ public class ControladorCatalogoDeMueblesTest {
   @Test
   public void dadoQueElCatalogoRechazaElPrecioMaximo_cuandoNavegoAlCatalogo_entoncesVeoElErrorYNoLosMuebles()
     throws Exception {
-    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(Estilo.Retro, 50000.0))
+    when(this.servicioCatalogo.ObtenerMueblesFiltrados(null, 50000.0, Estilo.Retro, null, null))
       .thenThrow(new PresupuestoNegativoException("El presupuesto no puede ser negativo"));
 
     ModelAndView modelAndView = this.cuandoNavegoAlCatalogo("Retro", "50000");
@@ -160,9 +171,43 @@ public class ControladorCatalogoDeMueblesTest {
   }
 
   @Test
+  public void dadoQueFiltroPorPrecioMinimo_cuandoNavegoAlCatalogo_entoncesLePidoSoloLosQueLoSuperan()
+    throws Exception {
+    Mueble caro = unMueble("Sillón Retró", 85000.0, Estilo.Retro);
+    ArrayList<Mueble> muebles = new ArrayList<>();
+    muebles.add(caro);
+    when(this.servicioCatalogo.ObtenerMueblesFiltrados(50000.0, null, null, null, null))
+      .thenReturn(muebles);
+
+    ModelAndView modelAndView =
+      this.controladorCatalogoDeMuebles.catalogo(null, null, "50000", null, null);
+
+    assertThat(this.obtenerMueblesDelModel(modelAndView), contains(caro));
+    assertThat(modelAndView.getModel().get("precioMinimo"), is(50000.0));
+    verify(this.servicioCatalogo).ObtenerMueblesFiltrados(50000.0, null, null, null, null);
+  }
+
+  @Test
+  public void dadoQueFiltroPorTipoDeAmbiente_cuandoNavegoAlCatalogo_entoncesLePidoSoloLosDeEseTipo()
+    throws Exception {
+    TipoDeAmbiente living = new TipoDeAmbiente("Living");
+    Mueble paraLiving = unMueble("Sillón Retró", 85000.0, Estilo.Retro);
+    ArrayList<Mueble> muebles = new ArrayList<>();
+    muebles.add(paraLiving);
+    when(this.servicioCatalogo.ObtenerMueblesFiltrados(null, null, null, living, null))
+      .thenReturn(muebles);
+
+    ModelAndView modelAndView =
+      this.controladorCatalogoDeMuebles.catalogo(null, null, null, "Living", null);
+
+    verify(this.servicioCatalogo).ObtenerMueblesFiltrados(null, null, null, living, null);
+    assertThat(modelAndView.getModel().get("tipoDeAmbiente"), is("Living"));
+    assertThat(this.obtenerMueblesDelModel(modelAndView), contains(paraLiving));
+  }
+
+  @Test
   public void dadoQueNavegoAMuebles_cuandoLoHago_entoncesVeoLaVistaDeMuebles() throws Exception {
     ModelAndView modelAndView = this.controladorCatalogoDeMuebles.muebles();
-
     assertThat(modelAndView.getViewName(), is("muebles"));
   }
 
@@ -170,7 +215,6 @@ public class ControladorCatalogoDeMueblesTest {
   public void dadoQueNavegoACrearMueble_cuandoLoHago_entoncesVeoElFormularioDeCreacion()
     throws Exception {
     ModelAndView modelAndView = this.controladorCatalogoDeMuebles.crearMueble();
-
     assertThat(modelAndView.getViewName(), is("crearMueble"));
   }
 
@@ -206,12 +250,13 @@ public class ControladorCatalogoDeMueblesTest {
   }
 
   private ModelAndView cuandoNavegoAlCatalogo(String estilo, String precioMaximo) {
-    return this.controladorCatalogoDeMuebles.catalogo(estilo, precioMaximo);
+    return this.controladorCatalogoDeMuebles.catalogo(estilo, precioMaximo, null, null, null);
   }
 
   private void dadoQueElCatalogoCumpleCon(Estilo estilo, Double precioMaximo, List<Mueble> muebles)
     throws Exception {
-    when(this.servicioCatalogo.ObtenerMueblesQueCumplan(estilo, precioMaximo)).thenReturn(muebles);
+    when(this.servicioCatalogo.ObtenerMueblesFiltrados(null, precioMaximo, estilo, null, null))
+      .thenReturn(muebles);
   }
 
   private static Mueble unMueble(String nombre, double precio, Estilo estilo) {

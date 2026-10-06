@@ -4,6 +4,7 @@ import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.ServicioCatalogo;
 import com.tallerwebi.dominio.ServicioRediseño;
+import com.tallerwebi.dominio.TipoDeAmbiente;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ControladorRediseno {
 
   private static final String PRESUPUESTO = "presupuesto";
   private static final String ESTILO = "estilo";
+  private static final String TIPO_DE_AMBIENTE = "tipoDeAmbiente";
 
   @Autowired
   public ControladorRediseno(ServicioCatalogo servicioCatalogo, ServicioRediseño servicioRediseño) {
@@ -42,7 +44,8 @@ public class ControladorRediseno {
   @RequestMapping(path = "/muebles/redisenar", method = RequestMethod.POST)
   public ModelAndView generarPropuesta(
     @RequestParam(name = ESTILO, required = false) String estilo,
-    @RequestParam(name = PRESUPUESTO, required = false) String presupuesto
+    @RequestParam(name = PRESUPUESTO, required = false) String presupuesto,
+    @RequestParam(name = TIPO_DE_AMBIENTE, required = false) String tipoDeAmbiente
   ) {
     FiltroDeMuebles propuesta;
 
@@ -52,21 +55,26 @@ public class ControladorRediseno {
       return this.redirectAlFormulario();
     }
 
-    return new ModelAndView("resultadosRediseno", this.modeloDelResultado(propuesta));
+    return new ModelAndView(
+      "resultadosRediseno",
+      this.modeloDelResultado(propuesta, this.tipoDeAmbiente(tipoDeAmbiente))
+    );
   }
 
   private ModelAndView redirectAlFormulario() {
     return new ModelAndView("redirect:/muebles/redisenar");
   }
 
-  private Map<String, Object> modeloDelResultado(FiltroDeMuebles propuesta) {
+  private Map<String, Object> modeloDelResultado(FiltroDeMuebles propuesta, TipoDeAmbiente tipo) {
     Map<String, Object> modelo = new ModelMap();
     modelo.put("propuesta", new DatosPropuesta(propuesta.getEstilo(), propuesta.getPrecioMaximo()));
+    modelo.put("tipoDeAmbiente", tipo == null ? null : tipo.getNombre());
     modelo.put("recomendacion", this.servicioRediseño.recomendar(propuesta.getEstilo()));
     List<Mueble> muebles = null;
     try {
       muebles =
         this.servicioCatalogo.ObtenerMueblesQueCumplan(
+            tipo,
             propuesta.getEstilo(),
             propuesta.getPrecioMaximo()
           );
@@ -76,5 +84,12 @@ public class ControladorRediseno {
     modelo.put("muebles", muebles);
 
     return modelo;
+  }
+
+  private TipoDeAmbiente tipoDeAmbiente(String nombre) {
+    if (nombre == null || nombre.trim().isEmpty()) {
+      return null;
+    }
+    return new TipoDeAmbiente(nombre);
   }
 }
