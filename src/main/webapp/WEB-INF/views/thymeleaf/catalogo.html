@@ -11,7 +11,7 @@
       <div>
         <span class="hb-eyebrow">Catálogo</span>
         <h1>Catálogo de muebles</h1>
-        <p>Todos los muebles disponibles. Filtrá por estilo y por precio para encontrar lo que buscás.</p>
+        <p>Todos los muebles disponibles. Filtrá por estilo, tipo de ambiente y precio, o ordená por precio.</p>
       </div>
     </header>
 
@@ -19,7 +19,7 @@
       <div class="card-body p-4">
         <form th:action="@{/catalogo}" method="get">
           <div class="row g-3 align-items-end">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label for="estilo" class="form-label">Estilo</label>
               <select id="estilo" name="estilo" class="form-select">
                 <option value="">Todos los estilos</option>
@@ -27,7 +27,26 @@
                   th:selected="${estilo == estiloSeleccionado}">Retro</option>
               </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+              <label for="tipoDeAmbiente" class="form-label">Tipo de ambiente</label>
+              <select id="tipoDeAmbiente" name="tipoDeAmbiente" class="form-select">
+                <option value="">Todos los ambientes</option>
+                <option value="Living" th:selected="${tipoDeAmbiente == 'Living'}">Living</option>
+                <option value="Habitación" th:selected="${tipoDeAmbiente == 'Habitación'}">Habitación</option>
+                <option value="Pasillo" th:selected="${tipoDeAmbiente == 'Pasillo'}">Pasillo</option>
+                <option value="Cocina" th:selected="${tipoDeAmbiente == 'Cocina'}">Cocina</option>
+                <option value="Comedor" th:selected="${tipoDeAmbiente == 'Comedor'}">Comedor</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="precioMin" class="form-label">Precio mínimo</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" id="precioMin" name="precioMin" class="form-control" min="0"
+                  placeholder="Sin mínimo" th:value="${precioMinimo}">
+              </div>
+            </div>
+            <div class="col-md-3">
               <label for="precioMax" class="form-label">Precio máximo</label>
               <div class="input-group">
                 <span class="input-group-text">$</span>
@@ -35,7 +54,15 @@
                   placeholder="Sin límite" th:value="${precioMaximo}">
               </div>
             </div>
-            <div class="col-md-4 d-flex gap-2">
+            <div class="col-md-3">
+              <label for="orden" class="form-label">Ordenar por precio</label>
+              <select id="orden" name="orden" class="form-select">
+                <option value="">Sin ordenar</option>
+                <option value="PRECIO_ASC" th:selected="${orden == T(com.tallerwebi.dominio.OrdenDeMuebles).PRECIO_ASC}">Menor a mayor</option>
+                <option value="PRECIO_DESC" th:selected="${orden == T(com.tallerwebi.dominio.OrdenDeMuebles).PRECIO_DESC}">Mayor a menor</option>
+              </select>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
               <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Filtrar</button>
               <a th:href="@{/catalogo}" class="btn btn-secondary">Limpiar filtros</a>
             </div>

@@ -1,9 +1,13 @@
 package com.tallerwebi.dominio;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Usuario {
@@ -16,6 +20,9 @@ public class Usuario {
   private String password;
   private String rol;
   private Boolean activo = false;
+
+  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Ambiente> ambientes = new ArrayList<>();
 
   public Long getId() {
     return id;
@@ -59,5 +66,14 @@ public class Usuario {
 
   public void activar() {
     activo = true;
+  }
+
+  public List<Ambiente> getAmbientes() {
+    return ambientes;
+  }
+
+  public void agregarAmbiente(Ambiente ambiente) {
+    ambiente.setUsuario(this);
+    this.ambientes.add(ambiente);
   }
 }

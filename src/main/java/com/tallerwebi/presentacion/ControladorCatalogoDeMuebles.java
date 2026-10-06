@@ -3,6 +3,7 @@ package com.tallerwebi.presentacion;
 import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.Mueble;
 import com.tallerwebi.dominio.ServicioCatalogo;
+import com.tallerwebi.dominio.TipoDeAmbiente;
 import com.tallerwebi.dominio.excepcion.MuebleNoEncontrado;
 import com.tallerwebi.dominio.excepcion.PresupuestoNegativoException;
 import com.tallerwebi.presentacion.excepcion.FiltroDeMueblesInvalidoException;
@@ -30,12 +31,16 @@ public class ControladorCatalogoDeMuebles {
   @RequestMapping(path = "/catalogo", method = RequestMethod.GET)
   public ModelAndView catalogo(
     @RequestParam(name = "estilo", required = false) String estilo,
-    @RequestParam(name = "precioMax", required = false) String precioMaximo
+    @RequestParam(name = "precioMax", required = false) String precioMaximo,
+    @RequestParam(name = "precioMin", required = false) String precioMinimo,
+    @RequestParam(name = "tipoDeAmbiente", required = false) String tipoDeAmbiente,
+    @RequestParam(name = "orden", required = false) String orden
   ) {
     FiltroDeMuebles filtro;
 
     try {
-      filtro = FiltroDeMuebles.delCatalogo(estilo, precioMaximo);
+      filtro =
+        FiltroDeMuebles.delCatalogo(estilo, precioMaximo, precioMinimo, tipoDeAmbiente, orden);
     } catch (FiltroDeMueblesInvalidoException e) {
       return new ModelAndView("redirect:/catalogo");
     }
@@ -74,13 +79,20 @@ public class ControladorCatalogoDeMuebles {
     modelo.put("estilos", Estilo.values());
     modelo.put("estiloSeleccionado", filtro.getEstilo());
     modelo.put("precioMaximo", filtro.getPrecioMaximo());
+    modelo.put("precioMinimo", filtro.getPrecioMinimo());
+    modelo.put("tipoDeAmbiente", filtro.getTipoDeAmbiente());
+    modelo.put("orden", filtro.getOrden());
     List<Mueble> muebles = null;
+    TipoDeAmbiente tipoDeAmbiente = this.aTipoDeAmbiente(filtro.getTipoDeAmbiente());
 
     try {
       muebles =
-        this.servicioCatalogo.ObtenerMueblesQueCumplan(
+        this.servicioCatalogo.ObtenerMueblesFiltrados(
+            filtro.getPrecioMinimo(),
+            filtro.getPrecioMaximo(),
             filtro.getEstilo(),
-            filtro.getPrecioMaximo()
+            tipoDeAmbiente,
+            filtro.getOrden()
           );
     } catch (PresupuestoNegativoException e) {
       modelo.put("error", "El presupuesto no puede ser negativo");
@@ -88,5 +100,12 @@ public class ControladorCatalogoDeMuebles {
     modelo.put("muebles", muebles);
 
     return modelo;
+  }
+
+  private TipoDeAmbiente aTipoDeAmbiente(String nombre) {
+    if (nombre == null || nombre.trim().isEmpty()) {
+      return null;
+    }
+    return new TipoDeAmbiente(nombre);
   }
 }
