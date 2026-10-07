@@ -2,7 +2,7 @@ const CAMPO_ANCHO = "input[name$='.ancho']";
 const CAMPO_PROFUNDIDAD = "input[name$='.profundidad']";
 const CAMPOS_DE_MEDIDA = `${CAMPO_ANCHO}, ${CAMPO_PROFUNDIDAD}`;
 
-export function conectarAutocompletado(contenedor) {
+export function conectarAutocompletado(contenedor, selectorDelDisparador = "select[data-categoria]") {
   contenedor.addEventListener("input", (evento) => {
     if (evento.target.matches(CAMPOS_DE_MEDIDA)) {
       evento.target.dataset.editadoAMano = "true";
@@ -10,7 +10,7 @@ export function conectarAutocompletado(contenedor) {
   });
 
   contenedor.addEventListener("change", (evento) => {
-    if (!evento.target.matches("select[data-categoria]")) {
+    if (!evento.target.matches(selectorDelDisparador)) {
       return;
     }
     const selector = evento.target;

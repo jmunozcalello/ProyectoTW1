@@ -43,6 +43,57 @@
         </fieldset>
 
         <fieldset class="mb-4">
+          <legend class="h5">Obstáculos fijos</legend>
+
+          <p class="text-muted">
+            Radiadores, tomas de corriente u otros elementos fijos de los muros. La posición se mide
+            desde la izquierda en los muros superior e inferior, y desde arriba en el derecho y el
+            izquierdo.
+          </p>
+
+          <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th scope="col">Tipo</th>
+                <th scope="col">Muro</th>
+                <th scope="col">Posición (m)</th>
+                <th scope="col">Ancho (m)</th>
+                <th scope="col">Profundidad (m)</th>
+                <th scope="col"><span class="visually-hidden">Quitar</span></th>
+              </tr>
+            </thead>
+            <tbody id="filas-obstaculos"></tbody>
+          </table>
+          </div>
+
+          <template id="plantilla-obstaculo">
+            <tr>
+              <td>
+                <select class="form-select" name="__TIPO__" data-medidas-sugeridas>
+                  <option th:each="tipo : ${tiposDeObstaculo}" th:value="${tipo}" th:text="${tipo.nombre}"
+                    th:attr="data-ancho=${tipo.anchoSugerido},data-profundidad=${tipo.profundidadSugerida}">Radiador</option>
+                </select>
+              </td>
+              <td>
+                <select class="form-select" name="__MURO__">
+                  <option th:each="muro : ${muros}" th:value="${muro}"
+                    th:text="${#strings.capitalize(muro.nombre)}">Superior</option>
+                </select>
+              </td>
+              <td><input type="number" step="0.01" min="0" class="form-control" name="__POSICION__" required></td>
+              <td><input type="number" step="0.01" min="0" class="form-control" name="__ANCHO__"></td>
+              <td><input type="number" step="0.01" min="0" class="form-control" name="__PROFUNDIDAD__"></td>
+              <td><button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button></td>
+            </tr>
+          </template>
+
+          <button type="button" id="agregar-obstaculo" class="btn btn-outline-primary">
+            Agregar obstáculo
+          </button>
+        </fieldset>
+
+        <fieldset class="mb-4">
           <legend class="h5">Muebles cargados</legend>
 
           <p class="text-muted">
@@ -106,13 +157,17 @@
   <footer th:replace="~{fragments/layout :: footer}"></footer>
 
   <script>
-    // Renumera los indices de "muebles[n]" para que al borrar una fila el POST no deje huecos.
-    function renumerar() {
-      document.querySelectorAll('#filas-muebles tr').forEach(function (fila, indice) {
+    // Renumera los indices de "prefijo[n]" para que al borrar una fila el POST no deje huecos.
+    function renumerar(cuerpo, prefijo) {
+      cuerpo.querySelectorAll('tr').forEach(function (fila, indice) {
         fila.querySelectorAll('input, select').forEach(function (campo) {
-          campo.name = campo.name.replace(/muebles\[\d+\]/, 'muebles[' + indice + ']');
+          campo.name = campo.name.replace(new RegExp(prefijo + '\\[\\d+\\]'), prefijo + '[' + indice + ']');
         });
       });
+    }
+
+    function renumerarMuebles() {
+      renumerar(document.getElementById('filas-muebles'), 'muebles');
     }
 
     document.getElementById('agregar-mueble').addEventListener('click', function () {
@@ -131,11 +186,36 @@
     document.getElementById('filas-muebles').addEventListener('click', function (evento) {
       if (evento.target.classList.contains('btn-outline-danger')) {
         evento.target.closest('tr').remove();
-        renumerar();
+        renumerarMuebles();
       }
     });
 
-    document.getElementById('filas-muebles').addEventListener('input', renumerar);
+    document.getElementById('filas-muebles').addEventListener('input', renumerarMuebles);
+
+    document.getElementById('agregar-obstaculo').addEventListener('click', function () {
+      var cuerpo = document.getElementById('filas-obstaculos');
+      var prefijo = 'obstaculos[' + cuerpo.querySelectorAll('tr').length + ']';
+      var html = document.getElementById('plantilla-obstaculo').innerHTML
+        .replaceAll('__TIPO__', prefijo + '.tipo')
+        .replaceAll('__MURO__', prefijo + '.muro')
+        .replaceAll('__POSICION__', prefijo + '.posicion')
+        .replaceAll('__ANCHO__', prefijo + '.ancho')
+        .replaceAll('__PROFUNDIDAD__', prefijo + '.profundidad');
+      var contenedor = document.createElement('tbody');
+      contenedor.innerHTML = html;
+      var fila = contenedor.firstElementChild;
+      cuerpo.appendChild(fila);
+      // Precarga las medidas sugeridas del tipo que viene elegido por defecto.
+      fila.querySelector('select[data-medidas-sugeridas]')
+        .dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    document.getElementById('filas-obstaculos').addEventListener('click', function (evento) {
+      if (evento.target.classList.contains('btn-outline-danger')) {
+        evento.target.closest('tr').remove();
+        renumerar(document.getElementById('filas-obstaculos'), 'obstaculos');
+      }
+    });
   </script>
 
   <script type="module" th:src="@{/js/dimensiones.js}"></script>

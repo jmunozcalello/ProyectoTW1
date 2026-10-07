@@ -443,6 +443,39 @@ h1, h2, h3, h4, h5, h6,
     linear-gradient(0deg, transparent 45%, #d8cec2 46%, #d8cec2 54%, transparent 55%);
 }
 
+.plano-mueble-conflicto .plano-mueble-cuerpo {
+  fill: #f8d7d3;
+  stroke: #b42318;
+  stroke-width: 0.07;
+}
+
+.plano-mueble-conflicto .plano-mueble-nombre {
+  fill: #8f1d12;
+}
+
+.hb-chip-alerta {
+  background: #fde7e4;
+  color: #8f1d12;
+}
+
+.hb-legend-no-disponible,
+.hb-legend-conflicto {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 0.15rem;
+}
+
+.hb-legend-no-disponible {
+  border: 1px solid #8a817a;
+  background: repeating-linear-gradient(45deg, #e6e1dc 0 2px, #8a817a 2px 3px);
+}
+
+.hb-legend-conflicto {
+  border: 2px solid #b42318;
+  background: #f8d7d3;
+}
+
 @media (max-width: 576px) {
   .hb-section-heading {
     align-items: flex-start;
