@@ -17,6 +17,9 @@ public class ServicioPlano2DImpl implements ServicioPlano2D {
     if (ancho == null || ancho <= 0) {
       throw new ValidacionException("El ancho del ambiente debe ser mayor a 0");
     }
+    for (Obstaculo obstaculo : ambiente.getObstaculos()) {
+      obstaculo.validarEn(ambiente);
+    }
 
     List<MuebleUbicado> mueblesUbicados = new ArrayList<>();
     List<Mueble> mueblesExcluidos = new ArrayList<>();
@@ -66,8 +69,12 @@ public class ServicioPlano2DImpl implements ServicioPlano2D {
     Double ambienteAncho = ambiente.getAncho();
     Double ambienteLargo = ambiente.getLargo();
 
-    Boolean noSeSaleEnX = (ubicacionX >= 0) && (ubicacionX + muebleAncho <= ambienteAncho);
-    Boolean noSeSaleEnY = (ubicacionY >= 0) && (ubicacionY + muebleLargo <= ambienteLargo);
+    Boolean noSeSaleEnX =
+      (ubicacionX >= -ZonaNoDisponible.TOLERANCIA) &&
+      (ubicacionX + muebleAncho <= ambienteAncho + ZonaNoDisponible.TOLERANCIA);
+    Boolean noSeSaleEnY =
+      (ubicacionY >= -ZonaNoDisponible.TOLERANCIA) &&
+      (ubicacionY + muebleLargo <= ambienteLargo + ZonaNoDisponible.TOLERANCIA);
 
     return noSeSaleEnX && noSeSaleEnY;
   }
@@ -90,15 +97,38 @@ public class ServicioPlano2DImpl implements ServicioPlano2D {
     private final Ambiente ambiente;
     private int tramoActual = MURO_SUPERIOR;
     private Double posicionEnElTramo = 0.0;
+    private final List<ZonaNoDisponible> zonasNoDisponibles;
 
     public RecorridoPerimetral(Ambiente ambiente) {
       this.ambiente = ambiente;
+      this.zonasNoDisponibles =
+        ambiente
+          .getObstaculos()
+          .stream()
+          .map(obstaculo -> obstaculo.zonaNoDisponible(ambiente))
+          .toList();
     }
 
     public MuebleUbicado ubicar(Mueble mueble) {
       int tramoInicial = tramoActual;
-      Double recorridoEnElTramo = posicionEnElTramo;
+      Double posicionInicial = posicionEnElTramo;
+      MuebleUbicado ubicado = recorrer(mueble, true);
+      if (ubicado == null) {
+        volverA(tramoInicial, posicionInicial);
+        ubicado = recorrer(mueble, false);
+      }
+      if (ubicado == null) {
+        volverA(tramoInicial, posicionInicial);
+      }
+      return ubicado;
+    }
 
+    /**
+     * Busca desde el cursor la primera posicion donde entra el mueble. Si evitarObstaculos es
+     * false, ignora las zonas no disponibles y marca el mueble en conflicto cuando pisa alguna.
+     */
+    private MuebleUbicado recorrer(Mueble mueble, boolean evitarObstaculos) {
+      Double recorridoEnElTramo = posicionEnElTramo;
       while (tramoActual < CANTIDAD_DE_TRAMOS) {
         if (sigueAdentroDelTramo(recorridoEnElTramo, mueble)) {
           MuebleUbicado candidato = new MuebleUbicado(
@@ -107,17 +137,55 @@ public class ServicioPlano2DImpl implements ServicioPlano2D {
             coordenadaYDelTramo(mueble, recorridoEnElTramo)
           );
           if (estaDentroDelPerimetro(candidato, ambiente)) {
-            avanzarEnElTramo(mueble, recorridoEnElTramo);
-            return candidato;
+            ZonaNoDisponible zona = zonaPisadaPor(candidato);
+            if (zona == null || !evitarObstaculos) {
+              avanzarEnElTramo(mueble, recorridoEnElTramo);
+              return new MuebleUbicado(
+                mueble,
+                candidato.getPosicionX(),
+                candidato.getPosicionY(),
+                zona != null
+              );
+            }
+            Double despuesDeLaZona = recorridoDespuesDe(zona, mueble);
+            if (avanzaEnElTramo(recorridoEnElTramo, despuesDeLaZona)) {
+              recorridoEnElTramo = despuesDeLaZona;
+              continue;
+            }
           }
         }
         tramoActual++;
         recorridoEnElTramo = inicioDelTramo(mueble);
       }
-
-      tramoActual = tramoInicial;
-      posicionEnElTramo = recorridoEnElTramo;
       return null;
+    }
+
+    private void volverA(int tramo, Double posicion) {
+      tramoActual = tramo;
+      posicionEnElTramo = posicion;
+    }
+
+    private ZonaNoDisponible zonaPisadaPor(MuebleUbicado candidato) {
+      return zonasNoDisponibles
+        .stream()
+        .filter(zona -> zona.seSolapaCon(candidato))
+        .findFirst()
+        .orElse(null);
+    }
+
+    /** Posicion del cursor que deja al mueble justo despues de la zona, en el sentido del tramo. */
+    private Double recorridoDespuesDe(ZonaNoDisponible zona, Mueble mueble) {
+      return switch (tramoActual) {
+        case MURO_DERECHO -> zona.getPosicionY() + zona.getLargo();
+        case MURO_INFERIOR -> ambiente.getAncho() - zona.getPosicionX();
+        case MURO_IZQUIERDO -> zona.getPosicionY() - mueble.getLargo();
+        default -> zona.getPosicionX() + zona.getAncho();
+      };
+    }
+
+    /** Evita bucles: solo se salta si el cursor avanza de verdad en el sentido del tramo. */
+    private Boolean avanzaEnElTramo(Double desde, Double hasta) {
+      return (hasta - desde) * sentidoDelTramo() > 0;
     }
 
     private Double extensionEnElTramo(Mueble mueble) {
@@ -158,7 +226,10 @@ public class ServicioPlano2DImpl implements ServicioPlano2D {
     }
 
     private Boolean sigueAdentroDelTramo(Double recorridoEnElTramo, Mueble mueble) {
-      return (recorridoEnElTramo - finDelTramo(mueble)) * sentidoDelTramo() <= 0;
+      return (
+        (recorridoEnElTramo - finDelTramo(mueble)) * sentidoDelTramo() <=
+        ZonaNoDisponible.TOLERANCIA
+      );
     }
 
     private Double coordenadaXDelTramo(Mueble mueble, Double avance) {
@@ -181,7 +252,9 @@ public class ServicioPlano2DImpl implements ServicioPlano2D {
 
     private void avanzarEnElTramo(Mueble mueble, Double recorridoEnElTramo) {
       Double nuevoRecorrido = recorridoEnElTramo + sentidoDelTramo() * extensionEnElTramo(mueble);
-      if ((nuevoRecorrido - finDelTramo(mueble)) * sentidoDelTramo() > 0) {
+      if (
+        (nuevoRecorrido - finDelTramo(mueble)) * sentidoDelTramo() > ZonaNoDisponible.TOLERANCIA
+      ) {
         tramoActual++;
         posicionEnElTramo = inicioDelTramo(mueble);
         return;
