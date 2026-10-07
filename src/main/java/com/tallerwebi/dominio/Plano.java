@@ -2,6 +2,7 @@ package com.tallerwebi.dominio;
 
 import jakarta.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Plano {
@@ -45,6 +46,20 @@ public class Plano {
 
   public List<MuebleUbicado> getMuebles() {
     return muebles;
+  }
+
+  public List<MuebleUbicado> getMueblesEnConflicto() {
+    return muebles.stream().filter(MuebleUbicado::isEnConflicto).toList();
+  }
+
+  public String descripcionDelConflicto(MuebleUbicado ubicado) {
+    String obstaculos = ambiente
+      .getObstaculos()
+      .stream()
+      .filter(obstaculo -> obstaculo.colisionaCon(ubicado, ambiente))
+      .map(Obstaculo::getDescripcion)
+      .collect(Collectors.joining(", "));
+    return ubicado.getMueble().getNombre() + " choca con " + obstaculos;
   }
 
   public List<Mueble> getMueblesExcluidos() {
