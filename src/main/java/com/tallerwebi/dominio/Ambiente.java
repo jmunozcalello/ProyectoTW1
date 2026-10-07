@@ -1,11 +1,15 @@
 package com.tallerwebi.dominio;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Ambiente {
@@ -24,6 +28,10 @@ public class Ambiente {
   @ManyToOne
   @JoinColumn(name = "usuario_id")
   private Usuario usuario;
+
+  @ElementCollection
+  @CollectionTable(name = "ambiente_obstaculos", joinColumns = @JoinColumn(name = "ambiente_id"))
+  private List<Obstaculo> obstaculos = new ArrayList<>();
 
   public Ambiente() {}
 
@@ -64,5 +72,13 @@ public class Ambiente {
 
   public void setUsuario(Usuario usuario) {
     this.usuario = usuario;
+  }
+
+  public List<Obstaculo> getObstaculos() {
+    return obstaculos;
+  }
+
+  public void agregarObstaculo(Obstaculo obstaculo) {
+    this.obstaculos.add(obstaculo);
   }
 }
