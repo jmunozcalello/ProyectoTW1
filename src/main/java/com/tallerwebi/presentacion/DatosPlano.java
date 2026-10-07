@@ -13,6 +13,7 @@ public class DatosPlano {
   private Double ancho;
   private Double largo;
   private List<DatosMueble> muebles = new ArrayList<>();
+  private List<DatosObstaculo> obstaculos = new ArrayList<>();
 
   public DatosPlano() {}
 
@@ -38,5 +39,13 @@ public class DatosPlano {
 
   public void setMuebles(List<DatosMueble> muebles) {
     this.muebles = muebles;
+  }
+
+  public List<DatosObstaculo> getObstaculos() {
+    return obstaculos;
+  }
+
+  public void setObstaculos(List<DatosObstaculo> obstaculos) {
+    this.obstaculos = obstaculos;
   }
 }

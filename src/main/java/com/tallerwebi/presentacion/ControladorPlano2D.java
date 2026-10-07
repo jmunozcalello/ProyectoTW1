@@ -2,9 +2,11 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.Ambiente;
 import com.tallerwebi.dominio.Mueble;
+import com.tallerwebi.dominio.Muro;
 import com.tallerwebi.dominio.Plano;
 import com.tallerwebi.dominio.ServicioCategoriaDeMueble;
 import com.tallerwebi.dominio.ServicioPlano2D;
+import com.tallerwebi.dominio.TipoDeObstaculo;
 import com.tallerwebi.dominio.excepcion.ValidacionException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +35,11 @@ public class ControladorPlano2D {
 
   @RequestMapping(path = "/plano/ambiente", method = RequestMethod.GET)
   public ModelAndView irAConfigurarAmbiente() {
-    return new ModelAndView(
-      "ambiente-config",
-      "categorias",
-      servicioCategoriaDeMueble.obtenerCategorias()
-    );
+    Map<String, Object> modelo = new ModelMap();
+    modelo.put("categorias", servicioCategoriaDeMueble.obtenerCategorias());
+    modelo.put("tiposDeObstaculo", TipoDeObstaculo.values());
+    modelo.put("muros", Muro.values());
+    return new ModelAndView("ambiente-config", modelo);
   }
 
   public ModelAndView generarPlano(Ambiente ambiente, List<Mueble> muebles) {
@@ -64,6 +66,11 @@ public class ControladorPlano2D {
   @RequestMapping(path = "/plano/generar", method = RequestMethod.POST)
   public ModelAndView generarPlanoDesdeFormulario(DatosPlano datosDelFormulario) {
     Ambiente ambiente = new Ambiente(datosDelFormulario.getAncho(), datosDelFormulario.getLargo());
+    for (DatosObstaculo datosObstaculo : datosDelFormulario.getObstaculos()) {
+      if (!datosObstaculo.estaVacio()) {
+        ambiente.agregarObstaculo(datosObstaculo.aObstaculo());
+      }
+    }
     List<Mueble> muebles = new ArrayList<>();
     try {
       for (DatosMueble datosMueble : datosDelFormulario.getMuebles()) {
