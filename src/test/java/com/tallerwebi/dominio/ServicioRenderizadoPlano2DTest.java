@@ -281,6 +281,20 @@ public class ServicioRenderizadoPlano2DTest {
   }
 
   @Test
+  public void deberiaSeguirDesdeDondeQuedoElRecorridoCuandoUnMuebleSeExcluye() {
+    // preparacion
+    Mueble placard = new Mueble("Placard", 1.5, 3.0);
+    Mueble cama = new Mueble("Cama", 3.0, 1.5);
+    Mueble mesa = new Mueble("Mesa", 0.5, 0.5);
+
+    // ejecucion
+    Plano plano = servicioPlano2D.generarPlano(ambiente, List.of(placard, cama, mesa));
+
+    // validacion
+    thenElUltimoMuebleEstaEnLaPosicion(List.of(1.5, 0.0), plano);
+  }
+
+  @Test
   public void deberiaExcluirMueblesDelResultadoCuandoElMuebleExcedeElEspacioDisponible() {
     // preparacion
     Ambiente ambiente = new Ambiente(2.0, 2.0);

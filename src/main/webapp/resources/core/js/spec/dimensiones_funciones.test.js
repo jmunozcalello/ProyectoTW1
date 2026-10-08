@@ -134,3 +134,26 @@ describe("Autocompletado de dimensiones por categoría", function() {
     expect(ancho(0).value).toBe("1.4");
   });
 });
+
+describe("Autocompletado de medidas sugeridas de obstáculos", function() {
+  it("al elegir un tipo de obstáculo completa sus medidas sugeridas", function() {
+    const documento = new JSDOM(`
+      <table><tbody id="filas-obstaculos"><tr>
+        <td><select data-medidas-sugeridas>
+          <option value="RADIADOR" data-ancho="0.8" data-profundidad="0.15">Radiador</option>
+          <option value="TOMA_DE_CORRIENTE" data-ancho="0.15" data-profundidad="0.1">Toma de corriente</option>
+        </select></td>
+        <td><input type="number" name="obstaculos[0].ancho"></td>
+        <td><input type="number" name="obstaculos[0].profundidad"></td>
+      </tr></tbody></table>`).window.document;
+    const filas = documento.getElementById("filas-obstaculos");
+    conectarAutocompletado(filas, "select[data-medidas-sugeridas]");
+
+    const selector = filas.querySelector("select");
+    selector.selectedIndex = 1;
+    selector.dispatchEvent(new documento.defaultView.Event("change", { bubbles: true }));
+
+    expect(filas.querySelector("input[name$='.ancho']").value).toBe("0.15");
+    expect(filas.querySelector("input[name$='.profundidad']").value).toBe("0.1");
+  });
+});

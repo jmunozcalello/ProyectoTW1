@@ -17,11 +17,17 @@ public class MuebleUbicado {
 
   private Double coordenadaX;
   private Double coordenadaY;
+  private boolean enConflicto;
 
   public MuebleUbicado(Mueble mueble, Double coordenadaX, Double coordenadaY) {
+    this(mueble, coordenadaX, coordenadaY, false);
+  }
+
+  public MuebleUbicado(Mueble mueble, Double coordenadaX, Double coordenadaY, boolean enConflicto) {
     this.mueble = mueble;
     this.coordenadaX = coordenadaX;
     this.coordenadaY = coordenadaY;
+    this.enConflicto = enConflicto;
   }
 
   public MuebleUbicado() {}
@@ -36,5 +42,9 @@ public class MuebleUbicado {
 
   public Double getPosicionY() {
     return coordenadaY;
+  }
+
+  public boolean isEnConflicto() {
+    return enConflicto;
   }
 }

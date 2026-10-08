@@ -23,7 +23,7 @@
       <li class="list-group-item disabled">5 · Resumen</li>
     </ol>
 
-      <form th:action="@{/plano/generar}" method="post">
+      <form th:action="@{/plano/obstaculos}" method="post">
 
         <fieldset class="mb-4">
           <legend class="h5">Dimensiones del ambiente</legend>
@@ -106,13 +106,17 @@
   <footer th:replace="~{fragments/layout :: footer}"></footer>
 
   <script>
-    // Renumera los indices de "muebles[n]" para que al borrar una fila el POST no deje huecos.
-    function renumerar() {
-      document.querySelectorAll('#filas-muebles tr').forEach(function (fila, indice) {
+    // Renumera los indices de "prefijo[n]" para que al borrar una fila el POST no deje huecos.
+    function renumerar(cuerpo, prefijo) {
+      cuerpo.querySelectorAll('tr').forEach(function (fila, indice) {
         fila.querySelectorAll('input, select').forEach(function (campo) {
-          campo.name = campo.name.replace(/muebles\[\d+\]/, 'muebles[' + indice + ']');
+          campo.name = campo.name.replace(new RegExp(prefijo + '\\[\\d+\\]'), prefijo + '[' + indice + ']');
         });
       });
+    }
+
+    function renumerarMuebles() {
+      renumerar(document.getElementById('filas-muebles'), 'muebles');
     }
 
     document.getElementById('agregar-mueble').addEventListener('click', function () {
@@ -131,11 +135,11 @@
     document.getElementById('filas-muebles').addEventListener('click', function (evento) {
       if (evento.target.classList.contains('btn-outline-danger')) {
         evento.target.closest('tr').remove();
-        renumerar();
+        renumerarMuebles();
       }
     });
 
-    document.getElementById('filas-muebles').addEventListener('input', renumerar);
+    document.getElementById('filas-muebles').addEventListener('input', renumerarMuebles);
   </script>
 
   <script type="module" th:src="@{/js/dimensiones.js}"></script>

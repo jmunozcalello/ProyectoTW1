@@ -33,6 +33,15 @@
             No hay mobiliario para distribuir
         </p>
 
+        <div th:if="${not #lists.isEmpty(plano.mueblesEnConflicto)}" class="alert alert-warning" role="alert">
+            <strong>Algunos muebles quedaron sobre obstáculos fijos.</strong>
+            No había lugar libre en los muros para ubicarlos:
+            <ul class="mb-0">
+                <li th:each="ubicado : ${plano.mueblesEnConflicto}"
+                    th:text="${plano.descripcionDelConflicto(ubicado)}">Sofa choca con Radiador (muro derecho)</li>
+            </ul>
+        </div>
+
         <section class="hb-plano-section mb-4">
             <div class="hb-section-heading">
                 <div>
@@ -50,6 +59,14 @@
                     <span class="hb-chip hb-chip-salvia"><i class="bi bi-check-circle"></i>
                 <span th:text="${#lists.size(plano.muebles)}">2</span> ubicados
               </span>
+                    <span th:if="${not #lists.isEmpty(plano.ambiente.obstaculos)}" class="hb-chip">
+                        <i class="bi bi-slash-square"></i>
+                        <span th:text="${#lists.size(plano.ambiente.obstaculos)}">1</span> obstáculos
+                    </span>
+                    <span th:if="${not #lists.isEmpty(plano.mueblesEnConflicto)}" class="hb-chip hb-chip-alerta">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span th:text="${#lists.size(plano.mueblesEnConflicto)}">1</span> en conflicto
+                    </span>
                 </div>
             </div>
 
@@ -60,7 +77,7 @@
                 </div>
 
                 <!-- El viewBox usa las mismas coordenadas en metros que devuelve el servicio. -->
-                <svg th:if="${not #lists.isEmpty(plano.muebles)}"
+                <svg th:if="${not #lists.isEmpty(plano.muebles) or not #lists.isEmpty(plano.ambiente.obstaculos)}"
                      th:attr="viewBox=${'-0.45 -0.45 ' + (plano.ambiente.ancho + 0.9) + ' ' + (plano.ambiente.largo + 0.9)}"
                      class="plano-svg w-100" preserveAspectRatio="xMidYMid meet"
                      role="img" aria-label="Plano 2D del ambiente con los muebles ubicados">
@@ -73,6 +90,11 @@
                             <rect width="0.22" height="0.22" fill="#f7f1e9"></rect>
                             <path d="M 0 0 L 0 0.22" stroke="#eadfd2" stroke-width="0.018"></path>
                         </pattern>
+                        <pattern id="plano-no-disponible" width="0.08" height="0.08" patternUnits="userSpaceOnUse"
+                                 patternTransform="rotate(45)">
+                            <rect width="0.08" height="0.08" fill="#e6e1dc"></rect>
+                            <path d="M 0 0 L 0 0.08" stroke="#8a817a" stroke-width="0.03"></path>
+                        </pattern>
                     </defs>
 
                     <rect x="0" y="0" fill="url(#plano-floor)"
@@ -83,7 +105,18 @@
                           th:attr="width=${plano.ambiente.ancho},height=${plano.ambiente.largo},
                          stroke-width=${0.12}"></rect>
 
-                    <g th:each="ubicado, i : ${plano.muebles}" class="plano-mueble">
+                    <g th:each="obstaculo : ${plano.ambiente.obstaculos}" class="plano-obstaculo"
+                       th:with="zona=${obstaculo.zonaNoDisponible(plano.ambiente)}">
+                        <title th:text="${obstaculo.descripcion}">Radiador (muro superior)</title>
+                        <rect fill="url(#plano-no-disponible)" stroke="#8a817a"
+                              th:attr="x=${zona.posicionX}, y=${zona.posicionY},
+                                       width=${zona.ancho}, height=${zona.largo}, stroke-width=${0.02}"></rect>
+                    </g>
+
+                    <g th:each="ubicado, i : ${plano.muebles}" class="plano-mueble"
+                       th:classappend="${ubicado.enConflicto} ? 'plano-mueble-conflicto'">
+                        <title th:if="${ubicado.enConflicto}"
+                               th:text="${plano.descripcionDelConflicto(ubicado)}">Sofa choca con Radiador (muro derecho)</title>
                         <rect class="plano-mueble-cuerpo" fill="#f6eae3" stroke="#a34e30"
                               th:attr="x=${ubicado.posicionX}, y=${ubicado.posicionY},
                            width=${ubicado.mueble.ancho}, height=${ubicado.mueble.largo}"></rect>
@@ -116,6 +149,8 @@
 
                 <div class="hb-plano-legend">
                     <span><i class="hb-legend-swatch"></i> Mueble ubicado</span>
+                    <span><i class="hb-legend-no-disponible"></i> Zona no disponible</span>
+                    <span><i class="hb-legend-conflicto"></i> Mueble en conflicto</span>
                     <span><i class="hb-legend-grid"></i> Cada cuadrícula representa 0,5 m</span>
                 </div>
             </div>
@@ -137,6 +172,7 @@
                         <th scope="col">Profundidad (m)</th>
                         <th scope="col">X (m)</th>
                         <th scope="col">Y (m)</th>
+                        <th scope="col">Estado</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -146,6 +182,10 @@
                         <td th:text="${#numbers.formatDecimal(ubicado.mueble.largo, 1, 1)}">0,9</td>
                         <td th:text="${#numbers.formatDecimal(ubicado.posicionX, 1, 1)}">0,0</td>
                         <td th:text="${#numbers.formatDecimal(ubicado.posicionY, 1, 1)}">0,0</td>
+                        <td>
+                            <span th:if="${ubicado.enConflicto}" class="badge text-bg-danger">En conflicto</span>
+                            <span th:unless="${ubicado.enConflicto}" class="badge text-bg-success">OK</span>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

@@ -1,5 +1,6 @@
 package com.tallerwebi.presentacion;
 
+import com.tallerwebi.dominio.Ambiente;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +14,20 @@ public class DatosPlano {
   private Double ancho;
   private Double largo;
   private List<DatosMueble> muebles = new ArrayList<>();
+  private List<DatosObstaculo> obstaculos = new ArrayList<>();
 
   public DatosPlano() {}
+
+  /** Arma el ambiente con sus obstáculos, salteando las filas de obstáculo sin medidas. */
+  public Ambiente aAmbiente() {
+    Ambiente ambiente = new Ambiente(ancho, largo);
+    for (DatosObstaculo datosObstaculo : obstaculos) {
+      if (!datosObstaculo.estaVacio()) {
+        ambiente.agregarObstaculo(datosObstaculo.aObstaculo());
+      }
+    }
+    return ambiente;
+  }
 
   public Double getAncho() {
     return ancho;
@@ -38,5 +51,13 @@ public class DatosPlano {
 
   public void setMuebles(List<DatosMueble> muebles) {
     this.muebles = muebles;
+  }
+
+  public List<DatosObstaculo> getObstaculos() {
+    return obstaculos;
+  }
+
+  public void setObstaculos(List<DatosObstaculo> obstaculos) {
+    this.obstaculos = obstaculos;
   }
 }
