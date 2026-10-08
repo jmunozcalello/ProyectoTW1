@@ -65,12 +65,7 @@ public class ControladorPlano2D {
    */
   @RequestMapping(path = "/plano/generar", method = RequestMethod.POST)
   public ModelAndView generarPlanoDesdeFormulario(DatosPlano datosDelFormulario) {
-    Ambiente ambiente = new Ambiente(datosDelFormulario.getAncho(), datosDelFormulario.getLargo());
-    for (DatosObstaculo datosObstaculo : datosDelFormulario.getObstaculos()) {
-      if (!datosObstaculo.estaVacio()) {
-        ambiente.agregarObstaculo(datosObstaculo.aObstaculo());
-      }
-    }
+    Ambiente ambiente = datosDelFormulario.aAmbiente();
     List<Mueble> muebles = new ArrayList<>();
     try {
       for (DatosMueble datosMueble : datosDelFormulario.getMuebles()) {
