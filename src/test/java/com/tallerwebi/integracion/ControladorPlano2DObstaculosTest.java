@@ -2,6 +2,7 @@ package com.tallerwebi.integracion;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,7 +37,7 @@ public class ControladorPlano2DObstaculosTest {
   }
 
   @Test
-  public void dadoQueAbroElFormularioDelPlano_entoncesPuedoCargarObstaculosConSusMedidasSugeridas()
+  public void dadoQueAbroElFormularioDelPlano_entoncesLosObstaculosSeCarganEnElPasoSiguiente()
     throws Exception {
     String html =
       this.mockMvc.perform(get("/plano/ambiente"))
@@ -45,13 +46,8 @@ public class ControladorPlano2DObstaculosTest {
         .getResponse()
         .getContentAsString();
 
-    assertThat(html, containsString("id=\"filas-obstaculos\""));
-    assertThat(html, containsString("value=\"RADIADOR\""));
-    assertThat(html, containsString("data-ancho=\"0.8\""));
-    assertThat(html, containsString("data-profundidad=\"0.15\""));
-    assertThat(html, containsString(">Toma de corriente</option>"));
-    assertThat(html, containsString(">Otro</option>"));
-    assertThat(html, containsString("value=\"IZQUIERDO\""));
+    assertThat(html, containsString("action=\"/plano/obstaculos\""));
+    assertThat(html, not(containsString("id=\"filas-obstaculos\"")));
   }
 
   @Test

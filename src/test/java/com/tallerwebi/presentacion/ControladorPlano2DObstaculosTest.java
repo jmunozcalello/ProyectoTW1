@@ -1,6 +1,5 @@
 package com.tallerwebi.presentacion;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
@@ -20,7 +19,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.web.servlet.ModelAndView;
 
 public class ControladorPlano2DObstaculosTest {
 
@@ -51,14 +49,6 @@ public class ControladorPlano2DObstaculosTest {
       List.of(0.5, 0.8, 0.15),
       List.of(obstaculo.getPosicion(), obstaculo.getAncho(), obstaculo.getProfundidad())
     );
-  }
-
-  @Test
-  public void deberiaOfrecerEnElFormularioLosTiposDeObstaculoYLosMuros() {
-    ModelAndView mav = controladorPlano2D.irAConfigurarAmbiente();
-
-    assertArrayEquals(TipoDeObstaculo.values(), (Object[]) mav.getModel().get("tiposDeObstaculo"));
-    assertArrayEquals(Muro.values(), (Object[]) mav.getModel().get("muros"));
   }
 
   @Test
