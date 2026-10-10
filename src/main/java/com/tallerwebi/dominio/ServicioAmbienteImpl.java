@@ -22,6 +22,11 @@ public class ServicioAmbienteImpl implements ServicioAmbiente {
   }
 
   @Override
+  public List<Ambiente> obtenerAmbientesDe(String email) {
+    return repositorioAmbiente.obtenerAmbientesDe(email);
+  }
+
+  @Override
   public Ambiente buscarAmbiente(Long id) {
     if (id == null) {
       return null;

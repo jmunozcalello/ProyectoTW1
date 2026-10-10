@@ -73,18 +73,17 @@ public class ControladorRediseno {
   }
 
   private Map<String, Object> modeloDelResultado(Long id, FiltroDeMuebles propuesta) {
-    
     Ambiente ambiente = this.servicioAmbiente.buscarAmbiente(id);
     TipoDeAmbiente tipo = ambiente.getTipoDeAmbiente();
     Map<String, Object> modelo = new ModelMap();
 
     modelo.put("propuesta", new DatosPropuesta(propuesta.getEstilo(), propuesta.getPrecioMaximo()));
     modelo.put(AMBIENTE, ambiente);
-    modelo.put("tipoDeAmbiente", tipo.getNombre());
+    modelo.put("tipoDeAmbiente", tipo == null ? null : tipo.getNombre());
     modelo.put("recomendacion", this.servicioRediseño.recomendar(propuesta.getEstilo()));
 
     List<Mueble> muebles = null;
-    
+
     try {
       muebles =
         this.servicioCatalogo.ObtenerMueblesQueCumplan(

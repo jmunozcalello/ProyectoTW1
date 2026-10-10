@@ -1,6 +1,7 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.ServicioAmbiente;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,9 +22,10 @@ public class ControladorAmbiente {
   }
 
   @RequestMapping(path = "/ambientes", method = RequestMethod.GET)
-  public ModelAndView ambientes() {
+  public ModelAndView ambientes(HttpServletRequest request) {
     Map<String, Object> modelo = new ModelMap();
-    modelo.put("ambientes", servicioAmbiente.obtenerAmbientes());
+    String email = (String) request.getSession().getAttribute("USUARIO_EMAIL");
+    modelo.put("ambientes", servicioAmbiente.obtenerAmbientesDe(email));
     return new ModelAndView("ambientes", modelo);
   }
 

@@ -37,6 +37,17 @@ public class ServicioAmbienteTest {
   }
 
   @Test
+  public void dadoUnEmail_cuandoPidoLosAmbientesDeEseUsuario_entoncesLosTraigoDelRepositorio() {
+    List<Ambiente> ambientes = new ArrayList<>();
+    ambientes.add(new Ambiente(4.0, 3.0, new TipoDeAmbiente("Habitación")));
+    when(this.repositorioAmbiente.obtenerAmbientesDe("test@unlam.edu.ar")).thenReturn(ambientes);
+
+    List<Ambiente> obtenidos = this.servicioAmbiente.obtenerAmbientesDe("test@unlam.edu.ar");
+
+    assertThat(obtenidos, contains(ambientes.get(0)));
+  }
+
+  @Test
   public void dadoUnId_cuandoBuscoElAmbiente_entoncesLoTraigoDelRepositorio() {
     Ambiente ambiente = new Ambiente(4.0, 3.0, new TipoDeAmbiente("Habitación"));
     when(this.repositorioAmbiente.buscarPorId(1L)).thenReturn(ambiente);

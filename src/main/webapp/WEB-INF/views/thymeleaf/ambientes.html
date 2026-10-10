@@ -31,6 +31,13 @@
                 <span th:text="${#numbers.formatDecimal(ambiente.ancho, 1, 0) + 'm x ' + #numbers.formatDecimal(ambiente.largo, 1, 0) + 'm'}">4m x 3m</span>
               </span>
             </p>
+            <ul th:if="${!#lists.isEmpty(ambiente.muebles)}" class="list-unstyled hb-lista-muebles">
+              <li th:each="mueble : ${ambiente.muebles}">
+                <i class="bi bi-diamond-fill"></i>
+                <a th:href="@{/mueble/{id}(id=${mueble.id})}" th:text="${mueble.nombre}">Cama</a>
+              </li>
+            </ul>
+            <p th:if="${#lists.isEmpty(ambiente.muebles)}" class="text-secondary">Sin muebles cargados todavía.</p>
             <a th:href="@{/ambientes/{id}(id=${ambiente.id})}" class="btn btn-primary">Ver ambiente</a>
           </div>
         </div>

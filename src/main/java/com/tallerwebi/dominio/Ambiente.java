@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,14 @@ public class Ambiente {
   @ElementCollection
   @CollectionTable(name = "ambiente_obstaculos", joinColumns = @JoinColumn(name = "ambiente_id"))
   private List<Obstaculo> obstaculos = new ArrayList<>();
+
+  @ManyToMany
+  @JoinTable(
+    name = "ambiente_muebles",
+    joinColumns = @JoinColumn(name = "ambiente_id"),
+    inverseJoinColumns = @JoinColumn(name = "mueble_id")
+  )
+  private List<Mueble> muebles = new ArrayList<>();
 
   public Ambiente() {}
 
@@ -80,5 +90,13 @@ public class Ambiente {
 
   public void agregarObstaculo(Obstaculo obstaculo) {
     this.obstaculos.add(obstaculo);
+  }
+
+  public List<Mueble> getMuebles() {
+    return muebles;
+  }
+
+  public void agregarMueble(Mueble mueble) {
+    this.muebles.add(mueble);
   }
 }

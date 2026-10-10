@@ -19,7 +19,7 @@ public class RepositorioAmbienteImpl implements RepositorioAmbiente {
 
   @Override
   public Ambiente buscarPorId(Long id) {
-    String query = "FROM Ambiente WHERE id = :id";
+    String query = "SELECT a FROM Ambiente a LEFT JOIN FETCH a.muebles WHERE a.id = :id";
     Ambiente ambiente =
       this.sessionFactory.getCurrentSession()
         .createQuery(query, Ambiente.class)
@@ -33,6 +33,18 @@ public class RepositorioAmbienteImpl implements RepositorioAmbiente {
     String query = "FROM Ambiente ORDER BY id";
     List<Ambiente> ambientes =
       this.sessionFactory.getCurrentSession().createQuery(query, Ambiente.class).getResultList();
+    return ambientes;
+  }
+
+  @Override
+  public List<Ambiente> obtenerAmbientesDe(String email) {
+    String query =
+      "SELECT a FROM Ambiente a LEFT JOIN FETCH a.muebles WHERE a.usuario.email = :email ORDER BY a.id";
+    List<Ambiente> ambientes =
+      this.sessionFactory.getCurrentSession()
+        .createQuery(query, Ambiente.class)
+        .setParameter("email", email)
+        .getResultList();
     return ambientes;
   }
 }

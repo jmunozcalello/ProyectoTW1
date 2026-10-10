@@ -1,5 +1,6 @@
 package com.tallerwebi.presentacion;
 
+import com.tallerwebi.dominio.ServicioAmbiente;
 import com.tallerwebi.dominio.ServicioLogin;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
@@ -17,10 +18,12 @@ import org.springframework.web.servlet.ModelAndView;
 public class ControladorLogin {
 
   private ServicioLogin servicioLogin;
+  private ServicioAmbiente servicioAmbiente;
 
   @Autowired
-  public ControladorLogin(ServicioLogin servicioLogin) {
+  public ControladorLogin(ServicioLogin servicioLogin, ServicioAmbiente servicioAmbiente) {
     this.servicioLogin = servicioLogin;
+    this.servicioAmbiente = servicioAmbiente;
   }
 
   @RequestMapping("/login")
@@ -41,6 +44,7 @@ public class ControladorLogin {
     );
     if (usuarioBuscado != null) {
       request.getSession().setAttribute("ROL", usuarioBuscado.getRol());
+      request.getSession().setAttribute("USUARIO_EMAIL", usuarioBuscado.getEmail());
       return new ModelAndView("redirect:/home");
     } else {
       Map<String, Object> model = new ModelMap();
@@ -72,8 +76,11 @@ public class ControladorLogin {
   }
 
   @RequestMapping(path = "/home", method = RequestMethod.GET)
-  public ModelAndView irAHome() {
-    return new ModelAndView("home");
+  public ModelAndView irAHome(HttpServletRequest request) {
+    Map<String, Object> modelo = new ModelMap();
+    String email = (String) request.getSession().getAttribute("USUARIO_EMAIL");
+    modelo.put("ambientes", servicioAmbiente.obtenerAmbientesDe(email));
+    return new ModelAndView("home", modelo);
   }
 
   @RequestMapping(path = "/", method = RequestMethod.GET)

@@ -14,6 +14,7 @@ import com.tallerwebi.dominio.Ambiente;
 import com.tallerwebi.dominio.CategoriaDeMueble;
 import com.tallerwebi.dominio.Estilo;
 import com.tallerwebi.dominio.Mueble;
+import com.tallerwebi.dominio.RepositorioAmbiente;
 import com.tallerwebi.dominio.ServicioCatalogo;
 import com.tallerwebi.dominio.ServicioCatalogoImpl;
 import com.tallerwebi.dominio.TipoDeAmbiente;
@@ -179,6 +180,32 @@ public class DataSqlTest {
     }
 
     assertThat(tipos, containsInAnyOrder("Habitación", "Cocina"));
+  }
+
+  @Test
+  @Transactional
+  public void dadoQueArrancaLaAplicacion_cuandoConsultoLosAmbientesDelUsuarioDeTest_entoncesCadaAmbienteTieneSusMuebles() {
+    RepositorioAmbiente repositorioAmbiente = new RepositorioAmbienteImpl(this.sessionFactory);
+
+    List<Ambiente> ambientes = repositorioAmbiente.obtenerAmbientesDe("test@unlam.edu.ar");
+
+    assertThat(ambientes, hasSize(2));
+    assertThat(
+      nombresDeMueblesDe(ambientes.get(0)),
+      containsInAnyOrder("Cama Boho", "Escritorio Minimalista", "Lámpara de Mesa Japandi")
+    );
+    assertThat(
+      nombresDeMueblesDe(ambientes.get(1)),
+      containsInAnyOrder(
+        "Mesada de Cocina Minimalista",
+        "Alacena Industrial",
+        "Zapatero Escandinavo"
+      )
+    );
+  }
+
+  private List<String> nombresDeMueblesDe(Ambiente ambiente) {
+    return ambiente.getMuebles().stream().map(Mueble::getNombre).toList();
   }
 
   private List<Ambiente> obtenerAmbientes() {

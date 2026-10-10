@@ -241,6 +241,22 @@ h1, h2, h3, h4, h5, h6,
   margin: 0;
 }
 
+/* Lista de muebles en tarjetas de ambiente: item compacto con diferencia de tamaño */
+.hb-lista-muebles {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.hb-lista-muebles li {
+  padding: 0.15rem 0;
+}
+
+.hb-lista-muebles .bi-diamond-fill {
+  font-size: 0.5rem;
+  vertical-align: middle;
+  color: var(--hb-terracota);
+}
+
 .hb-datos dt {
   font-weight: 500;
   color: var(--hb-texto-suave);

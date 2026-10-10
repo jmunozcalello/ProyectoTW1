@@ -1,4 +1,4 @@
-INSERT INTO Usuario(id, email, password, rol, activo) VALUES(null, 'test@gmail.com', 'test', 'ADMIN', true);
+INSERT INTO Usuario(id, email, password, rol, activo) VALUES(null, 'test@unlam.edu.ar', 'test', 'ADMIN', true);
 
 INSERT INTO TipoDeAmbiente(id, nombre) VALUES
   (1, 'Living'),
@@ -77,3 +77,11 @@ INSERT INTO mueble_tipos_de_ambiente(mueble_id, tipo_de_ambiente_id) VALUES
 INSERT INTO Ambiente(id, ancho, largo, tipo_de_ambiente_id, usuario_id) VALUES
   (1, 4.0, 3.0, 2, 1),
   (2, 5.0, 3.0, 4, 1);
+
+INSERT INTO ambiente_muebles(ambiente_id, mueble_id) VALUES
+  (1, 8),
+  (1, 3),
+  (1, 15),
+  (2, 11),
+  (2, 18),
+  (2, 16);
