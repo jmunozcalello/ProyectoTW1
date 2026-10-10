@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Habitación')}"></head>
+<head th:replace="~{fragments/layout :: head(${ambiente.tipoDeAmbiente.nombre})}"></head>
 
 <body>
   <nav th:replace="~{fragments/layout :: navbar('ambientes')}"></nav>
@@ -10,12 +10,12 @@
     <header class="hb-page-header">
       <div>
         <span class="hb-eyebrow">Ambiente</span>
-        <h1>Habitación</h1>
+        <h1 th:text="${ambiente.tipoDeAmbiente.nombre}">Habitación</h1>
         <p>Acá podés ver, editar y rediseñar este ambiente.</p>
       </div>
       <div class="d-flex flex-wrap gap-2">
         <a th:href="@{/muebles}" class="btn btn-lg btn-secondary"><i class="bi bi-pencil"></i> Ver / editar muebles</a>
-        <a th:href="@{/muebles/redisenar}" class="btn btn-lg btn-primary"><i class="bi bi-magic"></i> Rediseñar</a>
+        <a th:href="@{/ambientes/{id}/redisenar(id=${ambiente.id})}" class="btn btn-lg btn-primary"><i class="bi bi-magic"></i> Rediseñar</a>
       </div>
     </header>
 
@@ -24,11 +24,9 @@
         <h2 class="h5 mb-3">Información</h2>
         <dl class="hb-datos">
           <dt>Tipo</dt>
-          <dd>Dormitorio</dd>
+          <dd th:text="${ambiente.tipoDeAmbiente.nombre}">Dormitorio</dd>
           <dt>Dimensiones</dt>
-          <dd>4m x 3m</dd>
-          <dt>Estilo</dt>
-          <dd><span class="hb-chip hb-chip-salvia">Minimalista</span></dd>
+          <dd th:text="${#numbers.formatDecimal(ambiente.ancho, 1, 0) + 'm x ' + #numbers.formatDecimal(ambiente.largo, 1, 0) + 'm'}">4m x 3m</dd>
         </dl>
       </div>
     </div>

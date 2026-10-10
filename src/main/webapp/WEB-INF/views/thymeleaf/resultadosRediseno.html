@@ -21,7 +21,7 @@
         </p>
       </div>
       <div class="d-flex flex-wrap gap-2">
-        <a th:href="@{/muebles/redisenar}" class="btn btn-secondary">
+        <a th:href="@{/ambientes/{id}/redisenar(id=${ambiente.id})}" class="btn btn-secondary">
           <i class="bi bi-arrow-left"></i> Volver a rediseñar
         </a>
         <a th:href="@{/catalogo}" class="btn btn-primary">
@@ -82,16 +82,9 @@
 
     <h2 class="hb-section-title">Muebles sugeridos</h2>
 
-    <div th:if="${muebles != null and #lists.isEmpty(muebles) and tipoDeAmbiente == null}" class="alert alert-info">
+    <div th:if="${muebles != null and #lists.isEmpty(muebles)}" class="alert alert-info">
       <i class="bi bi-search"></i>
       No encontramos muebles para ese estilo dentro del presupuesto. Probá con otro estilo o aumentá el presupuesto.
-    </div>
-
-    <div th:if="${muebles != null and #lists.isEmpty(muebles) and tipoDeAmbiente != null}" class="alert alert-info">
-      <i class="bi bi-search"></i>
-      No encontramos muebles de tipo
-      <strong th:text="${tipoDeAmbiente}">Habitación</strong>
-      para ese estilo dentro del presupuesto. Probá con otro tipo de ambiente, otro estilo o aumentá el presupuesto.
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -99,6 +92,7 @@
         <div class="card h-100 hb-card-hover" th:id="${'mueble-' + mueble.id}">
           <div class="card-body d-flex flex-column">
             <span class="hb-chip hb-chip-salvia mb-2 align-self-start" th:text="${mueble.estilo}">Japandi</span>
+            <span class="hb-chip hb-chip-green mb-2 align-self-start" th:text="${mueble.categoriaDeMueble.nombre}">Sillón</span>
             <h3 class="h5" th:text="${mueble.nombre}">Sillón Japandi</h3>
             <p class="text-secondary" th:text="${mueble.descripcion}">
               Sillón bajo con cojines de lino natural.

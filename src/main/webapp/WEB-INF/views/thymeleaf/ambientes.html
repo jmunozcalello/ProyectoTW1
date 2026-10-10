@@ -15,22 +15,23 @@
       <a th:href="@{/plano/ambiente}" class="btn btn-lg btn-primary"><i class="bi bi-plus-lg"></i> Crear ambiente</a>
     </header>
 
+    <div th:if="${#lists.isEmpty(ambientes)}" class="alert alert-info">
+      <i class="bi bi-house"></i>
+      Todavía no tenés ambientes. Creá uno para empezar.
+    </div>
+
     <div class="row g-4">
-      <div class="col-md-6 col-lg-4">
+      <div th:each="ambiente : ${ambientes}" class="col-md-6 col-lg-4">
         <div class="card h-100 hb-card-hover">
           <div class="card-body">
-            <h2 class="h5">Habitación</h2>
-            <p><span class="hb-chip"><i class="bi bi-rulers"></i> 4m x 3m</span></p>
-            <a th:href="@{/ambientes/1}" class="btn btn-primary">Ver ambiente</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 hb-card-hover">
-          <div class="card-body">
-            <h2 class="h5">Cocina</h2>
-            <p><span class="hb-chip"><i class="bi bi-rulers"></i> 5m x 3m</span></p>
-            <a th:href="@{/ambientes/2}" class="btn btn-primary">Ver ambiente</a>
+            <h2 class="h5" th:text="${ambiente.tipoDeAmbiente.nombre}">Habitación</h2>
+            <p>
+              <span class="hb-chip">
+                <i class="bi bi-rulers"></i>
+                <span th:text="${#numbers.formatDecimal(ambiente.ancho, 1, 0) + 'm x ' + #numbers.formatDecimal(ambiente.largo, 1, 0) + 'm'}">4m x 3m</span>
+              </span>
+            </p>
+            <a th:href="@{/ambientes/{id}(id=${ambiente.id})}" class="btn btn-primary">Ver ambiente</a>
           </div>
         </div>
       </div>

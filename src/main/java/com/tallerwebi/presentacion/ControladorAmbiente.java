@@ -1,6 +1,10 @@
 package com.tallerwebi.presentacion;
 
+import com.tallerwebi.dominio.ServicioAmbiente;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -9,9 +13,18 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class ControladorAmbiente {
 
+  private final ServicioAmbiente servicioAmbiente;
+
+  @Autowired
+  public ControladorAmbiente(ServicioAmbiente servicioAmbiente) {
+    this.servicioAmbiente = servicioAmbiente;
+  }
+
   @RequestMapping(path = "/ambientes", method = RequestMethod.GET)
   public ModelAndView ambientes() {
-    return new ModelAndView("ambientes");
+    Map<String, Object> modelo = new ModelMap();
+    modelo.put("ambientes", servicioAmbiente.obtenerAmbientes());
+    return new ModelAndView("ambientes", modelo);
   }
 
   @RequestMapping(path = "/ambientes/crear", method = RequestMethod.GET)
@@ -21,6 +34,8 @@ public class ControladorAmbiente {
 
   @RequestMapping(path = "/ambientes/{id}", method = RequestMethod.GET)
   public ModelAndView detalleAmbiente(@PathVariable("id") Long id) {
-    return new ModelAndView("ambiente");
+    Map<String, Object> modelo = new ModelMap();
+    modelo.put("ambiente", servicioAmbiente.buscarAmbiente(id));
+    return new ModelAndView("ambiente", modelo);
   }
 }

@@ -11,10 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository("repositorioCatalogo")
 public class RepositorioCatalogoImpl implements RepositorioCatalogo {
 
-  /* No implemnte Critera Clásico ya que en Hibernate 6 fue eliminado y no esta disponible
-  Desconozco y ahora hay un 'CriteriaBuilder'/'CriteriaQuery'. Voy a esperar a la clase de
-  Repositorio antes de refactorizar este codigo */
-
   private final SessionFactory sessionFactory;
 
   @Autowired
@@ -29,16 +25,21 @@ public class RepositorioCatalogoImpl implements RepositorioCatalogo {
 
   @Override
   public List<Mueble> ObtenerTodosLosMuebles() {
-    String hql = "FROM Mueble";
-    Query<Mueble> query = sessionFactory.getCurrentSession().createQuery(hql, Mueble.class);
-    return query.getResultList();
+    String query = "FROM Mueble m LEFT JOIN FETCH m.categoriaDeMueble";
+    List<Mueble> muebles = sessionFactory
+      .getCurrentSession()
+      .createQuery(query, Mueble.class)
+      .getResultList();
+    return muebles;
   }
 
   @Override
   public Mueble ObtenerMueblePorId(int id) {
-    String hql = "FROM Mueble WHERE id = :id";
-    Query<Mueble> query = sessionFactory.getCurrentSession().createQuery(hql, Mueble.class);
-    query.setParameter("id", id);
-    return query.uniqueResult();
+    String query = "FROM Mueble m LEFT JOIN FETCH m.categoriaDeMueble WHERE m.id = :id";
+    Query<Mueble> hibernateQuery = sessionFactory
+      .getCurrentSession()
+      .createQuery(query, Mueble.class)
+      .setParameter("id", id);
+    return hibernateQuery.uniqueResult();
   }
 }

@@ -22,6 +22,8 @@
           <dd th:text="${'$ ' + #numbers.formatDecimal(mueble.precio, 1, 'COMMA', 0, 'POINT')}">$ 85.000</dd>
           <dt>Estilo</dt>
           <dd th:text="${mueble.estilo}">Retro</dd>
+          <dt>Categoría</dt>
+          <dd th:text="${categoriaDeMueble.nombre}">Sillón</dd>
         </dl>
       </div>
     </div>

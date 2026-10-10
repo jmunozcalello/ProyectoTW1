@@ -70,6 +70,7 @@ public class ControladorCatalogoDeMuebles {
 
     Map<String, Object> modelo = new ModelMap();
     modelo.put("mueble", mueble);
+    modelo.put("categoriaDeMueble", mueble.getCategoriaDeMueble());
 
     return new ModelAndView("mueble", modelo);
   }
